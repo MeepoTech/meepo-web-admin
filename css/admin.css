@@ -139,5 +139,10 @@ a{
 .firstSlice{
 	margin-right:10px;
 }
+
+.alert,
+.table .control-group{
+	margin-bottom:0px;
+}
 /*Group quota change end*/
 

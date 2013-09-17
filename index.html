@@ -4,6 +4,7 @@
 	<meta charset="utf-8">
 	<script src="js/jquery.min.js" type="text/javascript"></script>
     <script src="js/bootstrap.min.js" type="text/javascript"></script>
+    <script src="js/common.js" type="text/javascript"></script>
     <script src="js/admin.js" type="text/javascript"></script>
     <link href="css/bootstrap.css" rel="stylesheet" type="text/css" />
     <link href="css/bootstrap-responsive.css" rel="stylesheet" type="text/css" />
@@ -209,6 +210,12 @@
                                 <div class="input-append">
                                     <input type="text" class="span8 search-query" placeholder="请输入群组名" id="group_search_name">
                                     <button type="button" class="btn" id="group_search_submit">搜索</button>
+                                </div>
+                            </div>
+                            <div id="group_error_prompt" style="display:none">
+                                <div class="alert alert-error span7">
+                                    <button type="button" class="close" id="group_alert_close">×</button>
+                                    <strong>Error! </strong>配额大小为0~10范围内的整数
                                 </div>
                             </div>
                             <div class="pull-right">

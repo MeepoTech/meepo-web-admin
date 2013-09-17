@@ -40,6 +40,7 @@ var url_templates = {
 	group_info :         servers.group + '/{0}/info?token={1}',
 	group_search : 		 servers.group + '/search?query={0}&token={1}',
 	group_list:			 servers.group + '?token={0}&filters=group.type>=20',
+	group_update:		 servers.group + '/{0}/update?token={1}',
 };
 
 $(function(){
@@ -54,40 +55,8 @@ $(function(){
 	$('#group_edit_manage').click(groupEditManage);
 	$('#group_check_manage').click(groupCheckManage);
 	$('#group_cancel_manage').click(groupCancel);
+	$('#group_alert_close').click(groupAlertClose);
 });
-
-String.format = function(src)
-{
-    if (arguments.length === 0) 
-        return null; 
-		 
-    var args = Array.prototype.slice.call(arguments, 1);
-    for(var i = 0; i < args.length; ++i)
-        args[i] = encodeURIComponent(args[i]);
-    
-    return src.replace(/\{(\d+)\}/g, function(m, i){
-        return args[i];
-    });
-};
-
-function stringThumbnail(str){
-	if(str.length > strMaxLength)
-		return str.substr(0,strMaxLength-3)+'...';
-	else
-		return str;
-}
-
-function request(url,data,method,callback){
-	$.ajax({
-		url:url,
-		data:data,
-		type:method,
-		contentType:"application/json; charset=utf-8",
-		success: callback,
-		error: callback,
-		dataType:"json"
-	});
-}
 
 function flush_local_data(){
 	
@@ -229,6 +198,8 @@ function listGroup(){
 			saveDataVal[pos][1] = data.description;
 			saveDataVal[pos][2] = tags;
 			saveDataVal[pos][3] = data.usage.quota_str;
+			saveDataVal[pos][4] = data.type;
+			saveDataVal[pos][5] = data.group_id;
 			pos = pos +1;
 			if(pos >= eachPageCount){
 				//Save data
@@ -433,7 +404,8 @@ function groupSearch(){
 			saveDataVal[pos][1] = data.description;
 			saveDataVal[pos][2] = tags;
 			saveDataVal[pos][3] = data.usage.quota_str;
-			
+			saveDataVal[pos][4] = data.type;
+			saveDataVal[pos][5] = data.group_id;
 			pos = pos +1;
 			if(pos >= eachPageCount){
 				//Save data
@@ -498,9 +470,9 @@ function groupEdit(){
 			var tags = saveData[pos][2];
 			var description =saveData[pos][1];
 			
-			var quotaHTML = '<div class="input-append"><input type="text" class="span2" value="'+quotaInt+'"><span class="add-on">GB</span></div>';
-			var tagsHTML = '<input type="text" class="span8" value="'+tags+'">';
-			var descriptionHTML = '<textarea row="1">'+description+'</textarea>';
+			var quotaHTML = '<div class="input-append control-group"><input type="text" class="span2" value="'+quotaInt+'"><span class="add-on">GB</span></div>';
+			var tagsHTML = '<div class="control-group"><input type="text" class="span8" value="'+tags+'"></div>';
+			var descriptionHTML = '<div class="control-group"><textarea row="1">'+description+'</textarea></div>';
 			$('#group_table > tbody tr:eq('+pos+') td:eq(7)').html(quotaHTML);
 			$('#group_table > tbody tr:eq('+pos+') td:eq(4)').html(tagsHTML);
 			$('#group_table > tbody tr:eq('+pos+') td:eq(3)').html(descriptionHTML);
@@ -516,7 +488,7 @@ function groupSave(){
 	else{
 		$checkedList.each(function(index, element) {
 			var pos = element.name;
-            var description = $('#group_table > tbody tr:eq('+pos+') td:eq(3) >textarea').val();
+            var description = $('#group_table > tbody tr:eq('+pos+') td:eq(3) textarea').val();
 			var quotaInt = $('#group_table > tbody tr:eq('+pos+') td:eq(7) input[type="text"]').val();
 			var tags = $('#group_table > tbody tr:eq('+pos+') td:eq(4) input[type="text"]').val();
 			$('#group_table > tbody tr:eq('+pos+') td:eq(3)').html(stringThumbnail(description));
@@ -529,9 +501,36 @@ function groupSave(){
 			saveData[pos][2] = tags;
 			saveData[pos][3] = quotaInt+" GB";
 			localStorage.setItem('groupTableData',JSON.stringify(saveData));
+			
+			updateGroupInfo(saveData[pos][5],description,tags,saveData[pos][4]);
         });
+		
 		deactivateEdit();
 	}
+}
+
+function updateGroupInfo(groupID,description,tags,type){
+	//Check update data
+	
+	var tagArray = tags.split(',');
+	for(var index = 0; index < tagArray.length ; index++)
+		tagArray[index] = Trim(tagArray[index]).toLowerCase();
+		
+	var form = JSON.stringify({
+		"description" : description,
+		"tags" : tagArray,
+		"type" : type
+	});
+	
+	function after_update(data,status){
+		if(status == "error"){
+		}
+		else{
+			$('#group_error_prompt').css('display','block');
+		}
+	}
+	var completeUrl = String.format(url_templates.group_update,groupID,local_data.token);
+	request(completeUrl,form,"post",after_update);
 }
 
 function groupCancel(){
@@ -573,4 +572,8 @@ function groupCheckManage(){
             element.checked = false;
         });
 	}
+}
+
+function groupAlertClose(){
+	$('#group_error_prompt').css('display','none');
 }
