@@ -56,8 +56,8 @@
                 	<div class="pull-right">
                     	<div class="btn-group">
                             <button class="btn btn-small">Delete</button>
-                            <button class="btn btn-small">Edit</button>
-                            <button class="btn btn-small">Create</button>
+                            <button class="btn btn-small" id="user_edit_manage">Edit</button>
+                            <button class="btn btn-small" id="user_cancel_manage">Cancel</button>
                         </div>
                     </div>
                 </div>
@@ -215,7 +215,13 @@
                             <div id="group_error_prompt" style="display:none">
                                 <div class="alert alert-error span7">
                                     <button type="button" class="close" id="group_alert_close">×</button>
-                                    <strong>Error! </strong>配额大小为0~10范围内的整数
+                                    <strong>错误!! </strong>配额大小为0~10范围内的整数,描述与标签不能包含下列字符：\ \ / : * ? " < > |
+                                </div>
+                            </div>
+                            <div id="group_success_prompt" style="display:none">
+                                <div class="alert alert-success span7">
+                                    <button type="button" class="close" id="group_success_close">×</button>
+                                    <strong>恭喜!! </strong>数据更新成功!!
                                 </div>
                             </div>
                             <div class="pull-right">

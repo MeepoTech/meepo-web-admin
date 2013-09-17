@@ -50,12 +50,17 @@ $(function(){
 	$('#userManage').click(userManage);
 	$('#quotaManage').click(quotaManage);
 	$('#groupManage').click(groupManage);
+	//User
+	$('#user_edit_manage').click(userEditManage);
+	$('#user_cacel_manage').click(userCancelManage);
+	//Group
 	$('#slide_back').click(slideBack);
 	$('#group_search_submit').click(groupSearch);
 	$('#group_edit_manage').click(groupEditManage);
 	$('#group_check_manage').click(groupCheckManage);
 	$('#group_cancel_manage').click(groupCancel);
 	$('#group_alert_close').click(groupAlertClose);
+	$('#group_success_close').click(groupAlertClose);
 });
 
 function flush_local_data(){
@@ -240,7 +245,7 @@ function listGroupUser(groupID){
 				dataVal[index][1] = '<input type="checkbox" value="'+data.users.users[index].user_id+'" name="'+index+'">';
 				dataVal[index][2] = data.users.users[index].user_name;
 				dataVal[index][3] = data.users.users[index].display_name;
-				dataVal[idnex][4] = data.users.users[index].email;
+				dataVal[index][4] = data.users.users[index].email;
 				dataVal[index][5] = 'role';
 				dataVal[index][6] = '<a>重置</a>';
 				dataVal[index][7] = '<a onClick="changeUserState(\'0\',this)">已启用</a>';
@@ -336,6 +341,10 @@ function createRow(data){
 	return code;
 }
 
+//User
+
+
+//Group
 function userList(groupID){
 	slideForward();
 	listGroupUser(groupID);
@@ -383,7 +392,7 @@ function groupSearch(){
 			dataVal[pos] = [];
 			dataVal[pos][0] = pos;
 			dataVal[pos][1] = '<input type="checkbox" value="'+data.group_id+'" name="'+pos+'">';
-			dataVal[pos][2] = stringThumbnail(data.group_name);
+			dataVal[pos][2] = '<a onClick="userList(\''+data.group_id+'\')">'+stringThumbnail(data.group_name)+'</a>';
 			dataVal[pos][3] = stringThumbnail(data.description);
 			var tags = "";
 			if(data.tags.length > 0){
@@ -470,7 +479,7 @@ function groupEdit(){
 			var tags = saveData[pos][2];
 			var description =saveData[pos][1];
 			
-			var quotaHTML = '<div class="input-append control-group"><input type="text" class="span2" value="'+quotaInt+'"><span class="add-on">GB</span></div>';
+			var quotaHTML = '<div class="input-append control-group"><input type="text" class="span3" value="'+quotaInt+'"><span class="add-on">GB</span></div>';
 			var tagsHTML = '<div class="control-group"><input type="text" class="span8" value="'+tags+'"></div>';
 			var descriptionHTML = '<div class="control-group"><textarea row="1">'+description+'</textarea></div>';
 			$('#group_table > tbody tr:eq('+pos+') td:eq(7)').html(quotaHTML);
@@ -486,32 +495,59 @@ function groupSave(){
 	if($checkedList.length == 0){
 	}
 	else{
+		var errorFlag = false;
 		$checkedList.each(function(index, element) {
+			var eachErrorFlag = false;
 			var pos = element.name;
             var description = $('#group_table > tbody tr:eq('+pos+') td:eq(3) textarea').val();
 			var quotaInt = $('#group_table > tbody tr:eq('+pos+') td:eq(7) input[type="text"]').val();
 			var tags = $('#group_table > tbody tr:eq('+pos+') td:eq(4) input[type="text"]').val();
-			$('#group_table > tbody tr:eq('+pos+') td:eq(3)').html(stringThumbnail(description));
-			$('#group_table > tbody tr:eq('+pos+') td:eq(7)').html(quotaInt+" GB");
-			$('#group_table > tbody tr:eq('+pos+') td:eq(4)').html(stringThumbnail(tags));
+			//Check data formate
+			if(invalid_letters.test(description)){
+				eachErrorFlag = true;
+				$('#group_table > tbody tr:eq('+pos+') td:eq(3) .control-group').addClass('error');
+			}
 			
-			//update localStorage
-			var saveData = JSON.parse(localStorage.getItem('groupTableData'));
-			saveData[pos][1] = description;
-			saveData[pos][2] = tags;
-			saveData[pos][3] = quotaInt+" GB";
-			localStorage.setItem('groupTableData',JSON.stringify(saveData));
+			if(invalid_letters.test(tags)){
+				eachErrorFlag = true;
+				$('#group_table > tbody tr:eq('+pos+') td:eq(4) .control-group').addClass('error');
+			}
 			
-			updateGroupInfo(saveData[pos][5],description,tags,saveData[pos][4]);
+			if(!valid_int.test(quotaInt)){
+				eachErrorFlag = true;
+				$('#group_table > tbody tr:eq('+pos+') td:eq(7) .control-group').addClass('error');
+			}
+			
+			if(eachErrorFlag){
+				errorFlag = true;
+			}
+			else{
+				$('#group_table > tbody tr:eq('+pos+') td:eq(3)').html(stringThumbnail(description));
+				$('#group_table > tbody tr:eq('+pos+') td:eq(4)').html(stringThumbnail(tags));
+				$('#group_table > tbody tr:eq('+pos+') td:eq(7)').html(quotaInt+" GB");
+				//update localStorage
+				var saveData = JSON.parse(localStorage.getItem('groupTableData'));
+				saveData[pos][1] = description;
+				saveData[pos][2] = tags;
+				saveData[pos][3] = quotaInt+" GB";
+				localStorage.setItem('groupTableData',JSON.stringify(saveData));
+				element.checked = false;
+				//updateGroupInfo(saveData[pos][5],description,tags,saveData[pos][4]);
+			}
         });
-		
-		deactivateEdit();
+		if(!errorFlag){
+			deactivateEdit();
+			$('#group_error_prompt').css('display','none');
+			$('#group_success_prompt').css('display','block');
+		}
+		else{
+			$('#group_error_prompt').css('display','block');
+			$('#group_success_prompt').css('display','none');
+		}
 	}
 }
 
 function updateGroupInfo(groupID,description,tags,type){
-	//Check update data
-	
 	var tagArray = tags.split(',');
 	for(var index = 0; index < tagArray.length ; index++)
 		tagArray[index] = Trim(tagArray[index]).toLowerCase();
@@ -526,7 +562,6 @@ function updateGroupInfo(groupID,description,tags,type){
 		if(status == "error"){
 		}
 		else{
-			$('#group_error_prompt').css('display','block');
 		}
 	}
 	var completeUrl = String.format(url_templates.group_update,groupID,local_data.token);
@@ -550,8 +585,8 @@ function deactivateEdit(){
 	//Enable checkbox
 	$('#group_table input:checkbox').removeAttr('disabled');
 	$('#group_table input:checkbox').each(function(index, element) {
-		element.checked = false;
-	});
+        element.checked = false;
+    });
 }
 
 function activateEdit(){
@@ -576,4 +611,5 @@ function groupCheckManage(){
 
 function groupAlertClose(){
 	$('#group_error_prompt').css('display','none');
+	$('#group_success_prompt').css('display','none');
 }

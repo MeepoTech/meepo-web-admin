@@ -8,6 +8,9 @@
 #   LastChange: 2013-9-17 09:26:30
 #      History:
 =============================================================================*/
+//global variable
+var invalid_letters = /[:"\<\>\\\/\?\*\|]/;
+var valid_int = /^[1-9]\d*$/;
 
 //trim routine
 function LTrim(str){
