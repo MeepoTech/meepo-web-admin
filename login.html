@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <script src="js/jquery.min.js" type="text/javascript"></script>
+    <script src="js/bootstrap.min.js" type="text/javascript"></script>
+    <script src="js/jssha256.js" type="text/javascript"></script>
+    <script src="js/json2.js" type="text/javascript"></script>
+    <script src="js/admin.js" type="text/javascript"></script>
+    <link href="css/bootstrap.css" rel="stylesheet" type="text/css" />
+    <link href="css/bootstrap-responsive.css" rel="stylesheet" type="text/css" />
+    <link href="css/docs.css" rel="stylesheet" type="text/css" />
+    <link href="css/admin.css" rel="stylesheet" type="text/css" />
+	<title>Meepo管理界面</title>
+</head>
+<body class="loginBody">
+    <!--Container start-->
+    <div class="container">
+    	<div class="myModal">
+            <div class="modal-header">
+                <h3>Login</h3>
+            </div>
+            <div class="modal-body">
+                <div class="form-horizontal">
+                    <div class="control-group">
+                        <label class="control-label" for="username">用户名</label>
+                        <div class="controls">
+                            <input type="text" id="username" placeholder="Username">
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="password">密码</label>
+                        <div class="controls">
+                            <input type="password" id="password" placeholder="Password" onKeyDown="login_keyDown()">
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <div class="controls">
+                            <label class="checkbox">
+                                <input type="checkbox" id="remember_me">记住密码
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a href="#" class="btn btn-primary" id="login_submit">Login</a>
+                <a href="#" class="btn btn-primary" id="reset">Reset</a>
+            </div>
+        </div>
+    </div>
+    <!--Container end-->
+	
+</body>
+</html>
