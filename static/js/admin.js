@@ -9,7 +9,7 @@
 #      History:
 =============================================================================*/
 //Global variable
-var itemArray = Array('user','quota','group','data','info');
+var itemArray = Array('user','client','group','data','info');
 
 var pageSize = 30;
 var strMaxLength = 15;
@@ -48,7 +48,7 @@ $(function(){
 	$('#quota_group_search').click(quotaGroupSearch);
 	$('#quota_submit').click(quotaChangeSubmit);
 	$('#userManage').click(userManage);
-	$('#quotaManage').click(quotaManage);
+	$('#clientManage').click(clientManage);
 	$('#groupManage').click(groupManage);
 	//User
 	$('#user_edit_manage').click(userEditManage);
@@ -130,8 +130,8 @@ function userManage(){
 	listUser();
 }
 
-function quotaManage(){
-	switchItem('quota');
+function clientManage(){
+	switchItem('client');
 }
 
 function groupManage(){

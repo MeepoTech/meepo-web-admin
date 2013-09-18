@@ -10,7 +10,7 @@ a{
 }
 .loginBody,
 .homeBody{
-	background-image:url(../img/loginBg.jpg);
+	background-image:url(../img/loginBg.jpg)
 }
 
 .homeBody{
