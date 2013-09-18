@@ -150,10 +150,15 @@
                             	<input type="text" id="client_version" name="version">
                             </div>
                         </div>
-                        <div class="control-group">
+                        <div class="control-group form-search">
                         	<label class="control-label" for="client_upload">上传文件</label>
                             <div class="controls">
-                            	<input type="file" id="client_upload" name="myfile">
+                            	<input type="hidden" name="MAX_FILE_SIZE">
+                            	<div class="input-append">
+                                    <input type="text" id="client_upload" class="search-query" name="myfile" style="width:125px;" placeholder="选择上传文件">
+                                    <button type="button" class="btn" onClick="uploadFile.click()">浏览...</button>
+                                    <input type="file" name="uploadFile" value="" style="display:none;" onChange="client_upload.value = this.value">
+                                </div>
                             </div>
                         </div>
                         <div class="control-group">
