@@ -14,9 +14,9 @@ var itemArray = Array('user','client','group','data','info');
 var pageSize = 30;
 var strMaxLength = 15;
 var url_prefix = {
-	domain  : 'http://new.meepotech.com',
-	control : 'http://new.meepotech.com/0',
-	data    : 'http://new.meepotech.com/c0' 
+	domain  : 'http://admin.meepotech.com',
+	control : 'http://admin.meepotech.com/0',
+	data    : 'http://admin.meepotech.com/c0' 
 };
 
 var servers = {
@@ -51,8 +51,8 @@ $(function(){
 	$('#clientManage').click(clientManage);
 	$('#groupManage').click(groupManage);
 	//User
-	$('#user_edit_manage').click(userEditManage);
-	$('#user_cacel_manage').click(userCancelManage);
+	//$('#user_edit_manage').click(userEditManage);
+	//$('#user_cacel_manage').click(userCancelManage);
 	//Group
 	$('#slide_back').click(slideBack);
 	$('#group_search_submit').click(groupSearch);
@@ -97,7 +97,7 @@ function login(){
 				sessionStorage.setItem("logging",true);
 			}
 			localStorage.setItem("data",JSON.stringify(local_data));
-			self.location.href="index.html";
+			self.location.href="/home";
 		}
 	}
 	
