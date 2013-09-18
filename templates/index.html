@@ -1,0 +1,331 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<script src="js/jquery.min.js" type="text/javascript"></script>
+    <script src="js/bootstrap.min.js" type="text/javascript"></script>
+    <script src="js/common.js" type="text/javascript"></script>
+    <script src="js/admin.js" type="text/javascript"></script>
+    <link href="css/bootstrap.css" rel="stylesheet" type="text/css" />
+    <link href="css/bootstrap-responsive.css" rel="stylesheet" type="text/css" />
+    <link href="css/docs.css" rel="stylesheet" type="text/css" />
+    <link href="css/admin.css" rel="stylesheet" type="text/css" />
+    <title>Meepo管理界面</title>
+    <script type="text/javascript">
+		check_logging();
+	</script>
+</head>
+
+<body data-spy="scroll" data-target=".bs-docs-sidebar" class="homeBody">
+	<!--Navbar start-->
+	<div class="navbar navbar-inverse navbar-fixed-top">
+    	<div class="navbar-inner">
+        	<a class="brand" href="#" style="float:left">MeePo</a>
+        </div>
+    </div>
+    <!--Navbar end-->
+    
+    <!--Header start-->
+    <header>
+    	<div class="navbar">
+        	<div class="navbar-inner">
+            	<ul class="nav">
+                	<li class="active" id="userManage"><a>用户管理</a></li>
+                    <li class="divider-vertical"></li>
+                    <li id="quotaManage"><a>配额管理</a></li>
+                    <li class="divider-vertical"></li>
+                    <li id="groupManage"><a>群组管理</a></li>
+                    <li class="divider-vertical"></li>
+                    <li id="dataManage"><a>数据管理</a></li>
+                    <li class="divider-vertical"></li>
+                    <li id="infoManage"><a>信息统计</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+    <!--Header end-->
+    <!--Container start-->
+    <div class="container">
+    	<!--User manage start-->
+        <div id="user_manage" style="display:block">
+        	<div class="printDiv form-horizontal container-fluid">
+            	<div class="row-fluid manage_bar">
+                	<div class="pull-left">
+                    	<img src="img/user_manage.jpg" class="img-rounded">用户管理
+                    </div>
+                	<div class="pull-right">
+                    	<div class="btn-group">
+                            <button class="btn btn-small">Delete</button>
+                            <button class="btn btn-small" id="user_edit_manage">Edit</button>
+                            <button class="btn btn-small" id="user_cancel_manage">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="showDiv form-horizontal container-fluid">
+            	<div class="row-fluid">
+                	<div class="pull-left form-search">
+                    	<div class="input-append">
+                        	<input type="text" class="span8 search-query" placeholder="请输入用户名">
+                            <button type="button" class="btn">搜索</button>
+                        </div>
+                    </div>
+                    <div class="pull-right">
+                    	<select id="" class="mySelect">
+                        	<option>--选择用户组--</option>
+                            <option>群主</option>
+                            <option>普通用户</option>
+                        </select>
+                        <select id="" class="mySelect">
+                        	<option>--选择用户状态--</option>
+                            <option>已启用</option>
+                            <option>已禁用</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                	<table class="table table-bordered table-striped manage_table" id="user_table">
+                    	<thead>
+                        	<tr>
+                            	<th>#</th>
+                                <th><input type="checkbox"></th>
+                                <th>用户名</th>
+                                <th>昵称</th>
+                                <th>邮箱</th>
+                                <th>配额</th>
+                                <th>注册时间</th>
+                                <th>密码</th>
+                                <th>状态</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                    <div class="pagination pagination-centered">
+                    	<ul>
+                        	<li class="disabled"><a href="#"><<</a></li>
+                            <li class="active"><a href="#">1</a></li>
+                            <li><a href="#">2</a></li>
+                            <li><a href="#">3</a></li>
+                            <li><a href="#">4</a></li>
+                            <li><a href="#">5</a></li>
+                            <li><a href="#">>></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--User manage end-->
+        
+        <!--Quota manage start-->
+        <div id="quota_manage" style="display:none">
+        	<div class="printDiv form-horizontal container-fluid">
+            	<div class="row-fluid manage_bar">
+                	<div class="pull-left">
+                    	<img src="img/quota_manage.jpg" class="img-rounded">配额管理
+                    </div>
+                	<div class="pull-right">
+                    	<div class="btn-group">
+                        	<button class="btn btn-small">Close</button>
+                            <button class="btn btn-small">Delete</button>
+                            <button class="btn btn-small">Edit</button>
+                            <button class="btn btn-small">Create</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="showDiv form-horizontal container-fluid">
+            	<div class="row-fluid">
+                	<div class="pull-left form-search">
+                    	<div class="input-append">
+                        	<input type="text" class="span8 search-query" placeholder="请输入用户名">
+                            <button type="button" class="btn">搜索</button>
+                        </div>
+                    </div>
+                    <div class="pull-right">
+                    	<select id="" class="mySelect">
+                        	<option>--选择用户组--</option>
+                            <option>群主</option>
+                            <option>普通用户</option>
+                        </select>
+                        <select id="" class="mySelect">
+                        	<option>--选择登录状态--</option>
+                            <option>已登录</option>
+                            <option>未登录</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                	<table class="table table-bordered table-striped manage_table" id="quota_table">
+                    	<thead>
+                        	<tr>
+                            	<th>#</th>
+                                <th><input type="checkbox"></th>
+                                <th>用户名</th>
+                                <th>昵称</th>
+                                <th>邮箱</th>
+                                <th>注册时间</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                    <div class="pagination pagination-centered">
+                    	<ul>
+                        	<li class="disabled"><a href="#"><<</a></li>
+                            <li class="active"><a href="#">1</a></li>
+                            <li><a href="#">2</a></li>
+                            <li><a href="#">3</a></li>
+                            <li><a href="#">4</a></li>
+                            <li><a href="#">5</a></li>
+                            <li><a href="#">>></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--Quota manage end-->
+        
+        <!--Group manage start-->
+        <div id="group_manage" style="display:none">
+        	<div class="printDiv form-horizontal container-fluid">
+            	<div class="row-fluid manage_bar">
+                	<div class="pull-left">
+                    	<img src="img/group_manage.jpg" class="img-rounded">群组管理
+                    </div>
+                	<div class="pull-right">
+                    	<div class="btn-group">
+                            <button class="btn btn-small">Delete</button>
+                            <button class="btn btn-small" id="group_edit_manage" value="0">Edit</button>
+                            <button class="btn btn-small" id="group_cancel_manage">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="showDiv form-horizontal container-fluid">
+            	<div class="row-fluid divSlide" id="group_slide">
+                	<div class="eachSlice firstSlice">
+                    	<div class="row-fluid">
+                            <div class="pull-left form-search">
+                                <div class="input-append">
+                                    <input type="text" class="span8 search-query" placeholder="请输入群组名" id="group_search_name">
+                                    <button type="button" class="btn" id="group_search_submit">搜索</button>
+                                </div>
+                            </div>
+                            <div id="group_error_prompt" style="display:none">
+                                <div class="alert alert-error span7">
+                                    <button type="button" class="close" id="group_alert_close">×</button>
+                                    <strong>错误!! </strong>配额大小为0~10范围内的整数,描述与标签不能包含下列字符：\ \ / : * ? " < > |
+                                </div>
+                            </div>
+                            <div id="group_success_prompt" style="display:none">
+                                <div class="alert alert-success span7">
+                                    <button type="button" class="close" id="group_success_close">×</button>
+                                    <strong>恭喜!! </strong>数据更新成功!!
+                                </div>
+                            </div>
+                            <div class="pull-right">
+                                <select id="" class="mySelect">
+                                    <option>--选择群组类型--</option>
+                                    <option>公共群组</option>
+                                    <option>私有群组</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <table class="table table-bordered table-striped manage_table" id="group_table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th><input type="checkbox" id="group_check_manage"></th>
+                                        <th>群组名</th>
+                                        <th>描述</th>
+                                        <th>标签</th>
+                                        <th>类型</th>
+                                        <th>搜索</th>
+                                        <th>配额</th>
+                                        <th>创建时间</th>
+                                        <th>状态</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                            <div class="pagination pagination-centered">
+                                <ul>
+                                    <li class="disabled"><a href="#"><<</a></li>
+                                    <li class="active"><a href="#">1</a></li>
+                                    <li><a href="#">2</a></li>
+                                    <li><a href="#">3</a></li>
+                                    <li><a href="#">4</a></li>
+                                    <li><a href="#">5</a></li>
+                                    <li><a href="#">>></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="eachSlice">
+                    	<div class="row-fluid">
+                            <div class="pull-left form-search">
+                                <div class="btn-group">
+                                	<button class="btn btn-link" type="button" id="slide_back"><<</button>
+                                </div>
+                                <div class="input-append">
+                                	<input type="text" class="span8 search-query" placeholder="请输入用户名">
+                                    <button type="button" class="btn">搜索</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <table class="table table-bordered table-striped manage_table" id="group_user_table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th><input type="checkbox"></th>
+                                        <th>用户名</th>
+                                        <th>昵称</th>
+                                        <th>邮箱</th>
+                                        <th>角色</th>
+                                        <th>密码</th>
+                                        <th>状态</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                            <div class="pagination pagination-centered">
+                                <ul>
+                                    <li class="disabled"><a href="#"><<</a></li>
+                                    <li class="active"><a href="#">1</a></li>
+                                    <li><a href="#">2</a></li>
+                                    <li><a href="#">3</a></li>
+                                    <li><a href="#">4</a></li>
+                                    <li><a href="#">5</a></li>
+                                    <li><a href="#">>></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--Group manage end-->
+    </div>
+    <!--Container end-->
+    
+    <!--Footer start-->
+    <footer class="footer">
+    	<div class="container-fluid">
+            <p><font color="gray">
+                <a href="/terms">服务条款</a>&nbsp;&nbsp;&nbsp;
+                <a href="/about">关于我们</a>&nbsp;&nbsp;&nbsp;
+                <a href=mailto:support@meepotech.com>意见反馈</a>&nbsp;&nbsp;&nbsp;
+                <a href="/joinus">加入我们</a>
+                <br><br>
+                &copy; 2013 北京麦谱影随科技有限公司
+            </font></p>
+   		</div>
+    </footer>
+    <!--Footer end-->
+</body>
+</html>
