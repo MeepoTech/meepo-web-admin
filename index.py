@@ -5,7 +5,7 @@ import json
 import redis
 import time
 
-upload_dir = '/var/www/campus-website/upload'
+upload_dir = '/var/www/campus-website/upload/'
 render = web.template.render("templates")
 platform_list = ['win32', 'win64', 'linux32', 'linux64', 'osx', 'android']
 
