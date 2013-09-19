@@ -32,7 +32,7 @@ function login(){
 				sessionStorage.setItem("logging",true);
 			}
 			localStorage.setItem("data",JSON.stringify(local_data));
-			self.location.href="index.html";
+			self.location.href="/home";
 		}
 	}
 	
