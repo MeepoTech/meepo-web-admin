@@ -57,6 +57,10 @@ function stringThumbnail(str){
 		return str;
 }
 
+function minVal(first,second){
+	return first < second ? first : second;
+}
+
 function request(url,data,method,callback){
 	$.ajax({
 		url:url,

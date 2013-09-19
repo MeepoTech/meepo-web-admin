@@ -9,47 +9,28 @@
 #      History:
 =============================================================================*/
 //Global variable
-var itemArray = Array('user','client','group','data','info');
+var itemArray = Array('user','quota','group','data','info','client');
 
 var pageSize = 30;
 var strMaxLength = 15;
-var url_prefix = {
-	domain  : 'http://admin.meepotech.com',
-	control : 'http://admin.meepotech.com/0',
-	data    : 'http://admin.meepotech.com/c0' 
-};
-
-var servers = {
-	account : url_prefix.control + '/account',
-	user	: url_prefix.control + '/admin_users',
-	group   : url_prefix.control + '/admin_groups',
-	file    : url_prefix.control + '/admin_groups',
-	trash   : url_prefix.control + '/admin_groups',
-	device  : url_prefix.control + '/devices',
-	data    : url_prefix.control + '/admin_groups'
-};
-
-var LANG = "&locale=zh_CN";
-
-var url_templates = {
-	login :              servers.account + '/login?locale={0}&device_name=web-control&user_name={1}&password={2}',
-	
-	//user
-	user_list:			 servers.user + '?token={0}',
-	//group
-	group_info :         servers.group + '/{0}/info?token={1}',
-	group_search : 		 servers.group + '/search?query={0}&token={1}',
-	group_list:			 servers.group + '?token={0}&filters=group.type>=20',
-	group_update:		 servers.group + '/{0}/update?token={1}',
-};
 
 $(function(){
-	$('#login_submit').click(login);
+	//Quota group
 	$('#quota_group_search').click(quotaGroupSearch);
-	$('#quota_submit').click(quotaChangeSubmit);
+	$('#quota_group_submit').click(quotaGroupSubmit);
+	$('#quota_group_cancel').click(quotaGroupCancel)
+	$('#quota_group_success_close').click(quotaGroupAlertClose);
+	
+	//Quota user
+	$('#quota_user_search').click(quotaUserSearch);
+	$('#quota_user_submit').click(quotaUserSubmit);
+	$('#quota_user_cancel').click(quotaUserCancel)
+	$('#quota_user_success_close').click(quotaUserAlertClose);
+	
 	$('#userManage').click(userManage);
-	$('#clientManage').click(clientManage);
+	$('#quotaManage').click(quotaManage);
 	$('#groupManage').click(groupManage);
+	$('#clientManage').click(clientManage);
 	//User
 	//$('#user_edit_manage').click(userEditManage);
 	//$('#user_cacel_manage').click(userCancelManage);
@@ -61,7 +42,14 @@ $(function(){
 	$('#group_cancel_manage').click(groupCancel);
 	$('#group_alert_close').click(groupAlertClose);
 	$('#group_success_close').click(groupAlertClose);
+	
+	//Initialization
+	initEnvironment();
 });
+
+function initEnvironment(){
+	listUser();
+}
 
 function flush_local_data(){
 	
@@ -74,40 +62,6 @@ function check_logging(){
 	}
 	else{
 		local_data = JSON.parse(localStorage.data);
-	}
-}
-
-function login(){
-	var username = $('#username').val();
-	var password = $('#password').val();
-	
-	function after_login(data,status){
-		var local_data = {};
-		if(status == "error"){
-			
-		}
-		else{
-			local_data.adminname = username;
-			local_data.token = data.token;
-			local_data.device = data.device_id;
-			if($('#remember_me').attr("check")){
-				localStorage.setItem("logging",true);
-			}
-			else{
-				sessionStorage.setItem("logging",true);
-			}
-			localStorage.setItem("data",JSON.stringify(local_data));
-			self.location.href="/home";
-		}
-	}
-	
-	var completeUrl = String.format(url_templates.login,LANG,encodeURIComponent(username),encodeURIComponent(password));
-	request(completeUrl,'','post',after_login);
-}
-
-function login_keyDown(){
-	if(event.keyCode == 13){
-		login();
 	}
 }
 
@@ -130,8 +84,8 @@ function userManage(){
 	listUser();
 }
 
-function clientManage(){
-	switchItem('client');
+function quotaManage(){
+	switchItem('quota');
 }
 
 function groupManage(){
@@ -139,27 +93,41 @@ function groupManage(){
 	listGroup();
 }
 
+function clientManage(){
+	switchItem('client');
+}
+
 function listUser(){
+	clearTable('user_table');
+	
 	function after_list(data,status){
 		if(status == 'error'){
 		}
 		else{
-			//Construct data
 			var dataVal = [];
-			for(var index = 0 ; index < data.users.length ; index++){
-				var userVal = data.users[index];
-				dataVal[index] = [];
-				dataVal[index][0] = index;
-				dataVal[index][1] = '<input type="checkbox">';
-				dataVal[index][2] = userVal.user_name;
-				dataVal[index][3] = userVal.display_name;
-				dataVal[index][4] = userVal.email;
-				dataVal[index][5] = '4GB';
-				dataVal[index][6] = userVal.registered_str;
-				dataVal[index][7] = '<a>重置</a>';
-				dataVal[index][8] = '<a onClick="changeUserState(\'0\',this)">已启用</a>';
+			var saveDataVal = [];
+			for(var index = 0,pos = 0 ; index < data.count ; index++){
+				if(data.users[index].user_id != "00000000-0000-0000-0000-000000000000"){
+					//Construct data
+					var user = data.users[index];
+					dataVal[pos] = [];
+					dataVal[pos][0] = pos+1;
+					dataVal[pos][1] = '<input type="checkbox" value="'+user.user_id+'" name="'+pos+'">';
+					dataVal[pos][2] = user.user_name;
+					dataVal[pos][3] = user.display_name;
+					dataVal[pos][4] = user.email;
+					dataVal[pos][5] = user.registered_str;
+					dataVal[pos][6] = '<a>重置</a>';
+					dataVal[pos][7] = '<a onClick="changeUserState(\'0\',this)">已启用</a>';
+				
+					saveDataVal[pos] = [];
+					saveDataVal[pos][0] = user.user_id;
+					saveDataVal[pos][1] = user.user_name;
+					saveDataVal[pos][2] = user.role;
+					pos = pos + 1;
+				}
 			}
-			clearTable('user_table');
+			localStorage.setItem('userTableData',JSON.stringify(saveDataVal));
 			createTable('user_table',dataVal);
 		}
 	}
@@ -268,15 +236,21 @@ function changeUserState(currentState,currentTR){
 	}
 }
 
+//Quota group
 function quotaGroupSearch(){
-	var $table = $('#quota_group_table');
-	var groupName = $('#quota_groupName').val();
+	var groupName = $('#quota_group_search_name').val();
 	function after_getInfo(data,status){
 		if(status == 'error'){
 			
 		}
 		else{
-			$('#quota_group_table tr:eq(2) td:eq(1)').text(data.usage.quota_str);
+			$('#quota_group_id').val(data.group_id);
+			$('#quota_group_name').val(groupName);
+			var usage = parseInt(parseInt(data.usage.used) / parseInt(data.usage.quota));
+			$('#quota_group_usage').css('width',usage+"%");
+			$('#quota_group_usage_str').text(usage+"%");
+			$('#quota_group_quota').val(data.usage.quota_str.split(' ')[0]);
+			$('#quota_group_submit').removeAttr('disabled');
 		}
 	}
 	
@@ -287,12 +261,7 @@ function quotaGroupSearch(){
 			if(data.total == 0){
 			}
 			else{
-				$('#quota_group_table').css('display','block');
-				var group = data.groups[0];
-				$('#quota_group_table tr:eq(0) td:eq(1)').text(group.group_name);
-				$('#quota_group_table tr:eq(1) td:eq(1)').text(group.description);
-				
-				var completeUrl = String.format(url_templates.group_info,group.group_id,local_data.token);
+				var completeUrl = String.format(url_templates.group_info,data.groups[0].group_id,local_data.token);
 				request(completeUrl,"","get",after_getInfo);
 			}
 		}
@@ -301,21 +270,88 @@ function quotaGroupSearch(){
 	request(completeUrl,"","get",after_search);
 }
 
-function changeUnits(units){
-	$('#quota_units').html(units+'<span class="caret"></span>');
-	$('#unit_hidden').text(units);
+function quotaGroupSubmit(){
+	var group_id = $('#quota_group_id').val();
+	var group_quota = $('#quota_group_quota').val();
+	group_quota = parseInt(group_quota) * 1024 * 1024 * 1024;
+	
+	function after_update(data,status){
+		if(status == 'error'){
+		}
+		else{
+			$('#quota_group_success_prompt').css('display','block');
+		}
+	}
+	var completeUrl = String.format(url_templates.group_updata_quota,group_id,group_quota,local_data.token);
+	request(completeUrl,"","post",after_update);
 }
 
-function quotaChangeSubmit(){
-	var units = $('#unit_hidden').text();
-	switch(units){
-		case 'GB' :
-		break;
-		case 'TB' :
-		break;
-		case 'PB' :
-		break;
+function quotaGroupCancel(){
+	$('#quota_group_search_name').val("");
+	$('#quota_group_id').val("");
+	$('#quota_group_name').val("");
+	$('#quota_group_usage').css('width',"100%");
+	$('#quota_group_usage_str').text("100%");
+	$('#quota_group_quota').val("");
+	$('#quota_group_submit').attr('disabled',true);
+	quotaGroupAlertClose();
+}
+
+function quotaGroupAlertClose(){
+	$('#quota_group_success_prompt').css('display','none');
+}
+
+//Quota user
+function quotaUserSearch(){
+	var userName = $('#quota_user_search_name').val();
+	function after_getInfo(data,status){
+		if(status == 'error'){
+			
+		}
+		else{
+			$('#quota_user_id').val(data.user_id);
+			$('#quota_user_name').val(userName);
+			var usage = parseInt(parseInt(data.usage.used) / parseInt(data.usage.quota));
+			$('#quota_user_usage').css('width',usage+"%");
+			$('#quota_user_usage_str').text(usage+"%");
+			$('#quota_user_quota').val(data.usage.quota_str.split(' ')[0]);
+			$('#quota_user_submit').removeAttr('disabled');
+		}
 	}
+	
+	function after_search(data,status){
+		if(status == 'error'){
+		}
+		else{
+			if(data.total == 0){
+			}
+			else{
+				var completeUrl = String.format(url_templates.user_info,data.users[0].user_id,local_data.token);
+				request(completeUrl,"","get",after_getInfo);
+			}
+		}
+	}
+	var completeUrl = String.format(url_templates.user_search,userName,local_data.token);
+	request(completeUrl,"","get",after_search);
+}
+
+function quotaUserSubmit(){
+	
+}
+
+function quotaUserCancel(){
+	$('#quota_user_search_name').val("");
+	$('#quota_user_id').val("");
+	$('#quota_user_name').val("");
+	$('#quota_user_usage').css('width',"100%");
+	$('#quota_user_usage_str').text("100%");
+	$('#quota_user_quota').val("");
+	$('#quota_user_submit').attr('disabled',true);
+	quotaUserAlertClose();
+}
+
+function quotaUserAlertClose(){
+	$('#quota_user_success_prompt').css('display','none');
 }
 
 function clearTable(tableID){

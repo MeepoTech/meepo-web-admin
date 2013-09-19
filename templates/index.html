@@ -5,6 +5,7 @@
 	<script src="../static/js/jquery.min.js" type="text/javascript"></script>
     <script src="../static/js/bootstrap.min.js" type="text/javascript"></script>
     <script src="../static/js/common.js" type="text/javascript"></script>
+    <script src="../static/js/configuration.js" type="text/javascript"></script>
     <script src="../static/js/admin.js" type="text/javascript"></script>
     <link href="../static/css/bootstrap.css" rel="stylesheet" type="text/css" />
     <link href="../static/css/bootstrap-responsive.css" rel="stylesheet" type="text/css" />
@@ -32,13 +33,16 @@
             	<ul class="nav">
                 	<li class="active" id="userManage"><a>用户管理</a></li>
                     <li class="divider-vertical"></li>
-                    <li id="clientManage"><a>客户端管理</a></li>
+                    <li id="quotaManage"><a>配额管理</a></li>
                     <li class="divider-vertical"></li>
                     <li id="groupManage"><a>群组管理</a></li>
                     <li class="divider-vertical"></li>
                     <li id="dataManage"><a>数据管理</a></li>
                     <li class="divider-vertical"></li>
                     <li id="infoManage"><a>信息统计</a></li>
+                    <li class="divider-vertical"></li>
+                    <li id="clientManage"><a>客户端管理</a></li>
+                    <li class="divider-vertical"></li>
                 </ul>
             </div>
         </div>
@@ -55,8 +59,7 @@
                     </div>
                 	<div class="pull-right">
                     	<div class="btn-group">
-                            <button class="btn btn-small">Delete</button>
-                            <button class="btn btn-small" id="user_edit_manage">Edit</button>
+                            <button class="btn btn-small" id="user_delete_manage">Delete</button>
                             <button class="btn btn-small" id="user_cancel_manage">Cancel</button>
                         </div>
                     </div>
@@ -92,7 +95,6 @@
                                 <th>用户名</th>
                                 <th>昵称</th>
                                 <th>邮箱</th>
-                                <th>配额</th>
                                 <th>注册时间</th>
                                 <th>密码</th>
                                 <th>状态</th>
@@ -118,57 +120,116 @@
         <!--User manage end-->
         
         <!--Quota manage start-->
-        <div id="client_manage" style="display:none">
+        <div id="quota_manage" style="display:none">
         	<div class="printDiv form-horizontal container-fluid">
             	<div class="row-fluid manage_bar">
                 	<div class="pull-left">
-                    	<img src="../static/img/client_manage.png" class="img-rounded">客户端管理
+                    	<img src="../static/img/quota_manage.jpg" class="img-rounded">配额管理
                     </div>
                 </div>
             </div>
             <div class="showDiv form-horizontal container-fluid">
-            	<div class="row-fluid">
-                </div>
-                <div>
-                	<form class="form-horizontal" action="/upload" method="post" enctype="multipart/form-data">
+                <div class="row-fluid">
+                	<div class="row-fluid printDiv" style="width:98%">
+                        <div class="pull-left form-search">
+                            <div class="input-append">
+                                <input type="text" class="span8 search-query" placeholder="请输入用户名" id="quota_user_search_name">
+                                <button type="button" class="btn" id="quota_user_search">搜索</button>
+                            </div>
+                        </div>
+                        <div id="quota_user_success_prompt" style="display:none">
+                            <div class="alert alert-success span7">
+                                <button type="button" class="close" id="quota_group_success_close">×</button>
+                                <strong>恭喜!! </strong>数据更新成功!!
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row-fluid divider-horizontal"></div>
+                    <div class="row-fluid">
                     	<div class="control-group">
-                        	<label class="control-label" for="client_os">应用平台</label>
+                        	<label class="control-label" for="quota_user_name">用户名</label>
                             <div class="controls">
-                            	<select class="form-control" id="client_os" name="platform">
-                                	<option>win32</option>
-                                    <option>win64</option>
-                                    <option>linux32</option>
-                                    <option>linux64</option>
-                                    <option>osx</option>
-                                    <option>android</option>
-                                </select>
+                            	<input id="quota_user_name" type="text" disabled>
                             </div>
                         </div>
                         <div class="control-group">
-                        	<label class="control-label" for="client_version">版本号</label>
+                        	<label class="control-label" for="quota_user_usage">使用量</label>
                             <div class="controls">
-                            	<input type="text" id="client_version" name="version">
+                            	<div class="progress progress-striped active span2 myProgress">
+                                	<div class="bar" style="width:100%" id="quota_user_usage"></div>
+                                </div>
+                                <span class="progressFont" id="quota_user_usage_str">100%</span>
                             </div>
                         </div>
-                        <div class="control-group form-search">
-                        	<label class="control-label" for="client_upload">上传文件</label>
+                        <div class="control-group">
+                        	<label class="control-label" for="quota_user_quota">用户配额</label>
                             <div class="controls">
-                            	<input type="hidden" name="MAX_FILE_SIZE">
                             	<div class="input-append">
-                                    <input type="text" id="client_upload" class="search-query" style="width:125px;" placeholder="选择上传文件">
-                                    <button type="button" class="btn" onClick="myfile.click()">浏览...</button>
-                                    <input type="file" name="myfile" value="" style="display:none;" onChange="client_upload.value = this.value">
+                            		<input type="text" id="quota_user_quota" style="width:175px">
+                                	<span class="add-on">GB</span>
                                 </div>
+                                <span class="help-inline">配额必须为0~10的整数</span>
                             </div>
                         </div>
                         <div class="control-group">
                         	<div class="controls">
-                        		<button type="submit">上传</button>
-                                <button type="reset">重置</button>
+                            	<button type="button" id="quota_user_submit" class="btn" disabled>确定</button>
+                                <button type="button" id="quota_user_cancel" class="btn">取消</button>
                             </div>
                         </div>
-                    </form>
-                </div>
+                    </div>
+               	 </div>
+                 <div class="row-fluid">
+                	<div class="row-fluid printDiv" style="width:98%">
+                        <div class="pull-left form-search">
+                            <div class="input-append">
+                                <input type="text" class="span8 search-query" placeholder="请输入群组名" id="quota_group_search_name">
+                                <input type="hidden" id="quota_group_id">
+                                <button type="button" class="btn" id="quota_group_search">搜索</button>
+                            </div>
+                        </div>
+                        <div id="quota_group_success_prompt" style="display:none">
+                            <div class="alert alert-success span7">
+                                <button type="button" class="close" id="quota_group_success_close">×</button>
+                                <strong>恭喜!! </strong>数据更新成功!!
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row-fluid divider-horizontal"></div>
+                    <div class="row-fluid">
+                    	<div class="control-group">
+                        	<label class="control-label" for="quota_user_name">群组名</label>
+                            <div class="controls">
+                            	<input id="quota_group_name" type="text" disabled>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                        	<label class="control-label" for="quota_group_usage">使用量</label>
+                            <div class="controls">
+                            	<div class="progress progress-striped active span2 myProgress">
+                                	<div class="bar" style="width:100%" id="quota_group_usage"></div>
+                                </div>
+                                <span class="progressFont" id="quota_group_usage_str">100%</span>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                        	<label class="control-label" for="quota_group_quota">群组配额</label>
+                            <div class="controls">
+                            	<div class="input-append">
+                            		<input type="text" id="quota_group_quota" style="width:175px">
+                                	<span class="add-on">GB</span>
+                                </div>
+                                <span class="help-inline">配额必须为0~10的整数</span>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                        	<div class="controls">
+                            	<button type="button" id="quota_group_submit" class="btn" disabled>确定</button>
+                                <button type="button" id="quota_group_cancel" class="btn">取消</button>
+                            </div>
+                        </div>
+                    </div>
+               	 </div>
             </div>
         </div>
         <!--Quota manage end-->
@@ -297,6 +358,62 @@
             </div>
         </div>
         <!--Group manage end-->
+        
+        <!--Client manage start-->
+        <div id="client_manage" style="display:none">
+        	<div class="printDiv form-horizontal container-fluid">
+            	<div class="row-fluid manage_bar">
+                	<div class="pull-left">
+                    	<img src="../static/img/client_manage.png" class="img-rounded">客户端管理
+                    </div>
+                </div>
+            </div>
+            <div class="showDiv form-horizontal container-fluid">
+            	<div class="row-fluid">
+                </div>
+                <div>
+                	<form class="form-horizontal" action="/upload" method="post" enctype="multipart/form-data">
+                    	<div class="control-group">
+                        	<label class="control-label" for="client_os">应用平台</label>
+                            <div class="controls">
+                            	<select class="form-control" id="client_os" name="platform">
+                                	<option>win32</option>
+                                    <option>win64</option>
+                                    <option>linux32</option>
+                                    <option>linux64</option>
+                                    <option>osx</option>
+                                    <option>android</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                        	<label class="control-label" for="client_version">版本号</label>
+                            <div class="controls">
+                            	<input type="text" id="client_version" name="version">
+                            </div>
+                        </div>
+                        <div class="control-group form-search">
+                        	<label class="control-label" for="client_upload">上传文件</label>
+                            <div class="controls">
+                            	<input type="hidden" name="MAX_FILE_SIZE">
+                            	<div class="input-append">
+                                    <input type="text" id="client_upload" class="search-query" style="width:125px;" placeholder="选择上传文件">
+                                    <button type="button" class="btn" onClick="myfile.click()">浏览...</button>
+                                    <input type="file" name="myfile" value="" style="display:none;" onChange="client_upload.value = this.value">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                        	<div class="controls">
+                        		<button type="submit">上传</button>
+                                <button type="reset">重置</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!--Client manage edn-->
     </div>
     <!--Container end-->
     
