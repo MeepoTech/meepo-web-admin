@@ -137,61 +137,43 @@ function listUser(){
 
 function listGroup(){
 	clearTable('group_table');
-	
-	var pos = 0;
-	var dataVal = [];
-	var saveDataVal = [];
-	var eachPageCount = pageSize;
-	function after_detail(data,status){
-		if(status == "error"){
-		}
-		else{
-			dataVal[pos] = [];
-			dataVal[pos][0] = pos+1;
-			dataVal[pos][1] = '<input type="checkbox" value="'+data.group_id+'" name="'+pos+'">';
-			dataVal[pos][2] = '<a onClick="userList(\''+data.group_id+'\')">'+stringThumbnail(data.group_name)+'</a>';
-			dataVal[pos][3] = stringThumbnail(data.description);
-			var tags = "";
-			if(data.tags.length > 0){
-				tags = data.tags[0];
-				for(var tagIndex = 1 ; tagIndex < data.tags.length - 1 ; tagIndex ++){
-					tags = tags + ',' + data.tags[tagIndex];
-				}
-			}
-			dataVal[pos][4] = stringThumbnail(tags);
-			
-			dataVal[pos][5] = '++++';
-			dataVal[pos][6] = '++++';
-			dataVal[pos][7] = data.usage.quota_str; 
-			dataVal[pos][8] = data.established_str;
-			dataVal[pos][9] = '<a onClick="changeGroupState(\'0\',this)">已启用</a>';
-			
-			saveDataVal[pos] = [];
-			saveDataVal[pos][0] = data.group_name;
-			saveDataVal[pos][1] = data.description;
-			saveDataVal[pos][2] = tags;
-			saveDataVal[pos][3] = data.usage.quota_str;
-			saveDataVal[pos][4] = data.type;
-			saveDataVal[pos][5] = data.group_id;
-			pos = pos +1;
-			if(pos >= eachPageCount){
-				//Save data
-				localStorage.setItem('groupTableData',JSON.stringify(saveDataVal));
-				createTable('group_table',dataVal);
-			}
-		}
-	}
-	
 	function after_list(data,status){
 		if(status == "error"){
 		}
 		else{
-			eachPageCount = data.count < eachPageCount ? data.count : eachPageCount; 
+			var dataVal = [];
+			var saveDataVal = [];
 			for(var index = 0 ; index < data.count ; index++){
 				var group = data.groups[index];
-				var completeUrl = String.format(url_templates.group_info,group.group_id,local_data.token);
-				request(completeUrl,"","get",after_detail);
+				dataVal[index] = [];
+				dataVal[index][0] = index+1;
+				dataVal[index][1] = '<input type="checkbox" value="'+group.group_id+'" name="'+index+'">';
+				dataVal[index][2] = '<a onClick="userList(\''+group.group_id+'\')">'+stringThumbnail(group.group_name)+'</a>';
+				dataVal[index][3] = stringThumbnail(group.description);
+				var tags = "";
+				if(group.tags.length > 0){
+					tags = group.tags[0];
+					for(var tagIndex = 1 ; tagIndex < group.tags.length - 1 ; tagIndex ++){
+						tags = tags + ',' + group.tags[tagIndex];
+					}
+				}
+				dataVal[index][4] = stringThumbnail(tags);
+				
+				dataVal[index][5] = '++++';
+				dataVal[index][6] = '++++';
+				dataVal[index][7] = group.established_str;
+				dataVal[index][8] = '<a onClick="changeGroupState(\'0\',this)">已启用</a>';
+				
+				saveDataVal[index] = [];
+				saveDataVal[index][0] = group.group_name;
+				saveDataVal[index][1] = group.description;
+				saveDataVal[index][2] = tags;
+				saveDataVal[index][3] = group.type;
+				saveDataVal[index][4] = group.group_id;
 			}
+			//Save data
+			localStorage.setItem('groupTableData',JSON.stringify(saveDataVal));
+			createTable('group_table',dataVal);
 		}
 	}
 	
@@ -412,67 +394,44 @@ function slideBack(){
 
 function groupSearch(){
 	var groupName = $('#group_search_name').val();
-	var $table = $('#group_table');
-	var dataVal = [];
-	var saveDataVal = [];
-	var eachPageCount = pageSize;
-	var pos = 0;
 	clearTable('group_table');
-	
-	function after_detail(data,status){
-		if(status == 'error'){
-			
+	function after_search(data,status){
+		if(status == "error"){
 		}
 		else{
 			var dataVal = [];
-			dataVal[pos] = [];
-			dataVal[pos][0] = pos;
-			dataVal[pos][1] = '<input type="checkbox" value="'+data.group_id+'" name="'+pos+'">';
-			dataVal[pos][2] = '<a onClick="userList(\''+data.group_id+'\')">'+stringThumbnail(data.group_name)+'</a>';
-			dataVal[pos][3] = stringThumbnail(data.description);
-			var tags = "";
-			if(data.tags.length > 0){
-				tags = data.tags[0];
-				for(var tagIndex = 1 ; tagIndex < data.tags.length - 1 ; tagIndex ++){
-					tags = tags + ',' + data.tags[tagIndex];
+			var saveDataVal = [];
+			for(var index = 0 ; index < data.count ; index++){
+				var group = data.groups[index];
+				dataVal[index] = [];
+				dataVal[index][0] = index+1;
+				dataVal[index][1] = '<input type="checkbox" value="'+group.group_id+'" name="'+index+'">';
+				dataVal[index][2] = '<a onClick="userList(\''+group.group_id+'\')">'+stringThumbnail(group.group_name)+'</a>';
+				dataVal[index][3] = stringThumbnail(group.description);
+				var tags = "";
+				if(group.tags.length > 0){
+					tags = group.tags[0];
+					for(var tagIndex = 1 ; tagIndex < group.tags.length - 1 ; tagIndex ++){
+						tags = tags + ',' + group.tags[tagIndex];
+					}
 				}
+				dataVal[index][4] = stringThumbnail(tags);
+				
+				dataVal[index][5] = '++++';
+				dataVal[index][6] = '++++';
+				dataVal[index][7] = group.established_str;
+				dataVal[index][8] = '<a onClick="changeGroupState(\'0\',this)">已启用</a>';
+				
+				saveDataVal[index] = [];
+				saveDataVal[index][0] = group.group_name;
+				saveDataVal[index][1] = group.description;
+				saveDataVal[index][2] = tags;
+				saveDataVal[index][3] = group.type;
+				saveDataVal[index][4] = group.group_id;
 			}
-			dataVal[pos][4] = stringThumbnail(tags);
-			dataVal[pos][5] = '++++';
-			dataVal[pos][6] = '++++';
-			dataVal[pos][7] = data.usage.quota_str;
-			dataVal[pos][8] = data.established_str;
-			dataVal[pos][9] = '<a onClick="changeGroupState(\'0\',this)">已启用</a>';
-			
-			saveDataVal[pos] = [];
-			saveDataVal[pos][0] = data.group_name;
-			saveDataVal[pos][1] = data.description;
-			saveDataVal[pos][2] = tags;
-			saveDataVal[pos][3] = data.usage.quota_str;
-			saveDataVal[pos][4] = data.type;
-			saveDataVal[pos][5] = data.group_id;
-			pos = pos +1;
-			if(pos >= eachPageCount){
-				//Save data
-				localStorage.setItem('groupTableData',JSON.stringify(saveDataVal));
-				createTable('group_table',dataVal);
-			}
-		}
-	}
-	function after_search(data,status){
-		if(status == 'error'){
-		}
-		else{
-			if(data.count == 0){
-			}
-			else{
-				eachPageCount = data.count < eachPageCount ? data.count : eachPageCount;
-				for(var index = 0 ; index < data.count ; index++){
-					var group = data.groups[index];
-					var completeUrl = String.format(url_templates.group_info,group.group_id,local_data.token);
-					request(completeUrl,"","get",after_detail);
-				}
-			}
+			//Save data
+			localStorage.setItem('groupTableData',JSON.stringify(saveDataVal));
+			createTable('group_table',dataVal);
 		}
 	}
 	var completeUrl = String.format(url_templates.group_search,groupName,local_data.token);
@@ -509,16 +468,12 @@ function groupEdit(){
 			var groupID = element.value;
 			//var description = $('#group_table > tbody tr:eq('+pos+') td:eq(3)').html();
 			var saveData = JSON.parse(localStorage.getItem('groupTableData'));
-			var quotaStr = saveData[pos][3];
-			var quotaInt = quotaStr.split(" ")[0];
 			
 			var tags = saveData[pos][2];
 			var description =saveData[pos][1];
 			
-			var quotaHTML = '<div class="input-append control-group"><input type="text" class="span3" value="'+quotaInt+'"><span class="add-on">GB</span></div>';
 			var tagsHTML = '<div class="control-group"><input type="text" class="span8" value="'+tags+'"></div>';
 			var descriptionHTML = '<div class="control-group"><textarea row="1">'+description+'</textarea></div>';
-			$('#group_table > tbody tr:eq('+pos+') td:eq(7)').html(quotaHTML);
 			$('#group_table > tbody tr:eq('+pos+') td:eq(4)').html(tagsHTML);
 			$('#group_table > tbody tr:eq('+pos+') td:eq(3)').html(descriptionHTML);
         });
@@ -536,7 +491,6 @@ function groupSave(){
 			var eachErrorFlag = false;
 			var pos = element.name;
             var description = $('#group_table > tbody tr:eq('+pos+') td:eq(3) textarea').val();
-			var quotaInt = $('#group_table > tbody tr:eq('+pos+') td:eq(7) input[type="text"]').val();
 			var tags = $('#group_table > tbody tr:eq('+pos+') td:eq(4) input[type="text"]').val();
 			//Check data formate
 			if(invalid_letters.test(description)){
@@ -549,26 +503,19 @@ function groupSave(){
 				$('#group_table > tbody tr:eq('+pos+') td:eq(4) .control-group').addClass('error');
 			}
 			
-			if(!valid_int.test(quotaInt)){
-				eachErrorFlag = true;
-				$('#group_table > tbody tr:eq('+pos+') td:eq(7) .control-group').addClass('error');
-			}
-			
 			if(eachErrorFlag){
 				errorFlag = true;
 			}
 			else{
 				$('#group_table > tbody tr:eq('+pos+') td:eq(3)').html(stringThumbnail(description));
 				$('#group_table > tbody tr:eq('+pos+') td:eq(4)').html(stringThumbnail(tags));
-				$('#group_table > tbody tr:eq('+pos+') td:eq(7)').html(quotaInt+" GB");
 				//update localStorage
 				var saveData = JSON.parse(localStorage.getItem('groupTableData'));
 				saveData[pos][1] = description;
 				saveData[pos][2] = tags;
-				saveData[pos][3] = quotaInt+" GB";
 				localStorage.setItem('groupTableData',JSON.stringify(saveData));
 				element.checked = false;
-				//updateGroupInfo(saveData[pos][5],description,tags,saveData[pos][4]);
+				updateGroupInfo(saveData[pos][4],description,tags,saveData[pos][3]);
 			}
         });
 		if(!errorFlag){
@@ -610,7 +557,6 @@ function groupCancel(){
 	for(var pos = 0 ; pos < savedData.length ; pos++){
 		$('#group_table > tbody tr:eq('+pos+') td:eq(3)').html(stringThumbnail(savedData[pos][1]));
 		$('#group_table > tbody tr:eq('+pos+') td:eq(4)').html(stringThumbnail(savedData[pos][2]));
-		$('#group_table > tbody tr:eq('+pos+') td:eq(7)').html(savedData[pos][3]);
 	}
 	deactivateEdit();
 }
