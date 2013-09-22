@@ -10,7 +10,7 @@
 =============================================================================*/
 //global variable
 var invalid_letters = /[:"\<\>\\\/\?\*\|]/;
-var valid_int = /^[1-9]\d*$/;
+var valid_int = /^\d+$/;
 
 //trim routine
 function LTrim(str){

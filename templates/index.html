@@ -21,7 +21,17 @@
 	<!--Navbar start-->
 	<div class="navbar navbar-inverse navbar-fixed-top">
     	<div class="navbar-inner">
-        	<a class="brand" href="#" style="float:left">MeePo</a>
+        	<a class="brand" href="#" style="float:left;">MeePo</a>
+            <ul class="nav pull-right">
+            	<li class="divider-vertical"></li>
+                <li class="bar-font">
+                	<a>您好，supervisor</a>
+                </li>
+                <li>
+                	<a id="admin_logout" class="bar-font">注销</a>
+                </li>
+                <li></li>
+            </ul>
         </div>
     </div>
     <!--Navbar end-->
@@ -30,7 +40,7 @@
     <header>
     	<div class="navbar">
         	<div class="navbar-inner">
-            	<ul class="nav">
+            	<ul class="nav pull-left">
                 	<li class="active" id="userManage"><a>用户管理</a></li>
                     <li class="divider-vertical"></li>
                     <li id="quotaManage"><a>配额管理</a></li>
@@ -60,6 +70,7 @@
                 	<div class="pull-right">
                     	<div class="btn-group">
                             <button class="btn btn-small" id="user_delete_manage">Delete</button>
+                            <button class="btn btn-small" id="user_edit_manage">Edit</button>
                             <button class="btn btn-small" id="user_cancel_manage">Cancel</button>
                         </div>
                     </div>
@@ -69,8 +80,20 @@
             	<div class="row-fluid">
                 	<div class="pull-left form-search">
                     	<div class="input-append">
-                        	<input type="text" class="span8 search-query" placeholder="请输入用户名">
-                            <button type="button" class="btn">搜索</button>
+                        	<input type="text" class="span8 search-query" placeholder="请输入用户名" id="user_search_name">
+                            <button type="button" class="btn" id="user_search_submit">搜索</button>
+                        </div>
+                    </div>
+                    <div id="user_error_prompt" style="display:none">
+                    	<div class="alert alert-error span6">
+                        	<button type="button" class="close" id="user_error_close">×</button>
+                            <strong>错误!! </strong>可用群组数是0~10之间的整数
+                        </div>
+                    </div>
+                    <div id="user_success_prompt" style="display:none">
+                    	<div class="alert alert-success span6">
+                        	<button type="button" class="close" id="user_success_close">×</button>
+                            <strong>恭喜!! </strong>数据更新成功!!
                         </div>
                     </div>
                     <div class="pull-right">
@@ -91,11 +114,12 @@
                     	<thead>
                         	<tr>
                             	<th>#</th>
-                                <th><input type="checkbox"></th>
+                                <th><input type="checkbox" id="user_check_manage"></th>
                                 <th>用户名</th>
                                 <th>昵称</th>
                                 <th>邮箱</th>
                                 <th>注册时间</th>
+                                <th>可用群组数</th>
                                 <th>密码</th>
                                 <th>状态</th>
                             </tr>
@@ -139,7 +163,7 @@
                         </div>
                         <div id="quota_user_success_prompt" style="display:none">
                             <div class="alert alert-success span7">
-                                <button type="button" class="close" id="quota_group_success_close">×</button>
+                                <button type="button" class="close" id="quota_user_success_close">×</button>
                                 <strong>恭喜!! </strong>数据更新成功!!
                             </div>
                         </div>

@@ -8,6 +8,12 @@ html{
 a{
 	cursor:pointer;
 }
+
+.bar-font{
+	color:#999999;
+	font-size:12px;
+}
+
 .loginBody,
 .homeBody{
 	background-image:url(../img/loginBg.jpg)

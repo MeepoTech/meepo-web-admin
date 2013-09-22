@@ -20,6 +20,7 @@ $(function(){
 	$('#quota_group_submit').click(quotaGroupSubmit);
 	$('#quota_group_cancel').click(quotaGroupCancel)
 	$('#quota_group_success_close').click(quotaGroupAlertClose);
+	$('#quota_user_success_close').click(quotaUserAlertClose);
 	
 	//Quota user
 	$('#quota_user_search').click(quotaUserSearch);
@@ -32,8 +33,14 @@ $(function(){
 	$('#groupManage').click(groupManage);
 	$('#clientManage').click(clientManage);
 	//User
-	//$('#user_edit_manage').click(userEditManage);
-	//$('#user_cacel_manage').click(userCancelManage);
+	$('#user_edit_manage').click(userEditManage);
+	$('#user_cancel_manage').click(userCancelManage);
+	$('#user_delete_manage').click(userDeleteManage);
+	$('#user_check_manage').click(userCheckManage);
+	$('#user_search_submit').click(userSearch);
+	$('#user_error_close').click(userAlertClose);
+	$('#user_success_close').click(userAlertClose);
+	
 	//Group
 	$('#slide_back').click(slideBack);
 	$('#group_search_submit').click(groupSearch);
@@ -117,13 +124,15 @@ function listUser(){
 					dataVal[pos][3] = user.display_name;
 					dataVal[pos][4] = user.email;
 					dataVal[pos][5] = user.registered_str;
-					dataVal[pos][6] = '<a>重置</a>';
-					dataVal[pos][7] = '<a onClick="changeUserState(\'0\',this)">已启用</a>';
+					dataVal[pos][6] = user.groups_can_own;
+					dataVal[pos][7] = '<a>重置</a>';
+					dataVal[pos][8] = '<a onClick="changeUserState(\'0\',this)">已启用</a>';
 				
 					saveDataVal[pos] = [];
 					saveDataVal[pos][0] = user.user_id;
 					saveDataVal[pos][1] = user.user_name;
 					saveDataVal[pos][2] = user.role;
+					saveDataVal[pos][3] = user.groups_can_own;
 					pos = pos + 1;
 				}
 			}
@@ -283,6 +292,10 @@ function quotaGroupAlertClose(){
 	$('#quota_group_success_prompt').css('display','none');
 }
 
+function quotaUserAlertClose(){
+	$('#quota_user_success_prompt').css('display','none');
+}
+
 //Quota user
 function quotaUserSearch(){
 	var userName = $('#quota_user_search_name').val();
@@ -360,8 +373,150 @@ function createRow(data){
 }
 
 //User
+function userEditManage(){
+	var val = $('#user_edit_manage').val();
+	if(val == 0){
+		userEdit();
+	}
+	else{
+		userSave();
+	}
+}
+
+function userEdit(){
+	var $checkedList = $('#user_table >tbody input:checkbox:checked');
+	if($checkedList.length == 0){
+	}
+	else{
+		$checkedList.each(function(index, element) {
+            var pos = element.name;
+			var userID = element.value;
+			var saveData = JSON.parse(localStorage.getItem("userTableData"));
+			var groupCanOwn = saveData[pos][3];
+			var groupCanOwnHTML = '<div class="control-group"><input type="text" class="span1" value="'+groupCanOwn+'"></div>';
+			$('#user_table > tbody tr:eq('+pos+') td:eq(6)').html(groupCanOwnHTML);
+        });
+		activateEdit('user');
+	}
+}
+
+function userSave(){
+	var $checkedList = $('#user_table >tbody input:checkbox:checked');
+	if($checkedList.length == 0){
+	}
+	else{
+		var errorFlag = false;
+		$checkedList.each(function(index, element) {
+			var pos = element.name;
+			var eachErrorFlag = false;
+			var groupCanOwn = $('#user_table > tbody tr:eq('+pos+') td:eq(6) input[type="text"]').val();
+			//Check data format
+			if(!valid_int.test(groupCanOwn)){
+				eachErrorFlag = true;
+				$('#user_table > tbody tr:eq('+pos+') td:eq(6) .control-group').addClass('error');
+			}
+			
+			if(eachErrorFlag){
+				errorFlag = true;
+			}
+			else{
+				$('#user_table > tbody tr:eq('+pos+') td:eq(6)').html(groupCanOwn);
+				//update localStorage
+				var saveData = JSON.parse(localStorage.getItem('userTableData'));
+				saveData[pos][3] = groupCanOwn;
+				localStorage.setItem('userTableData',JSON.stringify(saveData));
+				element.checked = false;
+				updateUserInfo();
+			}
+		});
+		
+		if(!errorFlag){
+			deactivateEdit('user');
+			$('#user_error_prompt').css('display','none');
+			$('#user_success_prompt').css('display','block');
+		}
+		else{
+			$('#user_error_prompt').css('display','block');
+			$('#user_success_prompt').css('display','none');
+		}
+	}
+}
 
 
+function userCancelManage(){
+	//Restore the data
+	var savedData = JSON.parse(localStorage.getItem('userTableData'));
+	for(var pos = 0 ; pos < savedData.length ; pos++){
+		$('#user_table > tbody tr:eq('+pos+') td:eq(6)').html(savedData[pos][3]);
+	}
+	deactivateEdit('user');
+}
+
+function userDeleteManage(){
+}
+
+function userCheckManage(){
+	if($('#user_check_manage').is(':checked')){
+		$('#user_table >tbody input:checkbox').each(function(index, element) {
+            element.checked = true;
+        });
+	}
+	else{
+		$('#user_table >tbody input:checkbox').each(function(index, element) {
+            element.checked = false;
+        });
+	}
+}
+
+function updateUserInfo(){
+	
+}
+
+function userSearch(){
+	var userName = $('#user_search_name').val();
+	clearTable('user_table');
+	
+	function after_search(data,status){
+		if(status == 'error'){
+		}
+		else{
+			var dataVal = [];
+			var saveDataVal = [];
+			for(var index = 0,pos = 0 ; index < data.count ; index++){
+				if(data.users[index].user_id != "00000000-0000-0000-0000-000000000000"){
+					//Construct data
+					var user = data.users[index];
+					dataVal[pos] = [];
+					dataVal[pos][0] = pos+1;
+					dataVal[pos][1] = '<input type="checkbox" value="'+user.user_id+'" name="'+pos+'">';
+					dataVal[pos][2] = user.user_name;
+					dataVal[pos][3] = user.display_name;
+					dataVal[pos][4] = user.email;
+					dataVal[pos][5] = user.registered_str;
+					dataVal[pos][6] = user.groups_can_own;
+					dataVal[pos][7] = '<a>重置</a>';
+					dataVal[pos][8] = '<a onClick="changeUserState(\'0\',this)">已启用</a>';
+				
+					saveDataVal[pos] = [];
+					saveDataVal[pos][0] = user.user_id;
+					saveDataVal[pos][1] = user.user_name;
+					saveDataVal[pos][2] = user.role;
+					saveDataVal[pos][3] = user.groups_can_own;
+					pos = pos + 1;
+				}
+			}
+			localStorage.setItem('userTableData',JSON.stringify(saveDataVal));
+			createTable('user_table',dataVal);
+		}
+	}
+	var completeUrl = String.format(url_templates.user_search,userName,local_data.token);
+	request(completeUrl,"","get",after_search);
+}
+
+function userAlertClose(){
+	$('#user_error_prompt').css('display','none');
+	$('#user_success_prompt').css('display','none');
+}
 //Group
 function userList(groupID){
 	slideForward();
@@ -477,7 +632,7 @@ function groupEdit(){
 			$('#group_table > tbody tr:eq('+pos+') td:eq(4)').html(tagsHTML);
 			$('#group_table > tbody tr:eq('+pos+') td:eq(3)').html(descriptionHTML);
         });
-		activateEdit();
+		activateEdit('group');
 	}
 }
 
@@ -492,7 +647,7 @@ function groupSave(){
 			var pos = element.name;
             var description = $('#group_table > tbody tr:eq('+pos+') td:eq(3) textarea').val();
 			var tags = $('#group_table > tbody tr:eq('+pos+') td:eq(4) input[type="text"]').val();
-			//Check data formate
+			//Check data format
 			if(invalid_letters.test(description)){
 				eachErrorFlag = true;
 				$('#group_table > tbody tr:eq('+pos+') td:eq(3) .control-group').addClass('error');
@@ -519,7 +674,7 @@ function groupSave(){
 			}
         });
 		if(!errorFlag){
-			deactivateEdit();
+			deactivateEdit('group');
 			$('#group_error_prompt').css('display','none');
 			$('#group_success_prompt').css('display','block');
 		}
@@ -558,24 +713,24 @@ function groupCancel(){
 		$('#group_table > tbody tr:eq('+pos+') td:eq(3)').html(stringThumbnail(savedData[pos][1]));
 		$('#group_table > tbody tr:eq('+pos+') td:eq(4)').html(stringThumbnail(savedData[pos][2]));
 	}
-	deactivateEdit();
+	deactivateEdit('group');
 }
 
-function deactivateEdit(){
-	$('#group_edit_manage').val(0);
-	$('#group_edit_manage').text('Edit');
+function deactivateEdit(tableItems){
+	$('#'+tableItems+'_edit_manage').val(0);
+	$('#'+tableItems+'_edit_manage').text('Edit');
 	//Enable checkbox
-	$('#group_table input:checkbox').removeAttr('disabled');
-	$('#group_table input:checkbox').each(function(index, element) {
+	$('#'+tableItems+'_table input:checkbox').removeAttr('disabled');
+	$('#'+tableItems+'_table input:checkbox').each(function(index, element) {
         element.checked = false;
     });
 }
 
-function activateEdit(){
-	$('#group_edit_manage').val(1);
-	$('#group_edit_manage').text('Save');
+function activateEdit(tableItems){
+	$('#'+tableItems+'_edit_manage').val(1);
+	$('#'+tableItems+'_edit_manage').text('Save');
 	//Disable checkbox
-	$('#group_table input:checkbox').attr('disabled',true);
+	$('#'+tableItems+'_table input:checkbox').attr('disabled',true);
 }
 
 function groupCheckManage(){
