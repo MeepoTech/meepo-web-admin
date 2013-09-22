@@ -40,6 +40,7 @@ $(function(){
 	$('#user_search_submit').click(userSearch);
 	$('#user_error_close').click(userAlertClose);
 	$('#user_success_close').click(userAlertClose);
+	$('#user_page_right').click(userPageRight);
 	
 	//Group
 	$('#slide_back').click(slideBack);
@@ -516,6 +517,10 @@ function userSearch(){
 function userAlertClose(){
 	$('#user_error_prompt').css('display','none');
 	$('#user_success_prompt').css('display','none');
+}
+
+function userPageRight(){
+
 }
 //Group
 function userList(groupID){
