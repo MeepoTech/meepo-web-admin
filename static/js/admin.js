@@ -11,8 +11,9 @@
 //Global variable
 var itemArray = Array('user','quota','group','data','info','client');
 
-var pageSize = 30;
+var pageSize = 20;
 var strMaxLength = 15;
+var pageNumberShowed = 5;
 
 $(function(){
 	//Quota group
@@ -32,6 +33,7 @@ $(function(){
 	$('#quotaManage').click(quotaManage);
 	$('#groupManage').click(groupManage);
 	$('#clientManage').click(clientManage);
+	
 	//User
 	$('#user_edit_manage').click(userEditManage);
 	$('#user_cancel_manage').click(userCancelManage);
@@ -40,8 +42,10 @@ $(function(){
 	$('#user_search_submit').click(userSearch);
 	$('#user_error_close').click(userAlertClose);
 	$('#user_success_close').click(userAlertClose);
+	$('#user_page_first').click(userPageFirst);
 	$('#user_page_right').click(userPageRight);
 	$('#user_page_left').click(userPageLeft);
+	$('#user_page_last').click(userPageLast);
 	
 	//Group
 	$('#slide_back').click(slideBack);
@@ -51,6 +55,10 @@ $(function(){
 	$('#group_cancel_manage').click(groupCancel);
 	$('#group_alert_close').click(groupAlertClose);
 	$('#group_success_close').click(groupAlertClose);
+	$('#group_page_first').click(groupPageFirst);
+	$('#group_page_right').click(groupPageRight);
+	$('#group_page_left').click(groupPageLeft);
+	$('#group_page_last').click(groupPageLast);
 	
 	//Initialization
 	initEnvironment();
@@ -108,6 +116,8 @@ function clientManage(){
 
 function listUser(){
 	clearTable('user_table');
+	var currentPageNumber = parseInt($('#user_page_current_number').val());
+	var offset = (currentPageNumber-1)*pageSize;
 	
 	function after_list(data,status){
 		if(status == 'error'){
@@ -115,12 +125,18 @@ function listUser(){
 		else{
 			var dataVal = [];
 			var saveDataVal = [];
+			if(currentPageNumber == 1){
+				//Create page number
+				var totalPageNumber = calcPageTotalCount(data.total,pageSize);
+				$('#user_page_total_number').val(totalPageNumber);
+				$('#user_page_label').text('Page 1 of '+totalPageNumber);
+			}
 			for(var index = 0,pos = 0 ; index < data.count ; index++){
 				if(data.users[index].user_id != "00000000-0000-0000-0000-000000000000"){
 					//Construct data
 					var user = data.users[index];
 					dataVal[pos] = [];
-					dataVal[pos][0] = pos+1;
+					dataVal[pos][0] = offset+pos+1;
 					dataVal[pos][1] = '<input type="checkbox" value="'+user.user_id+'" name="'+pos+'">';
 					dataVal[pos][2] = user.user_name;
 					dataVal[pos][3] = user.display_name;
@@ -142,18 +158,28 @@ function listUser(){
 			createTable('user_table',dataVal);
 		}
 	}
-	var completeUrl = String.format(url_templates.user_list,local_data.token);
+	var completeUrl = String.format(url_templates.user_list,offset,pageSize,local_data.token);
 	request(completeUrl,"","get",after_list);
 }
 
 function listGroup(){
 	clearTable('group_table');
+	var currentPageNumber = parseInt($('#group_page_current_number').val());
+	var offset = (currentPageNumber-1)*pageSize;
+	
 	function after_list(data,status){
 		if(status == "error"){
 		}
 		else{
 			var dataVal = [];
 			var saveDataVal = [];
+			if(currentPageNumber == 1){
+				//Create page number
+				var totalPageNumber = calcPageTotalCount(data.total,pageSize);
+				$('#group_page_total_number').val(totalPageNumber);
+				$('#group_page_label').text('Page 1 of '+totalPageNumber);
+			}
+			
 			for(var index = 0 ; index < data.count ; index++){
 				var group = data.groups[index];
 				dataVal[index] = [];
@@ -374,6 +400,10 @@ function createRow(data){
 	return code;
 }
 
+function calcPageTotalCount(itemCount,pageSize){
+	return parseInt(((parseInt(itemCount)-1) / pageSize)) + 1;
+}
+
 //User
 function userEditManage(){
 	var val = $('#user_edit_manage').val();
@@ -520,28 +550,117 @@ function userAlertClose(){
 	$('#user_success_prompt').css('display','none');
 }
 
+//User page switch
+function userPageFirst(){
+	if(pageFirst('user')){
+		listUser();
+	}
+}
+
 function userPageRight(){
-	var length = parseInt($('#user_page_number').css('margin-left'));
-	if(length > -99){
-		length = length - 33;
-		$('#user_page_number').animate({marginLeft:length+'px'},200);
+	if(pageRight('user')){
+		listUser();
 	}
-	else{
-		$('#user_page_right').parent().addClass('disabled');
-	}
-	
 }
 
 function userPageLeft(){
-	var length = parseInt($('#user_page_number').css('margin-left'));
-	if(length < 0){
-		length = length + 33;
-		$('#user_page_number').animate({marginLeft:length+'px'},200);
-	}
-	else{
-		$('#user_page_left').parent().addClass('disabled');
+	if(pageLeft('user')){
+		listUser();
 	}
 }
+
+function userPageLast(){
+	if(pageLast('user')){
+		listUser();
+	}
+}
+
+//Group page switch
+function groupPageFirst(){
+	if(pageFirst('group')){
+		listGroup();
+	}
+}
+
+function groupPageRight(){
+	if(pageRight('group')){
+		listGroup();
+	}
+}
+
+function groupPageLeft(){
+	if(pageLeft('group')){
+		listGroup();
+	}
+}
+
+function groupPageLast(){
+	if(pageLast('group')){
+		listGroup();
+	}
+}
+
+//Page switch
+function pageFirst(pageItemName){
+	var pageNumber = parseInt($('#'+pageItemName+'_page_current_number').val());
+	var totalNumber = parseInt($('#'+pageItemName+'_page_total_number').val());
+	if(pageNumber != 1){
+		pageNumber = 1;
+		var pageStr = 'Page '+pageNumber+' of '+totalNumber;
+		$('#'+pageItemName+'_page_label').text(pageStr);
+		$('#'+pageItemName+'_page_current_number').val(pageNumber);
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+
+function pageRight(pageItemName){
+	var pageNumber = parseInt($('#'+pageItemName+'_page_current_number').val());
+	var totalNumber = parseInt($('#'+pageItemName+'_page_total_number').val());
+	if(pageNumber < totalNumber){
+		pageNumber = pageNumber + 1;
+		var pageStr = 'Page '+pageNumber+' of '+totalNumber;
+		$('#'+pageItemName+'_page_label').text(pageStr);
+		$('#'+pageItemName+'_page_current_number').val(pageNumber);
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+
+function pageLeft(pageItemName){
+	var pageNumber = parseInt($('#'+pageItemName+'_page_current_number').val());
+	var totalNumber = parseInt($('#'+pageItemName+'_page_total_number').val());
+	if(pageNumber > 1){
+		pageNumber = pageNumber - 1;
+		var pageStr = 'Page '+pageNumber+' of '+totalNumber;
+		$('#'+pageItemName+'_page_label').text(pageStr);
+		$('#'+pageItemName+'_page_current_number').val(pageNumber);
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+
+function pageLast(pageItemName){
+	var pageNumber = parseInt($('#'+pageItemName+'_page_current_number').val());
+	var totalNumber = parseInt($('#'+pageItemName+'_page_total_number').val());
+	if(pageNumber != totalNumber){
+		pageNumber = totalNumber;
+		var pageStr = 'Page '+pageNumber+' of '+totalNumber;
+		$('#'+pageItemName+'_page_label').text(pageStr);
+		$('#'+pageItemName+'_page_current_number').val(pageNumber);
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+
 //Group
 function userList(groupID){
 	$('#group_slide').animate({marginLeft:'-1158px'},500);

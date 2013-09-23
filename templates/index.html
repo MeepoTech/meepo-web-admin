@@ -128,26 +128,15 @@
                         </tbody>
                     </table>
                     <div class="pagination pagination-centered">
-                    	<ul id="user_pagination" class="first-pagination">
-                        	<li class=""><a id="">first</a></li>
+                    	<ul>
+                        	<li><a id="user_page_first">first</a></li>
                         	<li><a id="user_page_left">&laquo;</a></li>
-                        </ul>
-                        <div class="middle-pagination-div">
-                        	<ul style="width:320px;" class="middle-pagination" id="user_page_number">
-                            	<li class="active"><a href="#">1</a></li>
-                                <li><a href="#">2</a></li>
-                                <li><a href="#">3</a></li>
-                                <li><a href="#">4</a></li>
-                                <li><a href="#">5</a></li>
-                                <li><a href="#">6</a></li>
-                                <li><a href="#">7</a></li>
-                                <li><a href="#">8</a></li>
-                            </ul>
-                        </div>
-                        <ul class="last-pagination">
+                            <li><a id="user_page_label">Page 1 of 40</a></li>
                         	<li><a id="user_page_right">&raquo;</a></li>
-                            <li><a id="">Last</a></li>
+                            <li><a id="user_page_last">Last</a></li>
                         </ul>
+                        <input type="hidden" value="1" id="user_page_current_number">
+                        <input type="hidden" value="1" id="user_page_total_number">
                     </div>
                 </div>
             </div>
@@ -335,14 +324,14 @@
                             </table>
                             <div class="pagination pagination-centered">
                                 <ul>
-                                    <li class="disabled"><a href="#">&laquo;</a></li>
-                                    <li class="active"><a href="#">1</a></li>
-                                    <li><a href="#">2</a></li>
-                                    <li><a href="#">3</a></li>
-                                    <li><a href="#">4</a></li>
-                                    <li><a href="#">5</a></li>
-                                    <li><a href="#">&raquo;</a></li>
-                                </ul>
+                                    <li><a id="group_page_first">first</a></li>
+                                    <li><a id="group_page_left">&laquo;</a></li>
+                                    <li><a id="group_page_label">Page 1 of 40</a></li>
+                                    <li><a id="group_page_right">&raquo;</a></li>
+                                    <li><a id="group_page_last">Last</a></li>
+                        		</ul>
+                       			<input type="hidden" value="1" id="group_page_current_number">
+                        		<input type="hidden" value="1" id="group_page_total_number">
                             </div>
                         </div>
                     </div>

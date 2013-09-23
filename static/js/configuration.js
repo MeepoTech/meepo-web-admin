@@ -30,7 +30,7 @@ var url_templates = {
 	login :              servers.account + '/login?locale={0}&device_name=web-control&user_name={1}&password={2}',
 	
 	//user
-	user_list:			 servers.user + '?token={0}',
+	user_list:			 servers.user + '?offset={0}&count={1}&token={2}',
 	user_search:		 servers.user + '/search?query={0}&token={1}',
 	user_info:			 servers.user + '/{0}/info?token={1}',
 	//group
