@@ -128,14 +128,25 @@
                         </tbody>
                     </table>
                     <div class="pagination pagination-centered">
-                    	<ul id="user_pagination">
-                        	<li class="disabled"><a id="user_page_left">&laquo;</a></li>
-                            <li class="active"><a href="#">1</a></li>
-                            <li><a href="#">2</a></li>
-                            <li><a href="#">3</a></li>
-                            <li><a href="#">4</a></li>
-                            <li><a href="#">5</a></li>
-                            <li><a id="user_page_right">&raquo;</a></li>
+                    	<ul id="user_pagination" class="first-pagination">
+                        	<li class=""><a id="">first</a></li>
+                        	<li><a id="user_page_left">&laquo;</a></li>
+                        </ul>
+                        <div class="middle-pagination-div">
+                        	<ul style="width:320px;" class="middle-pagination" id="user_page_number">
+                            	<li class="active"><a href="#">1</a></li>
+                                <li><a href="#">2</a></li>
+                                <li><a href="#">3</a></li>
+                                <li><a href="#">4</a></li>
+                                <li><a href="#">5</a></li>
+                                <li><a href="#">6</a></li>
+                                <li><a href="#">7</a></li>
+                                <li><a href="#">8</a></li>
+                            </ul>
+                        </div>
+                        <ul class="last-pagination">
+                        	<li><a id="user_page_right">&raquo;</a></li>
+                            <li><a id="">Last</a></li>
                         </ul>
                     </div>
                 </div>

@@ -177,5 +177,31 @@ a{
 	border-top:1px solid #ffffff;
 	border-bottom:1px solid #f2f2f2;
 }
+
+.first-pagination li:last-child > a,
+.middle-pagination li:last-child > a{
+	-webkit-border-top-right-radius: 0px !important;
+            border-top-right-radius: 0px !important;
+	-webkit-border-bottom-right-radius: 0px !important;
+            border-bottom-right-radius: 0px !important;
+	-moz-border-radius-topright: 0px !important;
+	-moz-border-radius-bottomright: 0px !important;
+}
+
+.middle-pagination li:first-child > a,
+.last-pagination li:first-child > a{
+	-webkit-border-bottom-left-radius: 0px !important;
+            border-bottom-left-radius: 0px !important;
+    -webkit-border-top-left-radius: 0px !important;
+            border-top-left-radius: 0px !important;
+    -moz-border-radius-bottomleft: 0px !important;
+    -moz-border-radius-topleft: 0px !important;
+}
+
+.middle-pagination-div{
+	display:inline-block;
+	width:166px;
+	overflow:hidden;
+}
 /*Group quota change end*/
 

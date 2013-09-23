@@ -41,6 +41,7 @@ $(function(){
 	$('#user_error_close').click(userAlertClose);
 	$('#user_success_close').click(userAlertClose);
 	$('#user_page_right').click(userPageRight);
+	$('#user_page_left').click(userPageLeft);
 	
 	//Group
 	$('#slide_back').click(slideBack);
@@ -520,36 +521,35 @@ function userAlertClose(){
 }
 
 function userPageRight(){
+	var length = parseInt($('#user_page_number').css('margin-left'));
+	if(length > -99){
+		length = length - 33;
+		$('#user_page_number').animate({marginLeft:length+'px'},200);
+	}
+	else{
+		$('#user_page_right').parent().addClass('disabled');
+	}
+	
+}
 
+function userPageLeft(){
+	var length = parseInt($('#user_page_number').css('margin-left'));
+	if(length < 0){
+		length = length + 33;
+		$('#user_page_number').animate({marginLeft:length+'px'},200);
+	}
+	else{
+		$('#user_page_left').parent().addClass('disabled');
+	}
 }
 //Group
 function userList(groupID){
-	slideForward();
+	$('#group_slide').animate({marginLeft:'-1158px'},500);
 	listGroupUser(groupID);
 }
 
-function slideForward(){
-	var length = parseInt($('#group_slide').css('margin-left'));
-	if(length > -1158){
-		length = length - 80;
-		$('#group_slide').css('margin-left',length+'px');
-		window.setTimeout(slideForward,5);
-	}
-	else{
-		$('#group_slide').css('margin-left','-1158px');
-	}
-}
-
 function slideBack(){
-	var length = parseInt($('#group_slide').css('margin-left'));
-	if(length < 0){
-		length = length + 80;
-		$('#group_slide').css('margin-left',length+'px');
-		window.setTimeout(slideBack,5);
-	}
-	else{
-		$('#group_slide').css('margin-left','0px');
-	}
+	$('#group_slide').animate({marginLeft:'0px'},500);
 }
 
 function groupSearch(){
