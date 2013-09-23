@@ -309,8 +309,8 @@ function quotaGroupCancel(){
 	$('#quota_group_search_name').val("");
 	$('#quota_group_id').val("");
 	$('#quota_group_name').val("");
-	$('#quota_group_usage').css('width',"100%");
-	$('#quota_group_usage_str').text("100%");
+	$('#quota_group_usage').css('width',"0%");
+	$('#quota_group_usage_str').text("0%");
 	$('#quota_group_quota').val("");
 	$('#quota_group_submit').attr('disabled',true);
 	quotaGroupAlertClose();
@@ -366,8 +366,8 @@ function quotaUserCancel(){
 	$('#quota_user_search_name').val("");
 	$('#quota_user_id').val("");
 	$('#quota_user_name').val("");
-	$('#quota_user_usage').css('width',"100%");
-	$('#quota_user_usage_str').text("100%");
+	$('#quota_user_usage').css('width',"0%");
+	$('#quota_user_usage_str').text("0%");
 	$('#quota_user_quota').val("");
 	$('#quota_user_submit').attr('disabled',true);
 	quotaUserAlertClose();

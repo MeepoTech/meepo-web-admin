@@ -97,12 +97,7 @@
                         </div>
                     </div>
                     <div class="pull-right">
-                    	<select id="" class="mySelect">
-                        	<option>--选择用户组--</option>
-                            <option>群主</option>
-                            <option>普通用户</option>
-                        </select>
-                        <select id="" class="mySelect">
+                        <select id="" class="mySelect" disabled>
                         	<option>--选择用户状态--</option>
                             <option>已启用</option>
                             <option>已禁用</option>
@@ -180,9 +175,9 @@
                         	<label class="control-label" for="quota_user_usage">使用量</label>
                             <div class="controls">
                             	<div class="progress progress-striped active span2 myProgress">
-                                	<div class="bar" style="width:100%" id="quota_user_usage"></div>
+                                	<div class="bar" style="width:0%" id="quota_user_usage"></div>
                                 </div>
-                                <span class="progressFont" id="quota_user_usage_str">100%</span>
+                                <span class="progressFont" id="quota_user_usage_str">0%</span>
                             </div>
                         </div>
                         <div class="control-group">
@@ -231,9 +226,9 @@
                         	<label class="control-label" for="quota_group_usage">使用量</label>
                             <div class="controls">
                             	<div class="progress progress-striped active span2 myProgress">
-                                	<div class="bar" style="width:100%" id="quota_group_usage"></div>
+                                	<div class="bar" style="width:0%" id="quota_group_usage"></div>
                                 </div>
-                                <span class="progressFont" id="quota_group_usage_str">100%</span>
+                                <span class="progressFont" id="quota_group_usage_str">0%</span>
                             </div>
                         </div>
                         <div class="control-group">
@@ -297,7 +292,7 @@
                                 </div>
                             </div>
                             <div class="pull-right">
-                                <select id="" class="mySelect">
+                                <select id="" class="mySelect" disabled>
                                     <option>--选择群组类型--</option>
                                     <option>公共群组</option>
                                     <option>私有群组</option>
@@ -339,7 +334,7 @@
                     	<div class="row-fluid">
                             <div class="pull-left form-search">
                                 <div class="btn-group">
-                                	<button class="btn btn-link" type="button" id="slide_back"><<</button>
+                                	<button class="btn btn-link" type="button" id="slide_back">&larr; Back</button>
                                 </div>
                                 <div class="input-append">
                                 	<input type="text" class="span8 search-query" placeholder="请输入用户名">
@@ -428,8 +423,8 @@
                         </div>
                         <div class="control-group">
                         	<div class="controls">
-                        		<button type="submit">上传</button>
-                                <button type="reset">重置</button>
+                        		<button type="submit" class="btn">上传</button>
+                                <button type="reset" class="btn">重置</button>
                             </div>
                         </div>
                     </form>
