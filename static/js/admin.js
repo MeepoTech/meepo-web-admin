@@ -153,13 +153,12 @@ function listUser(){
 					dataVal[pos][5] = user.registered_str;
 					dataVal[pos][6] = user.groups_can_own;
 					dataVal[pos][7] = '<a>重置</a>';
-					/*if(data.groups[index].status == group_status.normal){
-						dataVal[index][8] = '<a style="color:#0088cc" onClick="changeGroupState(\'0\',this)">已启用</a>';
+					if(user.role != user_role.blocked){
+						dataVal[pos][8] = '<a style="color:#0088cc" onClick="changeUserState(\'0\',this)">已启用</a>';
 					}
 					else{
-						dataVal[index][8] = '<a style="color:#ff0000" onClick="changeUserState(\'1\',this)">已禁用</a>';
-					}*/
-					dataVal[pos][8] = '<a onClick="changeUserState(\'0\',this)">已启用</a>';
+						dataVal[pos][8] = '<a style="color:#ff0000" onClick="changeUserState(\'1\',this)">已禁用</a>';
+					}
 				
 					saveDataVal[pos] = [];
 					saveDataVal[pos][0] = user.user_id;
@@ -267,12 +266,36 @@ function listGroupUser(groupID){
 
 function changeUserState(currentState,currentTR){
 	var tr = currentTR.parentNode.parentNode;
+	var userID = tr.cells[1].firstChild.value;
+	var userRole = user_role.blocked;
+	
 	if(currentState == 0){
-		tr.cells[8].innerHTML = '<a style="color:#ff0000" onClick="changeUserState(\'1\',this)">已禁用</a>';
+		userRole = user_role.blocked;
 	}
 	else{
-		tr.cells[8].innerHTML = '<a style="color:#0088cc" onClick="changeUserState(\'0\',this)">已启用</a>';
+		userRole = user_role.user;
 	}
+	
+	function after_update(data,status){
+		if(status == 'error'){
+			
+		}
+		else{
+			if(currentState == 0){
+				tr.cells[8].innerHTML = '<a style="color:#ff0000" onClick="changeUserState(\'1\',this)">已禁用</a>';
+			}
+			else{
+				tr.cells[8].innerHTML = '<a style="color:#0088cc" onClick="changeUserState(\'0\',this)">已启用</a>';
+			}
+		}
+	}
+	
+	var form = JSON.stringify({
+		"role" : userRole
+	});
+	
+	var completeUrl = String.format(url_templates.user_update,userID,local_data.token);
+	request(completeUrl,form,"post",after_update);
 }
 
 //Quota group
@@ -861,13 +884,13 @@ function groupSearch(){
 function changeGroupState(currentState,currentTR){
 	var tr = currentTR.parentNode.parentNode;
 	var groupID = tr.cells[1].firstChild.value;
-	var grouopStatus = 0;
+	var groupStatus = 0;
 	
 	if(currentState == 0){
-		grouopStatus = group_status.blocked;
+		groupStatus = group_status.blocked;
 	}
 	else{
-		grouopStatus = group_status.normal;
+		groupStatus = group_status.normal;
 	}
 	
 	function after_update(data,status){
@@ -884,7 +907,7 @@ function changeGroupState(currentState,currentTR){
 	}
 	
 	var form = JSON.stringify({
-		"status" : grouopStatus
+		"status" : groupStatus
 	});
 	
 	var completeUrl = String.format(url_templates.group_update,groupID,local_data.token);
