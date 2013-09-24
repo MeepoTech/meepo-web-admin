@@ -74,41 +74,6 @@ a{
 	border-left:1px solid #ccc;
 }
 
-/*Group quota change start*/
-#quota_group_table{
-	border-left:1px solid #ccc;
-	border-right:1px solid #ccc;
-	border-bottom:1px solid #ccc;
-	display:none;
-}
-
-#quota_group_table > tbody tr{
-}
-
-#quota_group_table > tbody tr td{
-	padding: 8px 0px;
-    line-height: 20px;
-    vertical-align: top;
-    border-top: 1px solid #dddddd;
-}
-
-#quota_group_table > tbody tr td:nth-child(1){
-	text-align:center;
-	width:100px;
-}
-
-#quota_group_table > tbody tr:nth-child(2){
-	background-color:#ffffff;
-}
-
-#quota_group_table > tbody tr td:nth-child(2){
-	width:200px;
-}
-
-#unit_hidden{
-	display:none;
-}
-
 .manage_bar{
 	line-height:32px;
 }

@@ -164,36 +164,71 @@
                         </div>
                     </div>
                     <div class="row-fluid divider-horizontal"></div>
-                    <div class="row-fluid">
-                    	<div class="control-group">
-                        	<label class="control-label" for="quota_user_name">用户名</label>
-                            <div class="controls">
-                            	<input id="quota_user_name" type="text" disabled>
-                            </div>
-                        </div>
-                        <div class="control-group">
-                        	<label class="control-label" for="quota_user_usage">使用量</label>
-                            <div class="controls">
-                            	<div class="progress progress-striped active span2 myProgress">
-                                	<div class="bar" style="width:0%" id="quota_user_usage"></div>
+                    <div class="row-fluid divSlide" id="quota_user_slide">
+                    	<div class="eachSlice firstSlice">
+                        	<div class="row-fluid">
+                                <table class="table table-bordered table-striped manage_table" id="quota_user_table">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>用户名</th>
+                                            <th>昵称</th>
+                                            <th>邮箱</th>
+                                            <th>修改配额</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                                <div class="pagination pagination-centered">
+                                    <ul>
+                                        <li><a id="quota_user_page_first">first</a></li> 
+                                        <li><a id="quota_user_page_left">&laquo;</a></li>
+                                        <li><a id="quota_user_page_label">----------</a></li>
+                                        <li><a id="quota_user_page_right">&raquo;</a></li>
+                                        <li><a id="quota_user_page_last">Last</a></li>
+                                    </ul>
+                                    <input type="hidden" value="1" id="quota_user_page_current_number">
+                                    <input type="hidden" value="1" id="quota_user_page_total_number">
                                 </div>
-                                <span class="progressFont" id="quota_user_usage_str">0%</span>
                             </div>
                         </div>
-                        <div class="control-group">
-                        	<label class="control-label" for="quota_user_quota">用户配额</label>
-                            <div class="controls">
-                            	<div class="input-append">
-                            		<input type="text" id="quota_user_quota" style="width:175px">
-                                	<span class="add-on">GB</span>
+                        <div class="eachSlice">
+                        	<div class="row-fluid">
+                            	<ul class="pager" style="margin:0px 0px !important;">
+                                	<li class="previous"><a id="quota_user_slide_back">&larr; Back</a></li>
+                                </ul>
+                            	<div class="control-group">
+                                    <label class="control-label" for="quota_user_name">用户名</label>
+                                    <div class="controls">
+                                        <input id="quota_user_name" type="text" disabled>
+                                    </div>
                                 </div>
-                                <span class="help-inline">配额必须为0~10的整数</span>
-                            </div>
-                        </div>
-                        <div class="control-group">
-                        	<div class="controls">
-                            	<button type="button" id="quota_user_submit" class="btn" disabled>确定</button>
-                                <button type="button" id="quota_user_cancel" class="btn">取消</button>
+                                <div class="control-group">
+                                    <label class="control-label" for="quota_user_usage">使用量</label>
+                                    <div class="controls">
+                                        <div class="progress progress-striped active span2 myProgress">
+                                            <div class="bar" style="width:0%" id="quota_user_usage"></div>
+                                        </div>
+                                        <span class="progressFont" id="quota_user_usage_str">0%</span>
+                                    </div>
+                                </div>
+                                <div class="control-group">
+                                    <label class="control-label" for="quota_user_quota">用户配额</label>
+                                    <div class="controls">
+                                        <div class="input-append">
+                                            <input type="text" id="quota_user_quota" style="width:175px">
+                                            <span class="add-on">GB</span>
+                                        </div>
+                                        <span class="help-inline">配额必须为0~10的整数</span>
+                                    </div>
+                                </div>
+                                <div class="control-group">
+                                    <div class="controls">
+                                        <button type="button" id="quota_user_submit" class="btn" disabled>确定</button>
+                                        <button type="button" id="quota_user_cancel" class="btn">取消</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -215,39 +250,74 @@
                         </div>
                     </div>
                     <div class="row-fluid divider-horizontal"></div>
-                    <div class="row-fluid">
-                    	<div class="control-group">
-                        	<label class="control-label" for="quota_user_name">群组名</label>
-                            <div class="controls">
-                            	<input id="quota_group_name" type="text" disabled>
-                            </div>
-                        </div>
-                        <div class="control-group">
-                        	<label class="control-label" for="quota_group_usage">使用量</label>
-                            <div class="controls">
-                            	<div class="progress progress-striped active span2 myProgress">
-                                	<div class="bar" style="width:0%" id="quota_group_usage"></div>
+                    <div class="row-fluid divSlide" id="quota_group_slide">
+                        <div class="eachSlice firstSlice">
+                            <div class="row-fluid">
+                                <table class="table table-bordered table-striped manage_table" id="quota_group_table">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>群组名</th>
+                                            <th>描述</th>
+                                            <th>标签</th>
+                                            <th>修改配额</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                                <div class="pagination pagination-centered">
+                                    <ul>
+                                        <li><a id="quota_group_page_first">first</a></li> 
+                                        <li><a id="quota_group_page_left">&laquo;</a></li>
+                                        <li><a id="quota_group_page_label">----------</a></li>
+                                        <li><a id="quota_group_page_right">&raquo;</a></li>
+                                        <li><a id="quota_group_page_last">Last</a></li>
+                                    </ul>
+                                    <input type="hidden" value="1" id="quota_group_page_current_number">
+                                    <input type="hidden" value="1" id="quota_group_page_total_number">
                                 </div>
-                                <span class="progressFont" id="quota_group_usage_str">0%</span>
                             </div>
                         </div>
-                        <div class="control-group">
-                        	<label class="control-label" for="quota_group_quota">群组配额</label>
-                            <div class="controls">
-                            	<div class="input-append">
-                            		<input type="text" id="quota_group_quota" style="width:175px">
-                                	<span class="add-on">GB</span>
+                        <div class="eachSlice">
+                            <div class="row-fluid">
+                            	<ul class="pager" style="margin:0px 0px !important;">
+                                	<li class="previous"><a id="quota_group_slide_back">&larr; Back</a></li>
+                                </ul>
+                                <div class="control-group">
+                                    <label class="control-label" for="quota_user_name">群组名</label>
+                                    <div class="controls">
+                                        <input id="quota_group_name" type="text" disabled>
+                                    </div>
                                 </div>
-                                <span class="help-inline">配额必须为0~10的整数</span>
+                                <div class="control-group">
+                                    <label class="control-label" for="quota_group_usage">使用量</label>
+                                    <div class="controls">
+                                        <div class="progress progress-striped active span2 myProgress">
+                                            <div class="bar" style="width:0%" id="quota_group_usage"></div>
+                                        </div>
+                                        <span class="progressFont" id="quota_group_usage_str">0%</span>
+                                    </div>
+                                </div>
+                                <div class="control-group">
+                                    <label class="control-label" for="quota_group_quota">群组配额</label>
+                                    <div class="controls">
+                                        <div class="input-append">
+                                            <input type="text" id="quota_group_quota" style="width:175px">
+                                            <span class="add-on">GB</span>
+                                        </div>
+                                        <span class="help-inline">配额必须为0~10的整数</span>
+                                    </div>
+                                </div>
+                                <div class="control-group">
+                                    <div class="controls">
+                                        <button type="button" id="quota_group_submit" class="btn" disabled>确定</button>
+                                        <button type="button" id="quota_group_cancel" class="btn">取消</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="control-group">
-                        	<div class="controls">
-                            	<button type="button" id="quota_group_submit" class="btn" disabled>确定</button>
-                                <button type="button" id="quota_group_cancel" class="btn">取消</button>
-                            </div>
-                        </div>
-                    </div>
+                     </div>
                	 </div>
             </div>
         </div>

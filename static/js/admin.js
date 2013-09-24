@@ -18,16 +18,25 @@ var pageNumberShowed = 5;
 $(function(){
 	//Quota group
 	$('#quota_group_search').click(quotaGroupSearch);
+	$('#quota_group_slide_back').click(quotaGroupSlideBack);
 	$('#quota_group_submit').click(quotaGroupSubmit);
 	$('#quota_group_cancel').click(quotaGroupCancel)
 	$('#quota_group_success_close').click(quotaGroupAlertClose);
-	$('#quota_user_success_close').click(quotaUserAlertClose);
+	$('#quota_group_page_first').click(quotaGroupPageFirst);
+	$('#quota_group_page_right').click(quotaGroupPageRight);
+	$('#quota_group_page_left').click(quotaGroupPageLeft);
+	$('#quota_group_page_last').click(quotaGroupPageLast);
 	
 	//Quota user
 	$('#quota_user_search').click(quotaUserSearch);
+	$('#quota_user_slide_back').click(quotaUserSlideBack);
 	$('#quota_user_submit').click(quotaUserSubmit);
 	$('#quota_user_cancel').click(quotaUserCancel)
 	$('#quota_user_success_close').click(quotaUserAlertClose);
+	$('#quota_user_page_first').click(quotaUserPageFirst);
+	$('#quota_user_page_right').click(quotaUserPageRight);
+	$('#quota_user_page_left').click(quotaUserPageLeft);
+	$('#quota_user_page_last').click(quotaUserPageLast);
 	
 	$('#userManage').click(userManage);
 	$('#quotaManage').click(quotaManage);
@@ -144,6 +153,12 @@ function listUser(){
 					dataVal[pos][5] = user.registered_str;
 					dataVal[pos][6] = user.groups_can_own;
 					dataVal[pos][7] = '<a>重置</a>';
+					/*if(data.groups[index].status == group_status.normal){
+						dataVal[index][8] = '<a style="color:#0088cc" onClick="changeGroupState(\'0\',this)">已启用</a>';
+					}
+					else{
+						dataVal[index][8] = '<a style="color:#ff0000" onClick="changeUserState(\'1\',this)">已禁用</a>';
+					}*/
 					dataVal[pos][8] = '<a onClick="changeUserState(\'0\',this)">已启用</a>';
 				
 					saveDataVal[pos] = [];
@@ -183,14 +198,14 @@ function listGroup(){
 			for(var index = 0 ; index < data.count ; index++){
 				var group = data.groups[index];
 				dataVal[index] = [];
-				dataVal[index][0] = index+1;
+				dataVal[index][0] = offset+index+1;
 				dataVal[index][1] = '<input type="checkbox" value="'+group.group_id+'" name="'+index+'">';
 				dataVal[index][2] = '<a onClick="userList(\''+group.group_id+'\')">'+stringThumbnail(group.group_name)+'</a>';
 				dataVal[index][3] = stringThumbnail(group.description);
 				var tags = "";
 				if(group.tags.length > 0){
 					tags = group.tags[0];
-					for(var tagIndex = 1 ; tagIndex < group.tags.length - 1 ; tagIndex ++){
+					for(var tagIndex = 1 ; tagIndex < group.tags.length ; tagIndex ++){
 						tags = tags + ',' + group.tags[tagIndex];
 					}
 				}
@@ -199,7 +214,12 @@ function listGroup(){
 				dataVal[index][5] = getGroupType(data.groups[index].type);
 				dataVal[index][6] = getGroupSearch(data.groups[index].visible_to_search);
 				dataVal[index][7] = group.established_str;
-				dataVal[index][8] = '<a onClick="changeGroupState(\'0\',this)">已启用</a>';
+				if(data.groups[index].status == group_status.normal){
+					dataVal[index][8] = '<a style="color:#0088cc" onClick="changeGroupState(\'0\',this)">已启用</a>';
+				}
+				else{
+					dataVal[index][8] = '<a style="color:#ff0000" onClick="changeGroupState(\'1\',this)">已禁用</a>';;
+				}
 				
 				saveDataVal[index] = [];
 				saveDataVal[index][0] = group.group_name;
@@ -258,20 +278,9 @@ function changeUserState(currentState,currentTR){
 //Quota group
 function quotaGroupSearch(){
 	var groupName = $('#quota_group_search_name').val();
-	function after_getInfo(data,status){
-		if(status == 'error'){
-			
-		}
-		else{
-			$('#quota_group_id').val(data.group_id);
-			$('#quota_group_name').val(groupName);
-			var usage = parseInt(parseInt(data.usage.used) / parseInt(data.usage.quota));
-			$('#quota_group_usage').css('width',usage+"%");
-			$('#quota_group_usage_str').text(usage+"%");
-			$('#quota_group_quota').val(data.usage.quota_str.split(' ')[0]);
-			$('#quota_group_submit').removeAttr('disabled');
-		}
-	}
+	clearTable('quota_group_table');
+	var currentPageNumber = parseInt($('#quota_group_page_current_number').val());
+	var offset = (currentPageNumber - 1) * parseInt(pageSize / 2);
 	
 	function after_search(data,status){
 		if(status == 'error'){
@@ -280,8 +289,30 @@ function quotaGroupSearch(){
 			if(data.total == 0){
 			}
 			else{
-				var completeUrl = String.format(url_templates.group_info,data.groups[0].group_id,local_data.token);
-				request(completeUrl,"","get",after_getInfo);
+				var dataVal = [];
+				if(currentPageNumber == 1){
+					//Create page number
+					var totalPageNumber = calcPageTotalCount(data.total,pageSize);
+					$('#quota_group_page_total_number').val(totalPageNumber);
+					$('#quota_group_page_label').text('Page 1 of '+totalPageNumber);
+				}
+				for(var index = 0 ; index < data.groups.length ; index ++){
+					dataVal[index] = [];
+					var group = data.groups[index];
+					dataVal[index][0] = offset+index+1;
+					dataVal[index][1] = group.group_name;
+					dataVal[index][2] = group.description;
+					var tags = "";
+					if(group.tags.length > 0){
+						tags = group.tags[0];
+						for(var tagIndex = 1 ; tagIndex < group.tags.length ; tagIndex ++){
+							tags = tags + ',' + group.tags[tagIndex];
+						}
+					}
+					dataVal[index][3] = tags;
+					dataVal[index][4] = '<a onClick="groupQuotaChange(\''+group.group_id+'\')">修改 &rarr;</a>';
+				}
+				createTable('quota_group_table',dataVal);
 			}
 		}
 	}
@@ -324,23 +355,38 @@ function quotaUserAlertClose(){
 	$('#quota_user_success_prompt').css('display','none');
 }
 
-//Quota user
-function quotaUserSearch(){
-	var userName = $('#quota_user_search_name').val();
+function groupQuotaChange(groupID){
+	$('#quota_group_slide').animate({marginLeft:'-1158px'},500);
+	
 	function after_getInfo(data,status){
 		if(status == 'error'){
 			
 		}
 		else{
-			$('#quota_user_id').val(data.user_id);
-			$('#quota_user_name').val(userName);
+			$('#quota_group_id').val(data.group_id);
+			$('#quota_group_name').val(data.group_name);
 			var usage = parseInt(parseInt(data.usage.used) / parseInt(data.usage.quota));
-			$('#quota_user_usage').css('width',usage+"%");
-			$('#quota_user_usage_str').text(usage+"%");
-			$('#quota_user_quota').val(data.usage.quota_str.split(' ')[0]);
-			$('#quota_user_submit').removeAttr('disabled');
+			$('#quota_group_usage').css('width',usage+"%");
+			$('#quota_group_usage_str').text(usage+"%");
+			$('#quota_group_quota').val(data.usage.quota_str.split(' ')[0]);
+			$('#quota_group_submit').removeAttr('disabled');
 		}
 	}
+	
+	var completeUrl = String.format(url_templates.group_info,groupID,local_data.token);
+	request(completeUrl,"","get",after_getInfo);
+}
+
+function quotaGroupSlideBack(){
+	$('#quota_group_slide').animate({marginLeft:'0px'},500);
+}
+
+//Quota user
+function quotaUserSearch(){
+	var userName = $('#quota_user_search_name').val();
+	clearTable('quota_user_table');
+	var currentPageNumber = parseInt($('#quota_user_page_current_number').val());
+	var offset = (currentPageNumber - 1) * parseInt(pageSize / 2);
 	
 	function after_search(data,status){
 		if(status == 'error'){
@@ -349,8 +395,23 @@ function quotaUserSearch(){
 			if(data.total == 0){
 			}
 			else{
-				var completeUrl = String.format(url_templates.user_info,data.users[0].user_id,local_data.token);
-				request(completeUrl,"","get",after_getInfo);
+				var dataVal = [];
+				if(currentPageNumber == 1){
+					//Create page number
+					var totalPageNumber = calcPageTotalCount(data.total,pageSize);
+					$('#quota_user_page_total_number').val(totalPageNumber);
+					$('#quota_user_page_label').text('Page 1 of '+totalPageNumber);
+				}
+				for(var index = 0 ; index < data.users.length ; index++){
+					dataVal[index] = [];
+					var user = data.users[index];
+					dataVal[index][0] = offset+index+1;
+					dataVal[index][1] = user.user_name;
+					dataVal[index][2] = user.display_name;
+					dataVal[index][3] = user.email;
+					dataVal[index][4] = '<a onClick="userQuotaChange(\''+user.user_id+'\')">修改 &rarr;</a>';
+				}
+				createTable('quota_user_table',dataVal);
 			}
 		}
 	}
@@ -377,6 +438,31 @@ function quotaUserAlertClose(){
 	$('#quota_user_success_prompt').css('display','none');
 }
 
+function userQuotaChange(userID){
+	$('#quota_user_slide').animate({marginLeft:'-1158px'},500);
+	function after_getInfo(data,status){
+		if(status == 'error'){
+			
+		}
+		else{
+			$('#quota_user_id').val(data.user_id);
+			$('#quota_user_name').val(data.user_name);
+			var usage = parseInt(parseInt(data.usage.used) / parseInt(data.usage.quota));
+			$('#quota_user_usage').css('width',usage+"%");
+			$('#quota_user_usage_str').text(usage+"%");
+			$('#quota_user_quota').val(data.usage.quota_str.split(' ')[0]);
+			$('#quota_user_submit').removeAttr('disabled');
+		}
+	}
+	var completeUrl = String.format(url_templates.user_info,userID,local_data.token);
+	request(completeUrl,"","get",after_getInfo);
+}
+
+function quotaUserSlideBack(){
+	$('#quota_user_slide').animate({marginLeft:'0px'},500);
+}
+
+//Table operation
 function clearTable(tableID){
 	$('#'+tableID+">tbody tr").remove();
 }
@@ -600,6 +686,56 @@ function groupPageLast(){
 	}
 }
 
+//Quota group page switch
+function quotaGroupPageFirst(){
+	if(pageFirst('quota_group')){
+		quotaGroupSearch();
+	}
+}
+
+function quotaGroupPageRight(){
+	if(pageRight('quota_group')){
+		quotaGroupSearch();
+	}
+}
+
+function quotaGroupPageLeft(){
+	if(pageLeft('quota_group')){
+		quotaGroupSearch();
+	}
+}
+
+function quotaGroupPageLast(){
+	if(pageLast('quota_group')){
+		quotaGroupSearch();
+	}
+}
+
+//Quota user page switch
+function quotaUserPageFirst(){
+	if(pageFirst('quota_user')){
+		quotaUserSearch();
+	}
+}
+
+function quotaUserPageRight(){
+	if(pageRight('quota_user')){
+		quotaUserSearch();
+	}
+}
+
+function quotaUserPageLeft(){
+	if(pageLeft('quota_user')){
+		quotaUserSearch();
+	}
+}
+
+function quotaUserPageLast(){
+	if(pageLast('quota_group')){
+		quotaUserSearch();
+	}
+}
+
 //Page switch
 function pageFirst(pageItemName){
 	var pageNumber = parseInt($('#'+pageItemName+'_page_current_number').val());
@@ -699,7 +835,12 @@ function groupSearch(){
 				dataVal[index][5] = getGroupType(data.groups[index].type);
 				dataVal[index][6] = getGroupSearch(data.groups[index].visible_to_search);
 				dataVal[index][7] = group.established_str;
-				dataVal[index][8] = '<a onClick="changeGroupState(\'0\',this)">已启用</a>';
+				if(data.groups[index].status == group_status.normal){
+					dataVal[index][8] = '<a style="color:#0088cc" onClick="changeGroupState(\'0\',this)">已启用</a>';
+				}
+				else{
+					dataVal[index][8] = '<a style="color:#ff0000" onClick="changeGroupState(\'1\',this)">已禁用</a>';;
+				}
 				
 				saveDataVal[index] = [];
 				saveDataVal[index][0] = group.group_name;
@@ -719,12 +860,35 @@ function groupSearch(){
 
 function changeGroupState(currentState,currentTR){
 	var tr = currentTR.parentNode.parentNode;
+	var groupID = tr.cells[1].firstChild.value;
+	var grouopStatus = 0;
+	
 	if(currentState == 0){
-		tr.cells[9].innerHTML = '<a style="color:#ff0000" onClick="changeGroupState(\'1\',this)">已禁用</a>';
+		grouopStatus = group_status.blocked;
 	}
 	else{
-		tr.cells[9].innerHTML = '<a style="color:#0088cc" onClick="changeGroupState(\'0\',this)">已启用</a>';
+		grouopStatus = group_status.normal;
 	}
+	
+	function after_update(data,status){
+		if(status == 'error'){
+		}
+		else{
+			if(currentState == 0){
+				tr.cells[8].innerHTML = '<a style="color:#ff0000" onClick="changeGroupState(\'1\',this)">已禁用</a>';
+			}
+			else{
+				tr.cells[8].innerHTML = '<a style="color:#0088cc" onClick="changeGroupState(\'0\',this)">已启用</a>';
+			}
+		}
+	}
+	
+	var form = JSON.stringify({
+		"status" : grouopStatus
+	});
+	
+	var completeUrl = String.format(url_templates.group_update,groupID,local_data.token);
+	request(completeUrl,form,"post",after_update);
 }
 
 function groupEditManage(){
