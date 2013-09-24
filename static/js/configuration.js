@@ -40,3 +40,117 @@ var url_templates = {
 	group_update:		 servers.group + '/{0}/update?token={1}',
 	group_updata_quota:  servers.group + '/{0}/quota?quota={1}&token={2}',
 };
+
+var user_role = {
+	supervisor    : 0,
+	administrator : 10,
+	user		  : 20,
+	blocked		  : 90
+};
+
+var group_type = {
+	reserved  : 0,
+	private   : 10,
+	protected : 20,
+	public	  : 90
+};
+
+var group_status = {
+	normal  : 0,
+	blocked : 90
+};
+
+var relation_position = {
+	owner		  : 0,
+	administrator : 10,
+	member		  : 20,
+	blocked		  : 90
+};
+
+//Constants
+function getUserRole(roleVal){
+	var roleStr = "";
+	switch(roleVal){
+		case user_role.supervisor :
+			roleStr = "超级管理员";
+		break;
+			
+		case user_role.administrator :
+			roleStr = "管理员";
+		break;
+		
+		case user_role.user :
+			roleStr = "普通用户";
+		break;
+		
+		case user_role.blocked :
+			roleStr = "无访问权限";
+		break;
+	}
+	return roleStr;
+}
+
+function getGroupType(typeVal){
+	var typeStr = "";
+	switch(typeVal){
+		case group_type.reserved :
+			typeStr = "个人空间";
+		break;
+		
+		case group_type.private :
+			typeStr = "不可加入";
+		break;
+		
+		case group_type.protected :
+			typeStr = "加入需审批";
+		break;
+		
+		case group_type.public :
+			typeStr = "加入无需审批";
+		break;
+	}
+	return typeStr;
+}
+
+function getGroupStatus(statusVal){
+	var statusStr = "";
+	switch(statusVal){
+		case group_status.normal :
+			statusStr = "可以访问";
+		break;
+		
+		case group_status.blocked:
+			statusStr = "不可访问";
+		break;
+	}
+}
+
+function getRelationPosition(relationVal){
+	var relationStr = "";
+	switch(relationVal){
+		case relation_position.owner : 
+			relationStr = "群主";
+		break;
+		
+		case relation_position.administrator :
+			relationStr = "管理员";
+		break;
+		
+		case relation_position.member :
+			relationStr = "普通用户"; 
+		break;
+		
+		case relation_position.blocked : 
+			relationStr = "无访问权限";
+		break;
+	}
+}
+
+function getGroupSearch(searchVal){
+	if(searchVal){
+		return "可搜索";
+	}
+	else{
+		return "不可搜索";
+	}
+}

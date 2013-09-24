@@ -196,8 +196,8 @@ function listGroup(){
 				}
 				dataVal[index][4] = stringThumbnail(tags);
 				
-				dataVal[index][5] = '++++';
-				dataVal[index][6] = '++++';
+				dataVal[index][5] = getGroupType(data.groups[index].type);
+				dataVal[index][6] = getGroupSearch(data.groups[index].visible_to_search);
 				dataVal[index][7] = group.established_str;
 				dataVal[index][8] = '<a onClick="changeGroupState(\'0\',this)">已启用</a>';
 				
@@ -285,7 +285,7 @@ function quotaGroupSearch(){
 			}
 		}
 	}
-	var completeUrl = String.format(url_templates.group_search,groupName,local_data.token);
+	var completeUrl = String.format(url_templates.group_search,encodeURIComponent(groupName),local_data.token);
 	request(completeUrl,"","get",after_search);
 }
 
