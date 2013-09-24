@@ -233,7 +233,7 @@ function listGroupUser(groupID){
 				dataVal[index][2] = data.users.users[index].user_name;
 				dataVal[index][3] = data.users.users[index].display_name;
 				dataVal[index][4] = data.users.users[index].email;
-				dataVal[index][5] = 'role';
+				dataVal[index][5] = getRelationPosition(data.users.users[index].relation.position);
 				dataVal[index][6] = '<a>重置</a>';
 				dataVal[index][7] = '<a onClick="changeUserState(\'0\',this)">已启用</a>';
 			}
@@ -696,8 +696,8 @@ function groupSearch(){
 				}
 				dataVal[index][4] = stringThumbnail(tags);
 				
-				dataVal[index][5] = '++++';
-				dataVal[index][6] = '++++';
+				dataVal[index][5] = getGroupType(data.groups[index].type);
+				dataVal[index][6] = getGroupSearch(data.groups[index].visible_to_search);
 				dataVal[index][7] = group.established_str;
 				dataVal[index][8] = '<a onClick="changeGroupState(\'0\',this)">已启用</a>';
 				

@@ -123,6 +123,7 @@ function getGroupStatus(statusVal){
 			statusStr = "不可访问";
 		break;
 	}
+	return statusStr;
 }
 
 function getRelationPosition(relationVal){
@@ -144,6 +145,7 @@ function getRelationPosition(relationVal){
 			relationStr = "无访问权限";
 		break;
 	}
+	return relationStr;
 }
 
 function getGroupSearch(searchVal){
