@@ -285,7 +285,7 @@ function quotaGroupSearch(){
 			}
 		}
 	}
-	var completeUrl = String.format(url_templates.group_search,encodeURIComponent(groupName),local_data.token);
+	var completeUrl = String.format(url_templates.group_search,groupName,local_data.token);
 	request(completeUrl,"","get",after_search);
 }
 
