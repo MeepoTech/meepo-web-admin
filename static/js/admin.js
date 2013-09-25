@@ -152,7 +152,7 @@ function listUser(){
 					dataVal[pos][4] = user.email;
 					dataVal[pos][5] = user.registered_str;
 					dataVal[pos][6] = user.groups_can_own;
-					dataVal[pos][7] = '<a>重置</a>';
+					dataVal[pos][7] = '<a onClick="resetPassword(\''+user.user_id+'\')">重置</a>';
 					if(user.role != user_role.blocked){
 						dataVal[pos][8] = '<a style="color:#0088cc" onClick="changeUserState(\'0\',this)">已启用</a>';
 					}
@@ -551,6 +551,7 @@ function userSave(){
 			var pos = element.name;
 			var eachErrorFlag = false;
 			var groupCanOwn = $('#user_table > tbody tr:eq('+pos+') td:eq(6) input[type="text"]').val();
+			var userID = $('#user_table > tbody tr:eq('+pos+') td:eq(1) input[type="checkbox"]').val();
 			//Check data format
 			if(!valid_int.test(groupCanOwn)){
 				eachErrorFlag = true;
@@ -567,7 +568,7 @@ function userSave(){
 				saveData[pos][3] = groupCanOwn;
 				localStorage.setItem('userTableData',JSON.stringify(saveData));
 				element.checked = false;
-				updateUserInfo();
+				updateUserInfo(userID,groupCanOwn);
 			}
 		});
 		
@@ -609,8 +610,39 @@ function userCheckManage(){
 	}
 }
 
-function updateUserInfo(){
+function updateUserInfo(userID,groupCanOwn){
+	var form = JSON.stringify({
+		"groups_can_own" : groupCanOwn
+	});
+	function after_update(data,status){
+		if(status == 'error'){
+		}
+		else{
+			alert('修改成功');
+		}
+	}
 	
+	var completeUrl = String.format(url_templates.user_update,userID,local_data.token);
+	request(completeUrl,form,"post",after_update);
+}
+
+function resetPassword(userID){
+	var result = window.confirm("您是否确定将此用户的密码重新设置成123456?");
+	if(result == true){
+		function after_update(data,status){
+			if(status == 'error'){
+			}
+			else{
+				alert('密码重置成功');
+			}
+		}
+		var new_password = SHA256_hash('123456');
+		var completeUrl = String.format(url_templates.user_update_password,userID,new_password,local_data.token);
+		request(completeUrl,"","post",after_update);
+	}
+	else{
+		alert();
+	}
 }
 
 function userSearch(){
@@ -635,7 +667,7 @@ function userSearch(){
 					dataVal[pos][4] = user.email;
 					dataVal[pos][5] = user.registered_str;
 					dataVal[pos][6] = user.groups_can_own;
-					dataVal[pos][7] = '<a>重置</a>';
+					dataVal[pos][7] = '<a onClick="resetPassword(\''+user.user_id+'\')">重置</a>';
 					dataVal[pos][8] = '<a onClick="changeUserState(\'0\',this)">已启用</a>';
 				
 					saveDataVal[pos] = [];
@@ -981,7 +1013,7 @@ function groupSave(){
 				saveData[pos][2] = tags;
 				localStorage.setItem('groupTableData',JSON.stringify(saveData));
 				element.checked = false;
-				updateGroupInfo(saveData[pos][4],description,tags,saveData[pos][3]);
+				updateGroupInfo(saveData[pos][4],description,tags);
 			}
         });
 		if(!errorFlag){
@@ -996,15 +1028,14 @@ function groupSave(){
 	}
 }
 
-function updateGroupInfo(groupID,description,tags,type){
+function updateGroupInfo(groupID,description,tags){
 	var tagArray = tags.split(',');
 	for(var index = 0; index < tagArray.length ; index++)
 		tagArray[index] = Trim(tagArray[index]).toLowerCase();
 		
 	var form = JSON.stringify({
 		"description" : description,
-		"tags" : tagArray,
-		"type" : type
+		"tags" : tagArray
 	});
 	
 	function after_update(data,status){

@@ -34,6 +34,7 @@ var url_templates = {
 	user_search:		 servers.user + '/search?query={0}&token={1}',
 	user_info:			 servers.user + '/{0}/info?token={1}',
 	user_update:		 servers.user + '/{0}/update?token={1}',
+	user_update_password:servers.user + '/{0}/password?new_password={1}&token={2}',
 	//group
 	group_info :         servers.group + '/{0}/info?token={1}',
 	group_search : 		 servers.group + '/search?query={0}&token={1}',
