@@ -11,6 +11,7 @@
 //global variable
 var invalid_letters = /[:"\<\>\\\/\?\*\|]/;
 var valid_int = /^\d+$/;
+var LANG = "&locale=zh_CN";
 
 //trim routine
 function LTrim(str){
@@ -63,7 +64,7 @@ function minVal(first,second){
 
 function request(url,data,method,callback){
 	$.ajax({
-		url:url,
+		url:url + LANG,
 		data:data,
 		type:method,
 		contentType:"application/json; charset=utf-8",

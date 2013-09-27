@@ -15,6 +15,8 @@ var pageSize = 20;
 var strMaxLength = 15;
 var pageNumberShowed = 5;
 
+var GROUP_TYPE = [];
+
 $(function(){
 	//Quota group
 	$('#quota_group_search').click(quotaGroupSearch);
@@ -74,6 +76,7 @@ $(function(){
 });
 
 function initEnvironment(){
+	getGroupType();
 	listUser();
 }
 
@@ -210,8 +213,8 @@ function listGroup(){
 				}
 				dataVal[index][4] = stringThumbnail(tags);
 				
-				dataVal[index][5] = getGroupType(data.groups[index].type);
-				dataVal[index][6] = getGroupSearch(data.groups[index].visible_to_search);
+				dataVal[index][5] = group.type_str;
+				dataVal[index][6] = getGroupSearch(group.visible_to_search);
 				dataVal[index][7] = group.established_str;
 				if(data.groups[index].status == group_status.normal){
 					dataVal[index][8] = '<a style="color:#0088cc" onClick="changeGroupState(\'0\',this)">已启用</a>';
@@ -226,6 +229,7 @@ function listGroup(){
 				saveDataVal[index][2] = tags;
 				saveDataVal[index][3] = group.type;
 				saveDataVal[index][4] = group.group_id;
+				saveDataVal[index][5] = group.type_str;
 			}
 			//Save data
 			localStorage.setItem('groupTableData',JSON.stringify(saveDataVal));
@@ -252,7 +256,7 @@ function listGroupUser(groupID){
 				dataVal[index][2] = data.users.users[index].user_name;
 				dataVal[index][3] = data.users.users[index].display_name;
 				dataVal[index][4] = data.users.users[index].email;
-				dataVal[index][5] = getRelationPosition(data.users.users[index].relation.position);
+				dataVal[index][5] = data.users.users[index].relation.position_str;
 				dataVal[index][6] = '<a>重置</a>';
 				dataVal[index][7] = '<a onClick="changeUserState(\'0\',this)">已启用</a>';
 			}
@@ -443,7 +447,19 @@ function quotaUserSearch(){
 }
 
 function quotaUserSubmit(){
+	var user_id = $('#quota_user_id').val();
+	var user_quota = $('#quota_user_quota').val();
+	user_quota = parseInt(user_quota) * 1024 * 1024 * 1024;
 	
+	function after_update(data,status){
+		if(status == 'error'){
+		}
+		else{
+			$('#quota_user_success_prompt').css('display','block');
+		}
+	}
+	var completeUrl = String.format(url_templates.user_update_quota,user_id,user_quota,local_data.token);
+	request(completeUrl,"","post",after_update);
 }
 
 function quotaUserCancel(){
@@ -881,14 +897,14 @@ function groupSearch(){
 				var tags = "";
 				if(group.tags.length > 0){
 					tags = group.tags[0];
-					for(var tagIndex = 1 ; tagIndex < group.tags.length - 1 ; tagIndex ++){
+					for(var tagIndex = 1 ; tagIndex < group.tags.length ; tagIndex ++){
 						tags = tags + ',' + group.tags[tagIndex];
 					}
 				}
 				dataVal[index][4] = stringThumbnail(tags);
 				
-				dataVal[index][5] = getGroupType(data.groups[index].type);
-				dataVal[index][6] = getGroupSearch(data.groups[index].visible_to_search);
+				dataVal[index][5] = group.type_str;
+				dataVal[index][6] = getGroupSearch(group.visible_to_search);
 				dataVal[index][7] = group.established_str;
 				if(data.groups[index].status == group_status.normal){
 					dataVal[index][8] = '<a style="color:#0088cc" onClick="changeGroupState(\'0\',this)">已启用</a>';
@@ -903,6 +919,7 @@ function groupSearch(){
 				saveDataVal[index][2] = tags;
 				saveDataVal[index][3] = group.type;
 				saveDataVal[index][4] = group.group_id;
+				saveDataVal[index][5] = group.type_str;
 			}
 			//Save data
 			localStorage.setItem('groupTableData',JSON.stringify(saveDataVal));
@@ -956,6 +973,33 @@ function groupEditManage(){
 	}
 }
 
+function getGroupType(){
+	function after_get(data,status){
+		if(status == 'error'){
+		}
+		else{
+			for(var index = 0 ; index < data.length ; index++){
+				GROUP_TYPE[index] = new Object();
+				GROUP_TYPE[index].type_str = data[index].type_str;
+				GROUP_TYPE[index].type = data[index].type;
+			}
+		}
+	}
+	var completeUrl = String.format(url_templates.group_type,local_data.token);
+	request(completeUrl,"","get",after_get);
+}
+
+function createGroupTypeSelect(){
+	var htmlStr = '<select id="group_type">';
+	if(GROUP_TYPE.length > 0){
+		for(var index = 0 ; index < GROUP_TYPE.length ; index++){
+			htmlStr = htmlStr + '<option value="'+GROUP_TYPE[index].type+'">'+GROUP_TYPE[index].type_str+'</option>';
+		}
+	}
+	htmlStr = htmlStr + '</select>';
+	return htmlStr;
+}
+
 function groupEdit(){
 	var $checkedList = $('#group_table >tbody input:checkbox:checked');
 	if($checkedList.length == 0){
@@ -972,8 +1016,11 @@ function groupEdit(){
 			
 			var tagsHTML = '<div class="control-group"><input type="text" class="span8" value="'+tags+'"></div>';
 			var descriptionHTML = '<div class="control-group"><textarea row="1">'+description+'</textarea></div>';
+			var selectHTML = createGroupTypeSelect();
+			
 			$('#group_table > tbody tr:eq('+pos+') td:eq(4)').html(tagsHTML);
 			$('#group_table > tbody tr:eq('+pos+') td:eq(3)').html(descriptionHTML);
+			$('#group_table > tbody tr:eq('+pos+') td:eq(5)').html(selectHTML);
         });
 		activateEdit('group');
 	}
@@ -990,6 +1037,8 @@ function groupSave(){
 			var pos = element.name;
             var description = $('#group_table > tbody tr:eq('+pos+') td:eq(3) textarea').val();
 			var tags = $('#group_table > tbody tr:eq('+pos+') td:eq(4) input[type="text"]').val();
+			var type = $('#group_table > tbody tr:eq('+pos+') td:eq(5) select').find('option:selected').val();
+			var type_str = $('#group_table > tbody tr:eq('+pos+') td:eq(5) select').find('option:selected').text();
 			//Check data format
 			if(invalid_letters.test(description)){
 				eachErrorFlag = true;
@@ -1007,13 +1056,15 @@ function groupSave(){
 			else{
 				$('#group_table > tbody tr:eq('+pos+') td:eq(3)').html(stringThumbnail(description));
 				$('#group_table > tbody tr:eq('+pos+') td:eq(4)').html(stringThumbnail(tags));
+				$('#group_table > tbody tr:eq('+pos+') td:eq(5)').html(type_str);
 				//update localStorage
 				var saveData = JSON.parse(localStorage.getItem('groupTableData'));
 				saveData[pos][1] = description;
 				saveData[pos][2] = tags;
+				saveData[pos][5] = type_str
 				localStorage.setItem('groupTableData',JSON.stringify(saveData));
 				element.checked = false;
-				updateGroupInfo(saveData[pos][4],description,tags);
+				updateGroupInfo(saveData[pos][4],description,tags,type);
 			}
         });
 		if(!errorFlag){
@@ -1028,14 +1079,15 @@ function groupSave(){
 	}
 }
 
-function updateGroupInfo(groupID,description,tags){
+function updateGroupInfo(groupID,description,tags,type){
 	var tagArray = tags.split(',');
 	for(var index = 0; index < tagArray.length ; index++)
 		tagArray[index] = Trim(tagArray[index]).toLowerCase();
 		
 	var form = JSON.stringify({
 		"description" : description,
-		"tags" : tagArray
+		"tags" : tagArray,
+		"type" : type
 	});
 	
 	function after_update(data,status){
@@ -1054,6 +1106,7 @@ function groupCancel(){
 	for(var pos = 0 ; pos < savedData.length ; pos++){
 		$('#group_table > tbody tr:eq('+pos+') td:eq(3)').html(stringThumbnail(savedData[pos][1]));
 		$('#group_table > tbody tr:eq('+pos+') td:eq(4)').html(stringThumbnail(savedData[pos][2]));
+		$('#group_table > tbody tr:eq('+pos+') td:eq(5)').html(savedData[pos][5]);
 	}
 	deactivateEdit('group');
 }
