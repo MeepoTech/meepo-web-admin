@@ -19,7 +19,7 @@ function login(){
 	function after_login(data,status){
 		var local_data = {};
 		if(status == "error"){
-			
+			alert('输入的用户名或密码错误！');
 		}
 		else{
 			local_data.adminname = username;
