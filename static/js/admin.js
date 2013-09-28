@@ -71,6 +71,11 @@ $(function(){
 	$('#group_page_left').click(groupPageLeft);
 	$('#group_page_last').click(groupPageLast);
 	
+	$('#group_delete_manage').click(groupDeleteManage);
+	
+	//Group User
+	$('#group_user_check_manage').click(groupUserCheckManage);
+	
 	//Initialization
 	initEnvironment();
 });
@@ -157,10 +162,10 @@ function listUser(){
 					dataVal[pos][6] = user.groups_can_own;
 					dataVal[pos][7] = '<a onClick="resetPassword(\''+user.user_id+'\')">重置</a>';
 					if(user.role != user_role.blocked){
-						dataVal[pos][8] = '<a style="color:#0088cc" onClick="changeUserState(\'0\',this)">已启用</a>';
+						dataVal[pos][8] = '<a style="color:#0088cc" onClick="changeUserState(\'0\',this,8)">已启用</a>';
 					}
 					else{
-						dataVal[pos][8] = '<a style="color:#ff0000" onClick="changeUserState(\'1\',this)">已禁用</a>';
+						dataVal[pos][8] = '<a style="color:#ff0000" onClick="changeUserState(\'1\',this,8)">已禁用</a>';
 					}
 				
 					saveDataVal[pos] = [];
@@ -257,8 +262,13 @@ function listGroupUser(groupID){
 				dataVal[index][3] = data.users.users[index].display_name;
 				dataVal[index][4] = data.users.users[index].email;
 				dataVal[index][5] = data.users.users[index].relation.position_str;
-				dataVal[index][6] = '<a>重置</a>';
-				dataVal[index][7] = '<a onClick="changeUserState(\'0\',this)">已启用</a>';
+				dataVal[index][6] = '<a onClick="resetPassword(\''+data.users.users[index].user_id+'\')">重置</a>';
+				if(data.users.users[index].role != user_role.blocked){
+					dataVal[index][7] = '<a style="color:#0088cc" onClick="changeUserState(\'0\',this,7)">已启用</a>';
+				}
+				else{
+					dataVal[index][7] = '<a style="color:#ff0000" onClick="changeUserState(\'1\',this,7)">已禁用</a>';
+				}
 			}
 			createTable('group_user_table',dataVal);
 		}
@@ -268,7 +278,7 @@ function listGroupUser(groupID){
 	request(completeUrl,"","get",after_list);
 }
 
-function changeUserState(currentState,currentTR){
+function changeUserState(currentState,currentTR,tdIndex){
 	var tr = currentTR.parentNode.parentNode;
 	var userID = tr.cells[1].firstChild.value;
 	var userRole = user_role.blocked;
@@ -286,10 +296,10 @@ function changeUserState(currentState,currentTR){
 		}
 		else{
 			if(currentState == 0){
-				tr.cells[8].innerHTML = '<a style="color:#ff0000" onClick="changeUserState(\'1\',this)">已禁用</a>';
+				tr.cells[tdIndex].innerHTML = '<a style="color:#ff0000" onClick="changeUserState(\'1\',this,'+tdIndex+')">已禁用</a>';
 			}
 			else{
-				tr.cells[8].innerHTML = '<a style="color:#0088cc" onClick="changeUserState(\'0\',this)">已启用</a>';
+				tr.cells[tdIndex].innerHTML = '<a style="color:#0088cc" onClick="changeUserState(\'0\',this,'+tdIndex+')">已启用</a>';
 			}
 		}
 	}
@@ -684,7 +694,7 @@ function userSearch(){
 					dataVal[pos][5] = user.registered_str;
 					dataVal[pos][6] = user.groups_can_own;
 					dataVal[pos][7] = '<a onClick="resetPassword(\''+user.user_id+'\')">重置</a>';
-					dataVal[pos][8] = '<a onClick="changeUserState(\'0\',this)">已启用</a>';
+					dataVal[pos][8] = '<a onClick="changeUserState(\'0\',this,8)">已启用</a>';
 				
 					saveDataVal[pos] = [];
 					saveDataVal[pos][0] = user.user_id;
@@ -871,11 +881,15 @@ function pageLast(pageItemName){
 //Group
 function userList(groupID){
 	$('#group_slide').animate({marginLeft:'-1158px'},500);
+	$('#group_edit_manage').attr('disabled',true);
+	$('#group_delete_manage').val(1);
 	listGroupUser(groupID);
 }
 
 function slideBack(){
 	$('#group_slide').animate({marginLeft:'0px'},500);
+	$('#group_edit_manage').attr('disabled',false);
+	$('#group_delete_manage').val(0);
 }
 
 function groupSearch(){
@@ -1144,4 +1158,36 @@ function groupCheckManage(){
 function groupAlertClose(){
 	$('#group_error_prompt').css('display','none');
 	$('#group_success_prompt').css('display','none');
+}
+
+function groupDeleteManage(){
+	var val = $('#group_delete_manage').val();
+	if(val == 0){
+		groupDelete();
+	}
+	else{
+		groupUserDelete();
+	}
+}
+
+function groupDelete(){
+	
+}
+
+function groupUserDelete(){
+	
+}
+
+//Group user
+function groupUserCheckManage(){
+	if($('#group_user_check_manage').is(':checked')){
+		$('#group_user_table >tbody input:checkbox').each(function(index, element) {
+            element.checked = true;
+        });
+	}
+	else{
+		$('#group_user_table >tbody input:checkbox').each(function(index, element) {
+            element.checked = false;
+        });
+	}
 }
