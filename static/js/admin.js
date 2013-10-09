@@ -123,7 +123,6 @@ function clean_environment(){
 	$('#group_user_search_name').val('');
 	//Cancel
 	groupCancel();
-	groupUserCancel();
 	userCancelManage();
 	
 	//clean page number
@@ -402,7 +401,7 @@ function quotaGroupSearch(){
 			}
 		}
 	}
-	var completeUrl = String.format(url_templates.group_search,groupName,local_data.token);
+	var completeUrl = String.format(url_templates.group_search,groupName,offset,parseInt(pageSize / 2),local_data.token);
 	request(completeUrl,"","get",after_search);
 }
 
@@ -564,7 +563,7 @@ function userQuotaChange(userID){
 			$('#quota_user_usage').css('width',usage+"%");
 			$('#quota_user_usage_str').text(usage+"%");
 			var quotaToGB = parseInt(data.usage.quota) / (1024 * 1024 * 1024);
-			$('#quota_user_quota').val(data.usage.quota_str.split(' ')[0]);
+			$('#quota_user_quota').val(quotaToGB);
 			$('#quota_user_submit').removeAttr('disabled');
 		}
 	}
@@ -734,7 +733,6 @@ function resetPassword(userID){
 		request(completeUrl,"","post",after_update);
 	}
 	else{
-		alert();
 	}
 }
 
