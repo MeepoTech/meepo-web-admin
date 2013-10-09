@@ -295,6 +295,8 @@ function listGroup(){
 function listGroupUser(){
 	var groupID = $('#current_group_id').val();
 	clearTable('group_user_table');
+	var currentPageNumber = parseInt($('#group_user_page_current_number').val());
+	var offset = (currentPageNumber-1)*pageSize;
 	function after_list(data,status){
 		if(status == "error"){
 			
@@ -302,6 +304,12 @@ function listGroupUser(){
 		else{
 			var dataVal = [];
 			var saveDataVal = [];
+			if(currentPageNumber == 1){
+				//Create page number
+				var totalPageNumber = calcPageTotalCount(data.users.total,pageSize);
+				$('#group_user_page_total_number').val(totalPageNumber);
+				$('#group_user_page_label').text('Page 1 of '+totalPageNumber);
+			}
 			for(var index = 0 ; index < data.users.users.length ; index++){
 				dataVal[index] = [];
 				dataVal[index][0] = index+1;
@@ -322,7 +330,7 @@ function listGroupUser(){
 		}
 	}
 	
-	var completeUrl = String.format(url_templates.group_info,groupID,local_data.token);
+	var completeUrl = String.format(url_templates.group_info,groupID,offset,pageSize,local_data.token);
 	request(completeUrl,"","get",after_list);
 }
 
@@ -466,7 +474,7 @@ function groupQuotaChange(groupID){
 		}
 	}
 	
-	var completeUrl = String.format(url_templates.group_info,groupID,local_data.token);
+	var completeUrl = String.format(url_templates.group_info,groupID,0,0,local_data.token);
 	request(completeUrl,"","get",after_getInfo);
 }
 
@@ -1353,7 +1361,7 @@ function groupUserSave(){
 			saveData[pos][2] = position_str;
 			localStorage.setItem('groupUserTableData',saveData);
 			element.checked = false;
-			//updateGroupUserInfo(saveData[pos][0],saveData[pos][1],position);
+			updateGroupUserInfo(saveData[pos][0],saveData[pos][1],position);
         });
 		deactivateEdit('group_user');
 	}
@@ -1424,7 +1432,7 @@ function groupUserCancel(){
 	var savedData = JSON.parse(localStorage.getItem('groupUserTableData'));
 	if(typeof savedData != 'undefined' && savedData != null){
 		for(var pos = 0 ; pos < savedData.length ; pos++){
-			$('#group_user_table > tbody tr:eq('+pos+') td:eq(5)').html(savedData[pos][2]);
+			$('#group_user_table > tbody tr:eq('+pos+') td:eq(5)').html(savedData[pos][2]); 
 		}
 		deactivateEdit('group_user');
 	}
