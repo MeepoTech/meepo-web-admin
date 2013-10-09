@@ -1424,7 +1424,7 @@ function groupUserCancel(){
 	var savedData = JSON.parse(localStorage.getItem('groupUserTableData'));
 	if(typeof savedData != 'undefined' && savedData != null){
 		for(var pos = 0 ; pos < savedData.length ; pos++){
-			$('#group_user_table > tbody tr:eq('+pos+') td:eq(5)').html(savedData[pos][0]);
+			$('#group_user_table > tbody tr:eq('+pos+') td:eq(5)').html(savedData[pos][2]);
 		}
 		deactivateEdit('group_user');
 	}
