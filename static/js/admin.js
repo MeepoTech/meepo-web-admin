@@ -280,7 +280,7 @@ function listGroup(){
 				saveDataVal[index][3] = group.type;
 				saveDataVal[index][4] = group.group_id;
 				saveDataVal[index][5] = group.type_str;
-				saveDataVal[index][6] = getGroupSearch(group.visible_to_search);
+				saveDataVal[index][6] = group.visible_to_search;
 			}
 			//Save data
 			localStorage.setItem('groupTableData',JSON.stringify(saveDataVal));
@@ -323,6 +323,7 @@ function listGroupUser(){
 				saveDataVal[index][0] = groupID;
 				saveDataVal[index][1] = data.users.users[index].user_id;
 				saveDataVal[index][2] = data.users.users[index].relation.position_str;
+				saveDataVal[index][3] = data.users.users[index].relation.position;
 			}
 			//$('#group_table').css('display','none');
 			localStorage.setItem('groupUserTableData',JSON.stringify(saveDataVal));
@@ -1198,11 +1199,14 @@ function getGroupType(){
 	request(completeUrl,"","get",after_get);
 }
 
-function createGroupTypeSelect(){
+function createGroupTypeSelect(itemNumber,itemName){
 	var htmlStr = '<select id="group_type">';
 	if(GROUP_TYPE.length > 0){
+		htmlStr = htmlStr + '<option value="'+itemNumber+'">'+itemName+'</option>';
 		for(var index = 0 ; index < GROUP_TYPE.length ; index++){
-			htmlStr = htmlStr + '<option value="'+GROUP_TYPE[index].type+'">'+GROUP_TYPE[index].type_str+'</option>';
+			if(itemNumber != GROUP_TYPE[index].type){
+				htmlStr = htmlStr + '<option value="'+GROUP_TYPE[index].type+'">'+GROUP_TYPE[index].type_str+'</option>';
+			}
 		}
 	}
 	htmlStr = htmlStr + '</select>';
@@ -1225,21 +1229,30 @@ function getGroupUserPosition(){
 	request(completeUrl,"","get",after_get);
 }
 
-function createGroupUserPositionSelect(){
+function createGroupUserPositionSelect(itemNumber,itemName){
 	var htmlStr = '<select id="group_user_position" class="span6">';
 	if(USER_POSITION.length > 0){
+		htmlStr = htmlStr + '<option value="'+itemNumber+'">'+itemName+'</option>';
 		for(var index = 0 ; index < USER_POSITION.length ; index++){
-			htmlStr = htmlStr + '<option value="'+USER_POSITION[index].position+'">'+USER_POSITION[index].position_str+'</option>';
+			if(itemNumber != USER_POSITION[index].position){
+				htmlStr = htmlStr + '<option value="'+USER_POSITION[index].position+'">'+USER_POSITION[index].position_str+'</option>';
+			}	
 		}
 	}
 	htmlStr = htmlStr + '</select>';
 	return htmlStr;
 }
 
-function createGroupVisibleSelect(){
+function createGroupVisibleSelect(itemName){
 	var htmlStr = '<select id="group_visible" class="span12">';
-	htmlStr = htmlStr + '<option value="true">'+getGroupSearch(true)+'</option>';
-	htmlStr = htmlStr + '<option value="false">'+getGroupSearch(false)+'</option>';
+	if(itemName){
+		htmlStr = htmlStr + '<option value="true">'+getGroupSearch(true)+'</option>';
+		htmlStr = htmlStr + '<option value="false">'+getGroupSearch(false)+'</option>';
+	}
+	else{
+		htmlStr = htmlStr + '<option value="false">'+getGroupSearch(false)+'</option>';
+		htmlStr = htmlStr + '<option value="true">'+getGroupSearch(true)+'</option>';
+	}
 	htmlStr = htmlStr + '</select>';
 	return htmlStr;
 }
@@ -1260,8 +1273,8 @@ function groupEdit(){
 			
 			var tagsHTML = '<div class="control-group"><input type="text" class="span8" value="'+tags+'"></div>';
 			var descriptionHTML = '<div class="control-group"><textarea row="1">'+description+'</textarea></div>';
-			var selectHTML = createGroupTypeSelect();
-			var visibleHTML = createGroupVisibleSelect();
+			var selectHTML = createGroupTypeSelect(saveData[pos][3],saveData[pos][5]);
+			var visibleHTML = createGroupVisibleSelect(saveData[pos][6]);
 			
 			$('#group_table > tbody tr:eq('+pos+') td:eq(4)').html(tagsHTML);
 			$('#group_table > tbody tr:eq('+pos+') td:eq(3)').html(descriptionHTML);
@@ -1311,7 +1324,7 @@ function groupSave(){
 				saveData[pos][1] = description;
 				saveData[pos][2] = tags;
 				saveData[pos][5] = type_str;
-				saveData[pos][6] = visible_str;
+				saveData[pos][6] = visible;
 				localStorage.setItem('groupTableData',JSON.stringify(saveData));
 				element.checked = false;
 				updateGroupInfo(saveData[pos][4],description,tags,type,visible);
@@ -1337,7 +1350,8 @@ function groupUserEdit(){
 		$checkedList.each(function(index, element) {
 			var pos = element.name;
 			var userID = element.value;
-			var selectHTML = createGroupUserPositionSelect();
+			var saveData = JSON.parse(localStorage.getItem('groupUserTableData'));
+			var selectHTML = createGroupUserPositionSelect(saveData[pos][3],saveData[pos][2]);
 			
 			$('#group_user_table > tbody tr:eq('+pos+') td:eq(5)').html(selectHTML);
         });
@@ -1359,7 +1373,8 @@ function groupUserSave(){
 			//Update localStorage
 			var saveData = JSON.parse(localStorage.getItem('groupUserTableData'));
 			saveData[pos][2] = position_str;
-			localStorage.setItem('groupUserTableData',saveData);
+			saveData[pos][3] = position;
+			localStorage.setItem('groupUserTableData',JSON.stringify(saveData));
 			element.checked = false;
 			updateGroupUserInfo(saveData[pos][0],saveData[pos][1],position);
         });
@@ -1421,7 +1436,7 @@ function groupCancel(){
 			$('#group_table > tbody tr:eq('+pos+') td:eq(3)').html(stringThumbnail(savedData[pos][1]));
 			$('#group_table > tbody tr:eq('+pos+') td:eq(4)').html(stringThumbnail(savedData[pos][2]));
 			$('#group_table > tbody tr:eq('+pos+') td:eq(5)').html(savedData[pos][5]);
-			$('#group_table > tbody tr:eq('+pos+') td:eq(6)').html(savedData[pos][6]);
+			$('#group_table > tbody tr:eq('+pos+') td:eq(6)').html(getGroupSearch(savedData[pos][6]));
 		}
 		deactivateEdit('group');
 	}
