@@ -27,7 +27,7 @@ var servers = {
 
 var url_templates = {
 	login :              servers.account + '/login?locale={0}&device_name=web-control&user_name={1}&password={2}',
-	
+	logout:              servers.account + '/logout?token={0}',
 	//user
 	user_list:			 servers.user + '?offset={0}&count={1}&token={2}',
 	user_search:		 servers.user + '/search?query={0}&token={1}',
@@ -38,12 +38,13 @@ var url_templates = {
 	//group
 	group_info :         servers.group + '/{0}/info?token={1}',
 	group_search : 		 servers.group + '/search?query={0}&token={1}',
-	group_list:			 servers.group + '?token={0}&filters=group.type>=10',
+	group_list:			 servers.group + '?offset={0}&count={1}&token={2}&filters=group.type>=10',
 	group_update:		 servers.group + '/{0}/update?token={1}',
 	group_updata_quota:  servers.group + '/{0}/quota?quota={1}&token={2}',
 	
 	//constants
-	group_type:			 servers.constants + '/group_types?token={0}'
+	group_type:			 servers.constants + '/group_types?token={0}',
+	relation_positions:  servers.constants + '/relation_positions?token={0}',
 };
 
 var user_role = {

@@ -16,6 +16,7 @@ var strMaxLength = 15;
 var pageNumberShowed = 5;
 
 var GROUP_TYPE = [];
+var USER_POSITION = [];
 
 $(function(){
 	//Quota group
@@ -63,7 +64,7 @@ $(function(){
 	$('#group_search_submit').click(groupSearch);
 	$('#group_edit_manage').click(groupEditManage);
 	$('#group_check_manage').click(groupCheckManage);
-	$('#group_cancel_manage').click(groupCancel);
+	$('#group_cancel_manage').click(groupCancelManage);
 	$('#group_alert_close').click(groupAlertClose);
 	$('#group_success_close').click(groupAlertClose);
 	$('#group_page_first').click(groupPageFirst);
@@ -74,14 +75,23 @@ $(function(){
 	$('#group_delete_manage').click(groupDeleteManage);
 	
 	//Group User
+	$('#group_user_edit_manage').click(groupUserEditManage);
 	$('#group_user_check_manage').click(groupUserCheckManage);
+	$('#group_user_page_first').click(groupUserPageFirst);
+	$('#group_user_page_right').click(groupUserPageRight);
+	$('#group_user_page_left').click(groupUserPageLeft);
+	$('#group_user_page_last').click(groupUserPageLast);
 	
 	//Initialization
 	initEnvironment();
+	
+	//Logout
+	$('#admin_logout').click(logout);
 });
 
 function initEnvironment(){
 	getGroupType();
+	getGroupUserPosition();
 	listUser();
 }
 
@@ -99,6 +109,24 @@ function check_logging(){
 	}
 }
 
+function clean_environment(){
+	slideBack();
+	quotaGroupSlideBack();
+	quotaUserSlideBack();
+	clearTable('quota_group_table');
+	clearTable('quota_user_table');
+	//Clean all search content
+	$('#user_search_name').val('');
+	$('#quota_user_search_name').val('');
+	$('#quota_group_search_name').val('');
+	$('#group_search_name').val('');
+	$('#group_user_search_name').val('');
+	//Cancel
+	groupCancel();
+	groupUserCancel();
+	userCancelManage();
+}
+
 function switchItem(itemName){
 	for(var index = 0 ; index < itemArray.length ; index++){
 		var indexName = itemArray[index];
@@ -111,6 +139,20 @@ function switchItem(itemName){
 			$('#'+indexName+"_manage").css('display','none');
 		}
 	}
+	clean_environment();
+}
+
+function logout(){
+	function after_logout(data,status){
+		if(status == 'error'){
+			alert('无法注销');
+		}
+		else{
+			window.location.href='/';
+		}
+	}
+	var completeUrl = String.format(url_templates.logout,local_data.token);
+	request(completeUrl,"","post",after_logout);
 }
 
 function userManage(){
@@ -235,6 +277,7 @@ function listGroup(){
 				saveDataVal[index][3] = group.type;
 				saveDataVal[index][4] = group.group_id;
 				saveDataVal[index][5] = group.type_str;
+				saveDataVal[index][6] = getGroupSearch(group.visible_to_search);
 			}
 			//Save data
 			localStorage.setItem('groupTableData',JSON.stringify(saveDataVal));
@@ -242,11 +285,12 @@ function listGroup(){
 		}
 	}
 	
-	var completeUrl = String.format(url_templates.group_list,local_data.token);
+	var completeUrl = String.format(url_templates.group_list,offset,pageSize,local_data.token);
 	request(completeUrl,"","get",after_list);
 }
 
-function listGroupUser(groupID){
+function listGroupUser(){
+	var groupID = $('#current_group_id').val();
 	clearTable('group_user_table');
 	function after_list(data,status){
 		if(status == "error"){
@@ -262,14 +306,8 @@ function listGroupUser(groupID){
 				dataVal[index][3] = data.users.users[index].display_name;
 				dataVal[index][4] = data.users.users[index].email;
 				dataVal[index][5] = data.users.users[index].relation.position_str;
-				dataVal[index][6] = '<a onClick="resetPassword(\''+data.users.users[index].user_id+'\')">重置</a>';
-				if(data.users.users[index].role != user_role.blocked){
-					dataVal[index][7] = '<a style="color:#0088cc" onClick="changeUserState(\'0\',this,7)">已启用</a>';
-				}
-				else{
-					dataVal[index][7] = '<a style="color:#ff0000" onClick="changeUserState(\'1\',this,7)">已禁用</a>';
-				}
 			}
+			//$('#group_table').css('display','none');
 			createTable('group_user_table',dataVal);
 		}
 	}
@@ -767,6 +805,31 @@ function groupPageLast(){
 	}
 }
 
+//Group user page switch
+function groupUserPageFirst(){
+	if(pageFirst('group_user')){
+		listGroupUser();
+	}
+}
+
+function groupUserPageRight(){
+	if(pageRight('group_user')){
+		listGroupUser();
+	}
+}
+
+function groupUserPageLeft(){
+	if(pageLeft('group_user')){
+		listGroupUser();
+	}
+}
+
+function groupUserPageLast(){
+	if(pageLast('group_user')){
+		listGroupUser();
+	}
+}
+
 //Quota group page switch
 function quotaGroupPageFirst(){
 	if(pageFirst('quota_group')){
@@ -881,15 +944,21 @@ function pageLast(pageItemName){
 //Group
 function userList(groupID){
 	$('#group_slide').animate({marginLeft:'-1158px'},500);
-	$('#group_edit_manage').attr('disabled',true);
+	$('#group_edit_manage').css('display','none');
+	$('#group_user_edit_manage').css('display','inline-block');
 	$('#group_delete_manage').val(1);
-	listGroupUser(groupID);
+	$('#group_cancel_manage').val(1);
+	$('#current_group_id').val(groupID);
+	listGroupUser();
 }
 
 function slideBack(){
 	$('#group_slide').animate({marginLeft:'0px'},500);
-	$('#group_edit_manage').attr('disabled',false);
+	$('#group_edit_manage').css('display','inline-block');
+	$('#group_user_edit_manage').css('display','none');
 	$('#group_delete_manage').val(0);
+	$('#group_cancel_manage').val(0);
+	//$('#group_table').css('display','table');
 }
 
 function groupSearch(){
@@ -987,6 +1056,16 @@ function groupEditManage(){
 	}
 }
 
+function groupUserEditManage(){
+	var val = $('#group_user_edit_manage').val();
+	if(val == 0){
+		groupUserEdit();
+	}
+	else{
+		groupUserSave();
+	}
+}
+
 function getGroupType(){
 	function after_get(data,status){
 		if(status == 'error'){
@@ -1014,6 +1093,41 @@ function createGroupTypeSelect(){
 	return htmlStr;
 }
 
+function getGroupUserPosition(){
+	function after_get(data,status){
+		if(status == 'error'){
+		}
+		else{
+			for(var index = 0 ; index < data.length ; index++){
+				USER_POSITION[index] = new Object();
+				USER_POSITION[index].position_str = data[index].position_str;
+				USER_POSITION[index].position = data[index].position;
+			}
+		}
+	}
+	var completeUrl = String.format(url_templates.relation_positions,local_data.token);
+	request(completeUrl,"","get",after_get);
+}
+
+function createGroupUserPositionSelect(){
+	var htmlStr = '<select id="group_user_position">';
+	if(USER_POSITION.length > 0){
+		for(var index = 0 ; index < USER_POSITION.length ; index++){
+			htmlStr = htmlStr + '<option value="'+USER_POSITION[index].position+'">'+USER_POSITION[index].position_str+'</option>';
+		}
+	}
+	htmlStr = htmlStr + '</select>';
+	return htmlStr;
+}
+
+function createGroupVisibleSelect(){
+	var htmlStr = '<select id="group_visible" class="span12">';
+	htmlStr = htmlStr + '<option value="true">'+getGroupSearch(true)+'</option>';
+	htmlStr = htmlStr + '<option value="false">'+getGroupSearch(false)+'</option>';
+	htmlStr = htmlStr + '</select>';
+	return htmlStr;
+}
+
 function groupEdit(){
 	var $checkedList = $('#group_table >tbody input:checkbox:checked');
 	if($checkedList.length == 0){
@@ -1031,10 +1145,12 @@ function groupEdit(){
 			var tagsHTML = '<div class="control-group"><input type="text" class="span8" value="'+tags+'"></div>';
 			var descriptionHTML = '<div class="control-group"><textarea row="1">'+description+'</textarea></div>';
 			var selectHTML = createGroupTypeSelect();
+			var visibleHTML = createGroupVisibleSelect();
 			
 			$('#group_table > tbody tr:eq('+pos+') td:eq(4)').html(tagsHTML);
 			$('#group_table > tbody tr:eq('+pos+') td:eq(3)').html(descriptionHTML);
 			$('#group_table > tbody tr:eq('+pos+') td:eq(5)').html(selectHTML);
+			$('#group_table > tbody tr:eq('+pos+') td:eq(6)').html(visibleHTML);
         });
 		activateEdit('group');
 	}
@@ -1053,6 +1169,8 @@ function groupSave(){
 			var tags = $('#group_table > tbody tr:eq('+pos+') td:eq(4) input[type="text"]').val();
 			var type = $('#group_table > tbody tr:eq('+pos+') td:eq(5) select').find('option:selected').val();
 			var type_str = $('#group_table > tbody tr:eq('+pos+') td:eq(5) select').find('option:selected').text();
+			var visible = $('#group_table > tbody tr:eq('+pos+') td:eq(6) select').find('option:selected').val();
+			var visible_str = $('#group_table > tbody tr:eq('+pos+') td:eq(6) select').find('option:selected').text();
 			//Check data format
 			if(invalid_letters.test(description)){
 				eachErrorFlag = true;
@@ -1071,14 +1189,16 @@ function groupSave(){
 				$('#group_table > tbody tr:eq('+pos+') td:eq(3)').html(stringThumbnail(description));
 				$('#group_table > tbody tr:eq('+pos+') td:eq(4)').html(stringThumbnail(tags));
 				$('#group_table > tbody tr:eq('+pos+') td:eq(5)').html(type_str);
+				$('#group_table > tbody tr:eq('+pos+') td:eq(6)').html(visible_str);
 				//update localStorage
 				var saveData = JSON.parse(localStorage.getItem('groupTableData'));
 				saveData[pos][1] = description;
 				saveData[pos][2] = tags;
-				saveData[pos][5] = type_str
+				saveData[pos][5] = type_str;
+				saveData[pos][6] = visible_str;
 				localStorage.setItem('groupTableData',JSON.stringify(saveData));
 				element.checked = false;
-				updateGroupInfo(saveData[pos][4],description,tags,type);
+				updateGroupInfo(saveData[pos][4],description,tags,type,visible);
 			}
         });
 		if(!errorFlag){
@@ -1093,7 +1213,38 @@ function groupSave(){
 	}
 }
 
-function updateGroupInfo(groupID,description,tags,type){
+function groupUserEdit(){
+	var $checkedList = $('#group_user_table >tbody input:checkbox:checked');
+	if($checkedList.length == 0){
+	}
+	else{
+		$checkedList.each(function(index, element) {
+			var pos = element.name;
+			var userID = element.value;
+			var selectHTML = createGroupUserPositionSelect();
+			
+			$('#group_user_table > tbody tr:eq('+pos+') td:eq(5)').html(selectHTML);
+        });
+		activateEdit('group_user');
+	}
+}
+
+function groupUserSave(){
+	var $checkedList = $('#group_user_table >tbody input:checkbox:checked');
+	if($checkedList.length == 0){
+	}
+	else{
+		$checkedList.each(function(index, element) {
+			var pos = element.name;
+            var position_str = $('#group_user_table > tbody tr:eq('+pos+') td:eq(5) select').find('option:selected').text();
+			$('#group_user_table > tbody tr:eq('+pos+') td:eq(5)').html(position_str);
+			element.checked = false;
+        });
+		deactivateEdit('group_user');
+	}
+}
+
+function updateGroupInfo(groupID,description,tags,type,visible){
 	var tagArray = tags.split(',');
 	for(var index = 0; index < tagArray.length ; index++)
 		tagArray[index] = Trim(tagArray[index]).toLowerCase();
@@ -1101,7 +1252,8 @@ function updateGroupInfo(groupID,description,tags,type){
 	var form = JSON.stringify({
 		"description" : description,
 		"tags" : tagArray,
-		"type" : type
+		"type" : type,
+		"visible_to_search" : visible
 	});
 	
 	function after_update(data,status){
@@ -1114,6 +1266,16 @@ function updateGroupInfo(groupID,description,tags,type){
 	request(completeUrl,form,"post",after_update);
 }
 
+function groupCancelManage(){
+	var val = $('#group_cancel_manage').val();
+	if(val == 0){
+		groupCancel();
+	}
+	else{
+		groupUserCancel();
+	}
+}
+
 function groupCancel(){
 	//Restore the data
 	var savedData = JSON.parse(localStorage.getItem('groupTableData'));
@@ -1121,8 +1283,13 @@ function groupCancel(){
 		$('#group_table > tbody tr:eq('+pos+') td:eq(3)').html(stringThumbnail(savedData[pos][1]));
 		$('#group_table > tbody tr:eq('+pos+') td:eq(4)').html(stringThumbnail(savedData[pos][2]));
 		$('#group_table > tbody tr:eq('+pos+') td:eq(5)').html(savedData[pos][5]);
+		$('#group_table > tbody tr:eq('+pos+') td:eq(6)').html(savedData[pos][6]);
 	}
 	deactivateEdit('group');
+}
+
+function groupUserCancel(){
+	deactivateEdit('group_user');
 }
 
 function deactivateEdit(tableItems){

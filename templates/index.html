@@ -97,13 +97,13 @@
                             <strong>恭喜!! </strong>数据更新成功!!
                         </div>
                     </div>
-                    <div class="pull-right">
+                    <!--<div class="pull-right">
                         <select id="" class="mySelect" disabled>
                         	<option>--选择用户状态--</option>
                             <option>已启用</option>
                             <option>已禁用</option>
                         </select>
-                    </div>
+                    </div>-->
                 </div>
                 <div>
                 	<table class="table table-bordered table-striped manage_table" id="user_table">
@@ -127,7 +127,7 @@
                     	<ul>
                         	<li><a id="user_page_first">first</a></li>
                         	<li><a id="user_page_left">&laquo;</a></li>
-                            <li><a id="user_page_label">Page 1 of 40</a></li>
+                            <li><a id="user_page_label">----------</a></li>
                         	<li><a id="user_page_right">&raquo;</a></li>
                             <li><a id="user_page_last">Last</a></li>
                         </ul>
@@ -336,7 +336,8 @@
                     	<div class="btn-group">
                             <button class="btn btn-small" id="group_delete_manage" value="0">Delete</button>
                             <button class="btn btn-small" id="group_edit_manage" value="0">Edit</button>
-                            <button class="btn btn-small" id="group_cancel_manage">Cancel</button>
+                            <button class="btn btn-small" id="group_user_edit_manage" value="0" style="display:none;">Edit</button>
+                            <button class="btn btn-small" id="group_cancel_manage" value="0">Cancel</button>
                         </div>
                     </div>
                 </div>
@@ -363,13 +364,13 @@
                                     <strong>恭喜!! </strong>数据更新成功!!
                                 </div>
                             </div>
-                            <div class="pull-right">
+                            <!--<div class="pull-right">
                                 <select id="" class="mySelect" disabled>
                                     <option>--选择群组类型--</option>
                                     <option>公共群组</option>
                                     <option>私有群组</option>
                                 </select>
-                            </div>
+                            </div>-->
                         </div>
                         <div>
                             <table class="table table-bordered table-striped manage_table" id="group_table">
@@ -393,7 +394,7 @@
                                 <ul>
                                     <li><a id="group_page_first">first</a></li>
                                     <li><a id="group_page_left">&laquo;</a></li>
-                                    <li><a id="group_page_label">Page 1 of 40</a></li>
+                                    <li><a id="group_page_label">----------</a></li>
                                     <li><a id="group_page_right">&raquo;</a></li>
                                     <li><a id="group_page_last">Last</a></li>
                         		</ul>
@@ -409,8 +410,8 @@
                                 	<button class="btn btn-link" type="button" id="slide_back">&larr; Back</button>
                                 </div>
                                 <div class="input-append">
-                                	<input type="text" class="span8 search-query" placeholder="请输入用户名">
-                                    <button type="button" class="btn">搜索</button>
+                                	<input type="text" class="span8 search-query" placeholder="请输入用户名" id="group_user_search_name">
+                                    <button type="button" class="btn" id="group_user_search_submit">搜索</button>
                                 </div>
                             </div>
                         </div>
@@ -424,8 +425,6 @@
                                         <th>昵称</th>
                                         <th>邮箱</th>
                                         <th>角色</th>
-                                        <th>密码</th>
-                                        <th>状态</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -433,14 +432,15 @@
                             </table>
                             <div class="pagination pagination-centered">
                                 <ul>
-                                    <li class="disabled"><a href="#"><<</a></li>
-                                    <li class="active"><a href="#">1</a></li>
-                                    <li><a href="#">2</a></li>
-                                    <li><a href="#">3</a></li>
-                                    <li><a href="#">4</a></li>
-                                    <li><a href="#">5</a></li>
-                                    <li><a href="#">>></a></li>
-                                </ul>
+                                    <li><a id="group_user_page_first">first</a></li>
+                                    <li><a id="group_user_page_left">&laquo;</a></li>
+                                    <li><a id="group_user_page_label">----------</a></li>
+                                    <li><a id="group_user_page_right">&raquo;</a></li>
+                                    <li><a id="group_user_page_last">Last</a></li>
+                        		</ul>
+                       			<input type="hidden" value="1" id="group_user_page_current_number">
+                        		<input type="hidden" value="1" id="group_user_page_total_number">
+                                <input type="hidden" value="" id="current_group_id">
                             </div>
                         </div>
                     </div>
