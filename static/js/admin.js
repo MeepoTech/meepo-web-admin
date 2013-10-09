@@ -51,7 +51,7 @@ $(function(){
 	$('#user_cancel_manage').click(userCancelManage);
 	$('#user_delete_manage').click(userDeleteManage);
 	$('#user_check_manage').click(userCheckManage);
-	$('#user_search_submit').click(userSearch);
+	$('#user_search_submit').click(userSearchSubmit);
 	$('#user_error_close').click(userAlertClose);
 	$('#user_success_close').click(userAlertClose);
 	$('#user_page_first').click(userPageFirst);
@@ -61,7 +61,7 @@ $(function(){
 	
 	//Group
 	$('#slide_back').click(slideBack);
-	$('#group_search_submit').click(groupSearch);
+	$('#group_search_submit').click(groupSearchSubmit);
 	$('#group_edit_manage').click(groupEditManage);
 	$('#group_check_manage').click(groupCheckManage);
 	$('#group_cancel_manage').click(groupCancelManage);
@@ -125,6 +125,10 @@ function clean_environment(){
 	groupCancel();
 	groupUserCancel();
 	userCancelManage();
+	
+	//clean page number
+	$('#user_page_select_flag').val(0);
+	$('#group_page_select_flag').val(0);
 }
 
 function switchItem(itemName){
@@ -298,6 +302,7 @@ function listGroupUser(){
 		}
 		else{
 			var dataVal = [];
+			var saveDataVal = [];
 			for(var index = 0 ; index < data.users.users.length ; index++){
 				dataVal[index] = [];
 				dataVal[index][0] = index+1;
@@ -306,8 +311,14 @@ function listGroupUser(){
 				dataVal[index][3] = data.users.users[index].display_name;
 				dataVal[index][4] = data.users.users[index].email;
 				dataVal[index][5] = data.users.users[index].relation.position_str;
+				
+				saveDataVal[index] = [];
+				saveDataVal[index][0] = groupID;
+				saveDataVal[index][1] = data.users.users[index].user_id;
+				saveDataVal[index][2] = data.users.users[index].relation.position_str;
 			}
 			//$('#group_table').css('display','none');
+			localStorage.setItem('groupUserTableData',JSON.stringify(saveDataVal));
 			createTable('group_user_table',dataVal);
 		}
 	}
@@ -405,6 +416,11 @@ function quotaGroupSubmit(){
 		}
 		else{
 			$('#quota_group_success_prompt').css('display','block');
+			var usage = parseInt($('#quota_group_usage_number').val());
+			usage = usage / group_quota * 100;
+			usage = Number(usage).toFixed(2);
+			$('#quota_group_usage').css('width',usage+"%");
+			$('#quota_group_usage_str').text(usage+"%");
 		}
 	}
 	var completeUrl = String.format(url_templates.group_updata_quota,group_id,group_quota,local_data.token);
@@ -440,10 +456,13 @@ function groupQuotaChange(groupID){
 		else{
 			$('#quota_group_id').val(data.group_id);
 			$('#quota_group_name').val(data.group_name);
-			var usage = parseInt(parseInt(data.usage.used) / parseInt(data.usage.quota));
+			$('#quota_group_usage_number').val(data.usage.used);
+			var usage = parseInt(data.usage.used) / parseInt(data.usage.quota) * 100;
+			usage = Number(usage).toFixed(2);
 			$('#quota_group_usage').css('width',usage+"%");
 			$('#quota_group_usage_str').text(usage+"%");
-			$('#quota_group_quota').val(data.usage.quota_str.split(' ')[0]);
+			var quotaToGB = parseInt(data.usage.quota) / (1024 * 1024 * 1024);
+			$('#quota_group_quota').val(quotaToGB);
 			$('#quota_group_submit').removeAttr('disabled');
 		}
 	}
@@ -490,7 +509,7 @@ function quotaUserSearch(){
 			}
 		}
 	}
-	var completeUrl = String.format(url_templates.user_search,userName,local_data.token);
+	var completeUrl = String.format(url_templates.user_search,userName,offset,parseInt(pageSize / 2),local_data.token);
 	request(completeUrl,"","get",after_search);
 }
 
@@ -504,6 +523,11 @@ function quotaUserSubmit(){
 		}
 		else{
 			$('#quota_user_success_prompt').css('display','block');
+			var usage = parseInt($('#quota_user_usage_number').val());
+			usage = usage / user_quota * 100;
+			usage = Number(usage).toFixed(2);
+			$('#quota_user_usage').css('width',usage+"%");
+			$('#quota_user_usage_str').text(usage+"%");
 		}
 	}
 	var completeUrl = String.format(url_templates.user_update_quota,user_id,user_quota,local_data.token);
@@ -534,9 +558,12 @@ function userQuotaChange(userID){
 		else{
 			$('#quota_user_id').val(data.user_id);
 			$('#quota_user_name').val(data.user_name);
-			var usage = parseInt(parseInt(data.usage.used) / parseInt(data.usage.quota));
+			$('#quota_user_usage_number').val(data.usage.used);
+			var usage = parseInt(data.usage.used) / parseInt(data.usage.quota) * 100;
+			usage = Number(usage).toFixed(2);
 			$('#quota_user_usage').css('width',usage+"%");
 			$('#quota_user_usage_str').text(usage+"%");
+			var quotaToGB = parseInt(data.usage.quota) / (1024 * 1024 * 1024);
 			$('#quota_user_quota').val(data.usage.quota_str.split(' ')[0]);
 			$('#quota_user_submit').removeAttr('disabled');
 		}
@@ -652,10 +679,12 @@ function userSave(){
 function userCancelManage(){
 	//Restore the data
 	var savedData = JSON.parse(localStorage.getItem('userTableData'));
-	for(var pos = 0 ; pos < savedData.length ; pos++){
-		$('#user_table > tbody tr:eq('+pos+') td:eq(6)').html(savedData[pos][3]);
+	if(typeof savedData != 'undefined' && savedData != null){
+		for(var pos = 0 ; pos < savedData.length ; pos++){
+			$('#user_table > tbody tr:eq('+pos+') td:eq(6)').html(savedData[pos][3]);
+		}
+		deactivateEdit('user');
 	}
-	deactivateEdit('user');
 }
 
 function userDeleteManage(){
@@ -709,9 +738,17 @@ function resetPassword(userID){
 	}
 }
 
+function userSearchSubmit(){
+	$('#user_page_current_number').val(1);
+	$('#user_page_select_flag').val(1);
+	userSearch();
+}
+
 function userSearch(){
 	var userName = $('#user_search_name').val();
 	clearTable('user_table');
+	var currentPageNumber = parseInt($('#user_page_current_number').val());
+	var offset = (currentPageNumber-1)*pageSize;
 	
 	function after_search(data,status){
 		if(status == 'error'){
@@ -719,6 +756,13 @@ function userSearch(){
 		else{
 			var dataVal = [];
 			var saveDataVal = [];
+			if(currentPageNumber == 1){
+				//Create page number
+				var totalPageNumber = calcPageTotalCount(data.total,pageSize);
+				$('#user_page_total_number').val(totalPageNumber);
+				$('#user_page_label').text('Page 1 of '+totalPageNumber);
+			}
+			
 			for(var index = 0,pos = 0 ; index < data.count ; index++){
 				if(data.users[index].user_id != "00000000-0000-0000-0000-000000000000"){
 					//Construct data
@@ -746,7 +790,7 @@ function userSearch(){
 			createTable('user_table',dataVal);
 		}
 	}
-	var completeUrl = String.format(url_templates.user_search,userName,local_data.token);
+	var completeUrl = String.format(url_templates.user_search,userName,offset,pageSize,local_data.token);
 	request(completeUrl,"","get",after_search);
 }
 
@@ -758,50 +802,98 @@ function userAlertClose(){
 //User page switch
 function userPageFirst(){
 	if(pageFirst('user')){
-		listUser();
+		var val = $('#user_page_select_flag').val();
+		if(val == 0){
+			listUser();
+		}
+		else{
+			userSearch();
+		}
 	}
 }
 
 function userPageRight(){
 	if(pageRight('user')){
-		listUser();
+		var val = $('#user_page_select_flag').val();
+		if(val == 0){
+			listUser();
+		}
+		else{
+			userSearch();
+		}
 	}
 }
 
 function userPageLeft(){
 	if(pageLeft('user')){
-		listUser();
+		var val = $('#user_page_select_flag').val();
+		if(val == 0){
+			listUser();
+		}
+		else{
+			userSearch();
+		}
 	}
 }
 
 function userPageLast(){
 	if(pageLast('user')){
-		listUser();
+		var val = $('#user_page_select_flag').val();
+		if(val == 0){
+			listUser();
+		}
+		else{
+			userSearch();
+		}
 	}
 }
 
 //Group page switch
 function groupPageFirst(){
 	if(pageFirst('group')){
-		listGroup();
+		var val = $('#group_page_select_flag').val();
+		if(val == 0){
+			listGroup();
+		}
+		else{
+			groupSearch();
+		}
 	}
 }
 
 function groupPageRight(){
 	if(pageRight('group')){
-		listGroup();
+		var val = $('#group_page_select_flag').val();
+		if(val == 0){
+			listGroup();
+		}
+		else{
+			groupSearch();
+		}
 	}
 }
 
 function groupPageLeft(){
 	if(pageLeft('group')){
-		listGroup();
+		var val = $('#group_page_select_flag').val();
+		if(val == 0){
+			listGroup();
+		}
+		else{
+			groupSearch();
+		}
 	}
 }
 
 function groupPageLast(){
 	if(pageLast('group')){
-		listGroup();
+		var val = $('#group_page_select_flag').val();
+		if(val == 0){
+			listGroup();
+		}
+		else{
+			groupSearch();
+		}
 	}
 }
 
@@ -958,18 +1050,36 @@ function slideBack(){
 	$('#group_user_edit_manage').css('display','none');
 	$('#group_delete_manage').val(0);
 	$('#group_cancel_manage').val(0);
+	//Clean checkbox
+	deactivateEdit('group_user');
 	//$('#group_table').css('display','table');
+}
+
+function groupSearchSubmit(){
+	$('#group_page_current_number').val(1);
+	$('#group_page_select_flag').val(1);
+	groupSearch();
 }
 
 function groupSearch(){
 	var groupName = $('#group_search_name').val();
 	clearTable('group_table');
+	var currentPageNumber = parseInt($('#group_page_current_number').val());
+	var offset = (currentPageNumber-1)*pageSize;
+	
 	function after_search(data,status){
 		if(status == "error"){
 		}
 		else{
 			var dataVal = [];
 			var saveDataVal = [];
+			if(currentPageNumber == 1){
+				//Create page number
+				var totalPageNumber = calcPageTotalCount(data.total,pageSize);
+				$('#group_page_total_number').val(totalPageNumber);
+				$('#group_page_label').text('Page 1 of '+totalPageNumber);
+			}
+			
 			for(var index = 0 ; index < data.count ; index++){
 				var group = data.groups[index];
 				dataVal[index] = [];
@@ -1009,7 +1119,7 @@ function groupSearch(){
 			createTable('group_table',dataVal);
 		}
 	}
-	var completeUrl = String.format(url_templates.group_search,groupName,local_data.token);
+	var completeUrl = String.format(url_templates.group_search,groupName,offset,pageSize,local_data.token);
 	request(completeUrl,"","get",after_search);
 }
 
@@ -1110,7 +1220,7 @@ function getGroupUserPosition(){
 }
 
 function createGroupUserPositionSelect(){
-	var htmlStr = '<select id="group_user_position">';
+	var htmlStr = '<select id="group_user_position" class="span6">';
 	if(USER_POSITION.length > 0){
 		for(var index = 0 ; index < USER_POSITION.length ; index++){
 			htmlStr = htmlStr + '<option value="'+USER_POSITION[index].position+'">'+USER_POSITION[index].position_str+'</option>';
@@ -1236,9 +1346,16 @@ function groupUserSave(){
 	else{
 		$checkedList.each(function(index, element) {
 			var pos = element.name;
+			var position = $('#group_user_table > tbody tr:eq('+pos+') td:eq(5) select').find('option:selected').val();
             var position_str = $('#group_user_table > tbody tr:eq('+pos+') td:eq(5) select').find('option:selected').text();
 			$('#group_user_table > tbody tr:eq('+pos+') td:eq(5)').html(position_str);
+			
+			//Update localStorage
+			var saveData = JSON.parse(localStorage.getItem('groupUserTableData'));
+			saveData[pos][2] = position_str;
+			localStorage.setItem('groupUserTableData',saveData);
 			element.checked = false;
+			//updateGroupUserInfo(saveData[pos][0],saveData[pos][1],position);
         });
 		deactivateEdit('group_user');
 	}
@@ -1266,6 +1383,20 @@ function updateGroupInfo(groupID,description,tags,type,visible){
 	request(completeUrl,form,"post",after_update);
 }
 
+function updateGroupUserInfo(groupID,userID,position){
+	var form = JSON.stringify({
+		"position" : position
+	});
+	function after_update(data,status){
+		if(status == 'error'){
+		}
+		else{
+		}
+	}
+	var completeUrl = String.format(url_templates.group_user_update,groupID,userID,local_data.token);
+	request(completeUrl,form,"post",after_update);
+}
+
 function groupCancelManage(){
 	var val = $('#group_cancel_manage').val();
 	if(val == 0){
@@ -1279,17 +1410,26 @@ function groupCancelManage(){
 function groupCancel(){
 	//Restore the data
 	var savedData = JSON.parse(localStorage.getItem('groupTableData'));
-	for(var pos = 0 ; pos < savedData.length ; pos++){
-		$('#group_table > tbody tr:eq('+pos+') td:eq(3)').html(stringThumbnail(savedData[pos][1]));
-		$('#group_table > tbody tr:eq('+pos+') td:eq(4)').html(stringThumbnail(savedData[pos][2]));
-		$('#group_table > tbody tr:eq('+pos+') td:eq(5)').html(savedData[pos][5]);
-		$('#group_table > tbody tr:eq('+pos+') td:eq(6)').html(savedData[pos][6]);
+	if(typeof savedData != 'undefined' && savedData != null){
+		for(var pos = 0 ; pos < savedData.length ; pos++){
+			$('#group_table > tbody tr:eq('+pos+') td:eq(3)').html(stringThumbnail(savedData[pos][1]));
+			$('#group_table > tbody tr:eq('+pos+') td:eq(4)').html(stringThumbnail(savedData[pos][2]));
+			$('#group_table > tbody tr:eq('+pos+') td:eq(5)').html(savedData[pos][5]);
+			$('#group_table > tbody tr:eq('+pos+') td:eq(6)').html(savedData[pos][6]);
+		}
+		deactivateEdit('group');
 	}
-	deactivateEdit('group');
 }
 
 function groupUserCancel(){
-	deactivateEdit('group_user');
+	//Restore the data
+	var savedData = JSON.parse(localStorage.getItem('groupUserTableData'));
+	if(typeof savedData != 'undefined' && savedData != null){
+		for(var pos = 0 ; pos < savedData.length ; pos++){
+			$('#group_user_table > tbody tr:eq('+pos+') td:eq(5)').html(savedData[pos][0]);
+		}
+		deactivateEdit('group_user');
+	}
 }
 
 function deactivateEdit(tableItems){
