@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import web
+import os
 import json
 import redis
 import time
@@ -46,27 +47,30 @@ class Upload:
         platform = form['platform']
         if platform not in platform_list:
             return 'invalid platform type'
-
         # read metadata
+
         version = form['version']
         filename = form['myfile'].filename
         date = time.strftime('%Y-%m-%d', time.localtime(time.time()))
+
+        # save the file
+        output = open(upload_dir + filename, 'w')
+        output.write(form['myfile'].value)
+
+        # store metadata
         redis_key = 'release:' + platform
         meta = {
             'platform': platform,
             'version': version,
             'filename': filename,
             'date': date,
-            'adaptation': adaptation[platform]
+            'adaptation': adaptation[platform],
+            'size': str(round(os.path.getsize(upload_dir + filename)/1024/1024.0, 2)) + 'M'
         }
 
         r.hmset(redis_key, meta)
         if not r.hexists(redis_key, 'downloads'):
             r.hset(redis_key, 'downloads', 0)
-
-        # save the file
-        output = open(upload_dir + filename, 'w')
-        output.write(form['myfile'].value)
 
         return 'success'
 

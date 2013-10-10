@@ -7,12 +7,13 @@ upload_dir = '/var/www/campus-website/upload/'
 redis_addr = '0.meepotech.com'
 
 # platforms that we support(client)
-platform_list = ['win32', 'win64', 'linux32', 'linux64', 'osx', 'android']
+platform_list = ['win32', 'win64', 'linux32', 'linux64',
+                 'osx', 'android', 'ios']
 
 # supported os version
 adaptation = {
-    'win32':    'Windows XP/Vista/Win 7/Win 8',
-    'win64':    'Windows XP/Vista/Win 7/Win 8',
+    'win32':    'XP/Vista/Win7/Win8',
+    'win64':    'XP/Vista/Win7/Win8',
     'osx':      'Mac OS X 10.7+',
     'linux32':  ' ',
     'linux64':  ' ',
