@@ -61,7 +61,7 @@ class Upload:
         }
 
         r.hmset(redis_key, meta)
-        if not r.exists(redis_key, 'downloads'):
+        if not r.hexists(redis_key, 'downloads'):
             r.hset(redis_key, 'downloads', 0)
 
         # save the file
