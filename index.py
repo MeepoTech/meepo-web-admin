@@ -4,10 +4,9 @@ import web
 import json
 import redis
 import time
+from config import *
 
-upload_dir = '/var/www/campus-website/upload/'
 render = web.template.render("templates")
-platform_list = ['win32', 'win64', 'linux32', 'linux64', 'osx', 'android']
 
 urls = (
     '/',            'Login',
@@ -15,7 +14,7 @@ urls = (
     '/home',        'Home',
 )
 
-r = redis.StrictRedis(host="0.meepotech.com")
+r = redis.StrictRedis(host=redis_addr)
 
 
 class Login:
@@ -54,12 +53,16 @@ class Upload:
         date = time.strftime('%Y-%m-%d', time.localtime(time.time()))
         redis_key = 'release:' + platform
         meta = {
-            'version':   version,
-            'filename':  filename,
-            'date':      date
+            'platform': platform,
+            'version': version,
+            'filename': filename,
+            'date': date,
+            'adaptation': adaptation[platform]
         }
 
-        r.set(redis_key, json.dumps(meta))
+        r.hmset(redis_key, meta)
+        if not r.exists(redis_key, 'downloads'):
+            r.hset(redis_key, 'downloads', 0)
 
         # save the file
         output = open(upload_dir + filename, 'w')
