@@ -41,6 +41,8 @@ var url_templates = {
 	group_list:			 servers.group + '?offset={0}&count={1}&token={2}&filters=group.type>=10',
 	group_update:		 servers.group + '/{0}/update?token={1}',
 	group_updata_quota:  servers.group + '/{0}/quota?quota={1}&token={2}',
+	group_remove_user:   servers.group + '/{0}/users/{1}?token={2}',
+	group_disband:		 servers.group + '/{0}?token={1}',
 	//group user
 	group_user_update:   servers.group + '/{0}/users/{1}/update?token={2}',
 	
