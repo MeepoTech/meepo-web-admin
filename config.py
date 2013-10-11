@@ -4,7 +4,7 @@
 upload_dir = '/var/www/campus-website/upload/'
 
 # domain or IP which the redis sever run on
-redis_addr = '0.meepotech.com'
+#redis_addr = '0.meepotech.com'
 
 # platforms that we support(client)
 platform_list = ['win32', 'win64', 'linux32', 'linux64',

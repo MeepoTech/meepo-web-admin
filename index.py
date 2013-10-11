@@ -15,7 +15,8 @@ urls = (
     '/home',        'Home',
 )
 
-r = redis.StrictRedis(host=redis_addr)
+#r = redis.StrictRedis(host=redis_addr)
+r = redis.StrictRedis()
 
 
 class Login:
