@@ -1499,11 +1499,55 @@ function groupDeleteManage(){
 }
 
 function groupDelete(){
-	
+	var $checkedList = $('#group_table >tbody input:checkbox:checked');
+	if($checkedList.length == 0){
+	}
+	else{
+		$checkedList.each(function(index, element) {
+			var pos = element.name;
+			var groupID = $('#group_table > tbody tr:eq('+pos+') td:eq(1) input[type="checkbox"]').val();
+			disbandGroup(groupID);
+		});
+	}
+}
+
+function disbandGroup(groupID){
+	function after_disband(data,status){
+		if(status == 'error'){
+		}
+		else{
+			listGroup();
+		}
+	}
+	var completeUrl = String.format(url_templates.group_disband,groupID,local_data.token);
+	request(completeUrl,"","delete",after_disband);
 }
 
 function groupUserDelete(){
+	var $checkedList = $('#group_user_table >tbody input:checkbox:checked');
+	if($checkedList.length == 0){
+	}
+	else{
+		$checkedList.each(function(index, element) {
+			var pos = element.name;
+			var groupID = $('#current_group_id').val();
+			var userID = $('#group_user_table > tbody tr:eq('+pos+') td:eq(1) input[type="checkbox"]').val();
+			deleteUserFromGroup(groupID,userID);
+		});
+	}
+}
+
+function deleteUserFromGroup(groupID,userID){
+	function after_delete(data,status){
+		if(status == 'error'){
+		}
+		else{
+			listGroupUser();
+		}
+	}
 	
+	var completeUrl = String.format(url_templates.group_remove_user,groupID,userID,local_data.token);
+	request(completeUrl,"","delete",after_delete);
 }
 
 //Group user
