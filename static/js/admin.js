@@ -739,7 +739,6 @@ function updateUserInfo(userID,groupCanOwn){
 		if(status == 'error'){
 		}
 		else{
-			alert('修改成功');
 		}
 	}
 	
