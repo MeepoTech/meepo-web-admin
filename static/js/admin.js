@@ -44,6 +44,8 @@ $(function(){
 	$('#userManage').click(userManage);
 	$('#quotaManage').click(quotaManage);
 	$('#groupManage').click(groupManage);
+	$('#dataManage').click(dataManage);
+	$('#infoManage').click(infoManage);
 	$('#clientManage').click(clientManage);
 	
 	//User
@@ -170,6 +172,14 @@ function quotaManage(){
 function groupManage(){
 	switchItem('group');
 	listGroup();
+}
+
+function dataManage(){
+	switchItem('data');
+}
+
+function infoManage(){
+	switchItem('info');
 }
 
 function clientManage(){
