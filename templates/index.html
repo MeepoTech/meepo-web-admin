@@ -83,7 +83,7 @@
             	<div class="row-fluid">
                 	<div class="pull-left form-search">
                     	<div class="input-append">
-                        	<input type="text" class="span8 search-query" placeholder="请输入用户名" id="user_search_name">
+                        	<input type="text" class="span8 search-query" placeholder="请输入用户名" id="user_search_name" onKeyDown="keyDown('user_search')">
                             <button type="button" class="btn" id="user_search_submit">搜索</button>
                         </div>
                     </div>
@@ -156,7 +156,7 @@
                 	<div class="row-fluid printDiv" style="width:98%">
                         <div class="pull-left form-search">
                             <div class="input-append">
-                                <input type="text" class="span8 search-query" placeholder="请输入用户名" id="quota_user_search_name">
+                                <input type="text" class="span8 search-query" placeholder="请输入用户名" id="quota_user_search_name" onKeyDown="keyDown('quota_user_search')">
                                 <input type="hidden" id="quota_user_id">
                                 <button type="button" class="btn" id="quota_user_search">搜索</button>
                             </div>
@@ -219,14 +219,14 @@
                                         <span class="progressFont" id="quota_user_usage_str">0%</span>
                                     </div>
                                 </div>
-                                <div class="control-group">
+                                <div class="control-group" id="quota_user_quota_controls">
                                     <label class="control-label" for="quota_user_quota">用户配额</label>
                                     <div class="controls">
                                         <div class="input-append">
                                             <input type="text" id="quota_user_quota" style="width:175px">
                                             <span class="add-on">GB</span>
                                         </div>
-                                        <span class="help-inline">配额必须为0~10的整数</span>
+                                        <span class="help-inline">配额必须为0~10000的整数</span>
                                     </div>
                                 </div>
                                 <div class="control-group">
@@ -243,7 +243,7 @@
                 	<div class="row-fluid printDiv" style="width:98%">
                         <div class="pull-left form-search">
                             <div class="input-append">
-                                <input type="text" class="span8 search-query" placeholder="请输入群组名" id="quota_group_search_name">
+                                <input type="text" class="span8 search-query" placeholder="请输入群组名" id="quota_group_search_name" onKeyDown="keyDown('quota_group_search')">
                                 <input type="hidden" id="quota_group_id">
                                 <button type="button" class="btn" id="quota_group_search">搜索</button>
                             </div>
@@ -306,14 +306,14 @@
                                         <span class="progressFont" id="quota_group_usage_str">0%</span>
                                     </div>
                                 </div>
-                                <div class="control-group">
+                                <div class="control-group" id="quota_group_quota_controls">
                                     <label class="control-label" for="quota_group_quota">群组配额</label>
                                     <div class="controls">
                                         <div class="input-append">
                                             <input type="text" id="quota_group_quota" style="width:175px">
                                             <span class="add-on">GB</span>
                                         </div>
-                                        <span class="help-inline">配额必须为0~10的整数</span>
+                                        <span class="help-inline">配额必须为0~10000的整数</span>
                                     </div>
                                 </div>
                                 <div class="control-group">
@@ -353,7 +353,7 @@
                     	<div class="row-fluid">
                             <div class="pull-left form-search">
                                 <div class="input-append">
-                                    <input type="text" class="span8 search-query" placeholder="请输入群组名" id="group_search_name">
+                                    <input type="text" class="span8 search-query" placeholder="请输入群组名" id="group_search_name"  onKeyDown="keyDown('group_search')">
                                     <button type="button" class="btn" id="group_search_submit">搜索</button>
                                 </div>
                             </div>
@@ -416,7 +416,7 @@
                                 	<button class="btn btn-link" type="button" id="slide_back">&larr; Back</button>
                                 </div>
                                 <div class="input-append">
-                                	<input type="text" class="span8 search-query" placeholder="请输入用户名" id="group_user_search_name">
+                                	<input type="text" class="span8 search-query" placeholder="请输入用户名" id="group_user_search_name" onKeyDown="keyDown('group_user_search')">
                                     <button type="button" class="btn" id="group_user_search_submit">搜索</button>
                                 </div>
                             </div>
@@ -518,10 +518,10 @@
     <footer class="footer">
     	<div class="container-fluid">
             <p><font color="gray">
-                <a href="/terms">服务条款</a>&nbsp;&nbsp;&nbsp;
-                <a href="/about">关于我们</a>&nbsp;&nbsp;&nbsp;
-                <a href=mailto:support@meepotech.com>意见反馈</a>&nbsp;&nbsp;&nbsp;
-                <a href="/joinus">加入我们</a>
+                <a href="http://www.meepotech.com/terms">服务条款</a>&nbsp;&nbsp;&nbsp;
+                <a href="http://www.meepotech.com/">公司首页</a>&nbsp;&nbsp;&nbsp;
+                <a href="http://www.meepotech.com/about">关于我们</a>&nbsp;&nbsp;&nbsp;
+                <a href="mailto:support@meepotech.com">意见反馈</a>
                 <br><br>
                 &copy; 2013 北京麦谱影随科技有限公司
             </font></p>
