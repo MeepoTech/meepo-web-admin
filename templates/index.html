@@ -464,8 +464,8 @@
                     </div>
                     <div class="pull-right">
                     	<div class="btn-group">
-                        	<button class="btn btn-small" id="">导入</button>
-                            <button class="btn btn-small" id="">导出</button>
+                        	<button class="btn btn-small" id="data_import">导入</button>
+                            <button class="btn btn-small" id="data_export">导出</button>
                         </div>
                     </div>
                 </div>
@@ -476,21 +476,41 @@
                     	<div class="row-fluid">
                         	<div class="pull-left">
                             	<div class="input-append">
-                                	<input type="text" class="span8">
+                                	<input type="hidden" name="MAX_FILE_SIZE">
+                                	<input type="text" class="span10" id="data_upload_text" placeholder="选择上传文件">
+                                    <input type="file" id="data_file_search" style="display:none;" value="">
                                     <div class="btn-group">
                                         <button class="btn dropdown-toggle" data-toggle="dropdown" tabindex="-1">
                                         	导入选项<span class="caret"></span>
                                         </button>
                                         <ul class="dropdown-menu">
-                                        	<li><a href="#">导入用户</a></li>
-                                            <li><a href="#">导入群组</a></li>
+                                        	<li><a id="import_user">导入用户</a></li>
+                                            <li><a id="import_group">导入群组</a></li>
                                         </ul>
                                     </div>
                                 </div>
                             </div>
                             <div class="pull-right">
-                            	
+                            	<div class="btn-group">
+                                	<button class="btn btn-small" id="import_execution">执行</button>
+                                </div>
                             </div>
+                        </div>
+                        <div class="up-down-bar" id="">
+                        	<div class="progress progress-striped active span9 upProgress">
+                            	<div class="bar" style="width:0%" id="import_progress"></div>
+                            </div>
+                            <span class="progressFont" id="import_rate">0%</span>
+                            <span class="progressFont" id="import_statistic">已经上传<strong>0</strong>/0</span>
+                        </div>
+                        <div>
+                        	<table class="table table-bordered table-striped manage_table" id="data_import_table">
+                            	<thead>
+                                	<tr></tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                     <div class="eachSlice">

@@ -84,6 +84,10 @@ $(function(){
 	$('#group_user_page_left').click(groupUserPageLeft);
 	$('#group_user_page_last').click(groupUserPageLast);
 	
+	//Import
+	$('#import_user').click(importUser);
+	$('#import_group').click(importGroup);
+	$('#import_execution').click(importExecution);
 	//Initialization
 	initEnvironment();
 	
@@ -619,11 +623,25 @@ function clearTable(tableID){
 	$('#'+tableID+">tbody tr").remove();
 }
 
+function clearTableHeader(tableID){
+	$('#'+tableID+">thead>tr td").remove();
+}
+
+
 function createTable(tableID,data){
 	if(data != null && typeof data != "undefined"){
 		var $table = $('#'+tableID+'>tbody');
 		for(var i = 0 ; i < data.length ; i++){
 			$table.append(createRow(data[i]));
+		}
+	}
+}
+
+function createTableHeader(tableID,data){
+	if(data != null && typeof data != 'undefined'){
+		var $table = $('#'+tableID+'>thead>tr');
+		for(var i = 0 ; i < data.length ; i++){
+			$table.append('<td>'+data[i]+'</td>');
 		}
 	}
 }
@@ -1592,6 +1610,106 @@ function groupUserCheckManage(){
         });
 	}
 }
+
+//Import
+function importInterface(){
+}
+
+function importUser(){
+	$('#data_file_search').click();
+	$('#data_file_search').change(importOnchange);
+}
+
+function importGroup(){
+}
+
+function importOnchange(){
+	$('#data_upload_text').val(this.value);
+	var file = this.files[0];
+	if(window.File && window.FileReader && window.FileList && window.Blob){
+		var fileReader = new FileReader();
+		fileReader.onloadend = function(e){
+			var fileArray = fileStrToArray(e.target.result);
+			createPreviewTable(fileArray,pageSize);
+			dataProgressInit('import',fileArray.length-1);
+		};
+		fileReader.readAsText(file,'ISO-8859-1');
+	}
+	else{
+		alert('此浏览器的版本过低！');
+	}
+}
+
+function importExecution(){
+	var file = document.getElementById('data_file_search').files[0];
+	if(window.File && window.FileReader && window.FileList && window.Blob){
+		var fileReader = new FileReader();
+		fileReader = new FileReader();
+		fileReader.onloadend=function(e){
+			var fileArray = fileStrToArray(e.target.result);
+			registerUser(fileArray);
+		};
+		fileReader.readAsText(file,'ISO-8859-1');
+	}
+	else{
+		alert('此浏览器的版本过低！');
+	}
+}
+
+function fileStrToArray(str){
+	var infoArray = str.split('\n');
+	for(var index = 0 ; index < infoArray.length ; index++){
+		infoArray[index] = infoArray[index].split(',');
+	}
+	return infoArray;
+}
+
+function createPreviewTable(dataArray,count){
+	clearTableHeader('data_import_table');
+	clearTable('data_import_table');
+	if(dataArray.length > 1 && count > 0){
+		var factCount = minVal(dataArray.length-1,count);
+		createTableHeader('data_import_table',dataArray[0]);
+		createTable('data_import_table',dataArray.slice(1,factCount+1));
+	}
+}
+
+function registerUser(dataArray){
+	var total = dataArray.length - 1;
+	var count = 0;
+	function after_register(data,status){
+		if(status == 'error'){
+		}
+		else{
+			count = count + 1; 
+			dataProgressExec('import',count,total);
+		}
+	}
+	for(var index =1 ; index <= total ; index++){
+		var form = {
+			'user_name' : dataArray[index][0],
+			'email' : dataArray[index][3],
+			'display_name' : dataArray[index][1]
+		};
+		var password = SHA256_hash(dataArray[index][2]);
+		var completeUrl = String.format(url_templates.user_register_and_activate,password,local_data.token);
+		request(completeUrl,form,"post",after_register);
+	}
+}
+
+function dataProgressInit(itemName,total){
+	$('#'+itemName+'_progress').css('width','0%');
+	$('#'+itemName+'_rate').text('0%');
+	$('#'+itemName+'_statistic').html('已经上传<strong>0</strong>/'+total);
+}
+
+function dataProgressExec(itemName,count,total){
+	var rate = Number(parseInt(count) / parseInt(total) * 100).toFixed(2);
+	$('#'+itemName+'_progress').css('width',rate+'%');
+	$('#'+itemName+'_rate').text(rate+'%');
+	$('#'+itemName+'_statistic>strong').text(count);
+}
+//Export
 
 //key down
 function keyDown(name){
