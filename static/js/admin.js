@@ -127,6 +127,7 @@ function clean_environment(){
 	$('#quota_group_search_name').val('');
 	$('#group_search_name').val('');
 	$('#group_user_search_name').val('');
+	$('#data_upload_text').val('');
 	//Cancel
 	groupCancel();
 	userCancelManage();
@@ -180,6 +181,9 @@ function groupManage(){
 
 function dataManage(){
 	switchItem('data');
+	clearTableHeader('data_import_table');
+	clearTable('data_import_table');
+	dataProgressInit('import',0);
 }
 
 function infoManage(){
@@ -1686,11 +1690,11 @@ function registerUser(dataArray){
 		}
 	}
 	for(var index =1 ; index <= total ; index++){
-		var form = {
+		var form = JSON.stringify({
 			'user_name' : dataArray[index][0],
 			'email' : dataArray[index][3],
 			'display_name' : dataArray[index][1]
-		};
+		});
 		var password = SHA256_hash(dataArray[index][2]);
 		var completeUrl = String.format(url_templates.user_register_and_activate,password,local_data.token);
 		request(completeUrl,form,"post",after_register);
