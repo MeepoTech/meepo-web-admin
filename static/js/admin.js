@@ -1680,13 +1680,21 @@ function createPreviewTable(dataArray,count){
 
 function registerUser(dataArray){
 	var total = dataArray.length - 1;
-	var count = 0;
+	var success = 0;
+	var error = 0;
 	function after_register(data,status){
 		if(status == 'error'){
+			error = error + 1;
 		}
 		else{
-			count = count + 1; 
-			dataProgressExec('import',count,total);
+			success = success + 1;
+		}
+		dataProgressExec('import',success+error,total);
+		if((error + success) >= total){
+			$('#import_result_label').css('display','block');
+			$('#import_result_label .load-label-total').text(total);
+			$('#import_result_label .load-label-success').text(success);
+			$('#import_result_label .load-label-error').text(error);
 		}
 	}
 	for(var index =1 ; index <= total ; index++){

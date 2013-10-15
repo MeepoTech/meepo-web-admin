@@ -153,3 +153,30 @@ a{
 }
 /*Group quota change end*/
 
+/*Import and export style start*/
+.load-label{
+	float:left;
+	margin-left:50px;
+	width:400px;
+	padding:4px 14px;
+	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+  	background-color: #dff0d8;
+  	border: 1px solid #d6e9c6;
+  	-webkit-border-radius: 4px;
+     	-moz-border-radius: 4px;
+        	border-radius: 4px;
+	color:#468847;
+	display:none;
+}
+
+.load-label-total,
+.load-label-success,
+.load-label-error{
+	margin-right:20px;
+}
+
+.load-label-error{
+	color:#b94a48;
+}
+/*Import and export style end*/
+
