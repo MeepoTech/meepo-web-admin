@@ -78,6 +78,13 @@ var relation_position = {
 	blocked		  : 90
 };
 
+var export_user_header = {
+	user_name : "用户名",
+	display_name : "昵称",
+	email: "邮箱",
+	groups_can_own: "可用群组数"
+};
+
 function getGroupSearch(searchVal){
 	if(searchVal){
 		return "可搜索";

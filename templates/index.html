@@ -7,6 +7,8 @@
     <script src="../static/js/bootstrap.min.js" type="text/javascript"></script>
     <script src="../static/js/bootstrap-popover.js" type="text/javascript"></script>
     <script src="../static/js/jssha256.js" type="text/javascript"></script>
+    <script src="../static/js/blob.js" type="text/javascript"></script>
+    <script src="../static/js/fileSaver.js" type="text/javascript"></script>
     <script src="../static/js/common.js" type="text/javascript"></script>
     <script src="../static/js/configuration.js" type="text/javascript"></script>
     <script src="../static/js/admin.js" type="text/javascript"></script>
@@ -477,7 +479,7 @@
                         	<div class="pull-left">
                             	<div class="input-append">
                                 	<input type="hidden" name="MAX_FILE_SIZE">
-                                	<input type="text" class="span10" id="data_upload_text" placeholder="选择上传文件">
+                                	<input type="text" class="span10" id="data_import_text" placeholder="选择上传文件">
                                     <input type="file" id="data_file_search" style="display:none;" value="">
                                     <div class="btn-group">
                                         <button class="btn dropdown-toggle" data-toggle="dropdown" tabindex="-1">
@@ -492,11 +494,15 @@
                             </div>
                             <div id="import_result_label" class="load-label">
                             	<button type="button" class="close" id="">×</button>
-                                <strong>导入完成!!&nbsp;&nbsp;</strong>总共:&nbsp;<span class="load-label-total">2000</span>成功:&nbsp;<span class="load-label-success">1900</span>失败:&nbsp;<span class="load-label-error">100</span> 
+                                <strong>导入完成!!&nbsp;&nbsp;</strong>
+                                总共:&nbsp;<span class="load-label-total">2000</span>
+                                成功:&nbsp;<span class="load-label-success">1900</span>
+                                失败:&nbsp;<span class="load-label-error">100</span> 
                             </div>
                             <div class="pull-right">
                             	<div class="btn-group">
                                 	<button class="btn btn-small" id="import_execution">执行</button>
+                                    <button class="btn btn-small" id="import_help">帮助</button>
                                 </div>
                             </div>
                         </div>
@@ -518,6 +524,51 @@
                         </div>
                     </div>
                     <div class="eachSlice">
+                    	<div class="row-fluid">
+                        	<div class="pull-left">
+                            	<div class="input-append">
+                                	<input type="text" class="span10" id="data_export_text" placeholder="请输入文件名">
+                                    <span class="add-on">.csv</span>
+                                    <div class="btn-group">
+                                        <button class="btn dropdown-toggle" data-toggle="dropdown" tabindex="-1">
+                                        	导出选项<span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                        	<li><a id="export_user">导出用户</a></li>
+                                            <li><a id="export_group">导出群组</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="export_result_label" class="load-label">
+                            	<button type="button" class="close" id="">×</button>
+                                <strong>导出完成!!&nbsp;&nbsp;</strong>
+                                总共:&nbsp;<span class="load-label-total">2000</span>
+                                成功:&nbsp;<span class="load-label-success">1900</span>
+                                失败:&nbsp;<span class="load-label-error">100</span> 
+                            </div>
+                            <div class="pull-right">
+                                <div class="btn-group">
+                                    <button class="btn btn-small" id="export_execution">执行</button>
+                                </div>
+                            </div>
+                        </div>
+						<div class="up-down-bar" id="">
+                        	<div class="progress progress-striped active span9 upProgress">
+                            	<div class="bar" style="width:0%" id="export_progress"></div>
+                            </div>
+                            <span class="progressFont" id="export_rate">0%</span>
+                            <span class="progressFont" id="export_statistic">已经导出<strong>0</strong>/0</span>
+                        </div>
+                        <div>
+                        	<table class="table table-bordered table-striped manage_table" id="data_export_table">
+                            	<thead>
+                                	<tr></tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
