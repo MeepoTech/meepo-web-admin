@@ -83,6 +83,7 @@ $(function(){
 	$('#group_user_page_right').click(groupUserPageRight);
 	$('#group_user_page_left').click(groupUserPageLeft);
 	$('#group_user_page_last').click(groupUserPageLast);
+	$('#group_user_search_submit').click(groupUserSearchSubmit);
 	
 	//Import
 	$('#data_import').click(dataImport);
@@ -1403,6 +1404,9 @@ function groupSave(){
 	}
 }
 
+function groupUserSearchSubmit(){
+}
+
 function groupUserEdit(){
 	var $checkedList = $('#group_user_table >tbody input:checkbox:checked');
 	if($checkedList.length == 0){
@@ -1516,7 +1520,7 @@ function groupUserCancel(){
 
 function deactivateEdit(tableItems){
 	$('#'+tableItems+'_edit_manage').val(0);
-	$('#'+tableItems+'_edit_manage').text('Edit');
+	$('#'+tableItems+'_edit_manage').text('编辑');
 	//Enable checkbox
 	$('#'+tableItems+'_table input:checkbox').removeAttr('disabled');
 	$('#'+tableItems+'_table input:checkbox').each(function(index, element) {
@@ -1526,7 +1530,7 @@ function deactivateEdit(tableItems){
 
 function activateEdit(tableItems){
 	$('#'+tableItems+'_edit_manage').val(1);
-	$('#'+tableItems+'_edit_manage').text('Save');
+	$('#'+tableItems+'_edit_manage').text('保存');
 	//Disable checkbox
 	$('#'+tableItems+'_table input:checkbox').attr('disabled',true);
 }
