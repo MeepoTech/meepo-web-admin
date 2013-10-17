@@ -85,6 +85,13 @@ var export_user_header = {
 	groups_can_own: "可用群组数"
 };
 
+var export_group_header = {
+	group_name : "群组名",
+	description : "群组描述",
+	group_tags : "群组标签",
+	group_type : "群组类型"
+};
+
 function getGroupSearch(searchVal){
 	if(searchVal){
 		return "可搜索";

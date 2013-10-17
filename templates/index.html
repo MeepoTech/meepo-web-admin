@@ -495,9 +495,9 @@
                             <div id="import_result_label" class="load-label">
                             	<button type="button" class="close" id="">×</button>
                                 <strong>导入完成!!&nbsp;&nbsp;</strong>
-                                总共:&nbsp;<span class="load-label-total">2000</span>
-                                成功:&nbsp;<span class="load-label-success">1900</span>
-                                失败:&nbsp;<span class="load-label-error">100</span> 
+                                总共:&nbsp;<span class="load-label-total"></span>
+                                成功:&nbsp;<span class="load-label-success"></span>
+                                失败:&nbsp;<span class="load-label-error"></span> 
                             </div>
                             <div class="pull-right">
                             	<div class="btn-group">
@@ -527,7 +527,7 @@
                     	<div class="row-fluid">
                         	<div class="pull-left">
                             	<div class="input-append">
-                                	<input type="text" class="span10" id="data_export_text" placeholder="请输入文件名">
+                                	<input type="text" class="span8" id="data_export_text" placeholder="请输入文件名">
                                     <span class="add-on">.csv</span>
                                     <div class="btn-group">
                                         <button class="btn dropdown-toggle" data-toggle="dropdown" tabindex="-1">
@@ -543,13 +543,13 @@
                             <div id="export_result_label" class="load-label">
                             	<button type="button" class="close" id="">×</button>
                                 <strong>导出完成!!&nbsp;&nbsp;</strong>
-                                总共:&nbsp;<span class="load-label-total">2000</span>
-                                成功:&nbsp;<span class="load-label-success">1900</span>
-                                失败:&nbsp;<span class="load-label-error">100</span> 
+                                总共:&nbsp;<span class="load-label-total"></span>
+                                成功:&nbsp;<span class="load-label-success"></span>
+                                失败:&nbsp;<span class="load-label-error"></span> 
                             </div>
                             <div class="pull-right">
                                 <div class="btn-group">
-                                    <button class="btn btn-small" id="export_execution">执行</button>
+                                    <button class="btn btn-small" id="export_execution" value="0">执行</button>
                                 </div>
                             </div>
                         </div>
@@ -559,6 +559,7 @@
                             </div>
                             <span class="progressFont" id="export_rate">0%</span>
                             <span class="progressFont" id="export_statistic">已经导出<strong>0</strong>/0</span>
+                            <input type="hidden" value="0" id="export_data_total">
                         </div>
                         <div>
                         	<table class="table table-bordered table-striped manage_table" id="data_export_table">

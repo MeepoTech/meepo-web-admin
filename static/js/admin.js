@@ -93,6 +93,7 @@ $(function(){
 	//Export
 	$('#data_export').click(dataExport);
 	$('#export_user').click(exportUser);
+	$('#export_group').click(exportGroup);
 	$('#export_execution').click(exportExecution);
 	//Initialization
 	initEnvironment();
@@ -1738,6 +1739,7 @@ function dataExport(){
 }
 
 function exportUser(){
+	$('#export_execution').val(1);
 	clearTableHeader('data_export_table');
 	clearTable('data_export_table');
 	function after_list(data,status){
@@ -1759,6 +1761,8 @@ function exportUser(){
 				dataVal[index][2] = user.email;
 				dataVal[index][3] = user.groups_can_own;
 			}
+			$('#export_data_total').val(data.total);
+			dataProgressInit('export',data.total);
 			createTableHeader('data_export_table',dataHeaderVal);
 			createTable('data_export_table',dataVal);
 		}
@@ -1767,10 +1771,67 @@ function exportUser(){
 	request(completeUrl,"","get",after_list);
 }
 
-function exportExecution(){
+function exportGroup(){
+	$('#export_execution').val(2);
+	clearTableHeader('data_export_table');
+	clearTable('data_export_table');
 	function after_list(data,status){
 		if(status == 'error'){
 			
+		}
+		else{
+			var dataVal = [];
+			var dataHeaderVal = [];
+			dataHeaderVal[0] = export_group_header.group_name;
+			dataHeaderVal[1] = export_group_header.description;
+			dataHeaderVal[2] = export_group_header.group_tags;
+			dataHeaderVal[3] = export_group_header.group_type;
+			
+			for(var index = 0 ; index < data.count ; index++){
+				var group = data.groups[index];
+				dataVal[index] = [];
+				dataVal[index][0] = group.group_name;
+				dataVal[index][1] = group.description;
+				var tags = "";
+				if(group.tags.length > 0){
+					tags = group.tags[0];
+					for(var tagIndex = 1 ; tagIndex < group.tags.length ; tagIndex ++){
+						tags = tags + ',' + group.tags[tagIndex];
+					}
+				}
+				dataVal[index][2] = tags;
+				dataVal[index][3] = group.type_str;
+			}
+			$('#export_data_total').val(data.total);
+			dataProgressInit('export',data.total);
+			createTableHeader('data_export_table',dataHeaderVal);
+			createTable('data_export_table',dataVal);
+		}
+	}
+	var completeUrl = String.format(url_templates.group_list,0,pageSize,local_data.token);
+	request(completeUrl,"","get",after_list);
+}
+
+function exportExecution(){
+	var val = parseInt($('#export_execution').val());
+	if(val == 1){
+		exportUserExec();
+	}
+	else if(val == 2){
+		exportGroupExec();
+	}
+	else{
+		alert("请选择导入选项!!");
+	}
+}
+
+function exportUserExec(){
+	var total = $('#export_data_total').val();
+	function after_list(data,status){
+		var error = 0;
+		var success=0;
+		if(status == 'error'){
+			error = error + 1;
 		}
 		else{
 			var text = "";
@@ -1780,6 +1841,8 @@ function exportExecution(){
 				text = text + user.display_name + ",";
 				text = text + user.email + ",";
 				text = text + user.groups_can_own + "\n";
+				success = success + 1;
+				dataProgressExec('export',index+1,total);
 			}
 			var blob = new Blob([text],{type: "text/plain;charset=utf-8"});
 			if(blob){
@@ -1787,8 +1850,56 @@ function exportExecution(){
 				saveAs(blob,path+".csv");
 			}
 		}
+		
+		$('#export_result_label').css('display','block');
+		$('#export_result_label .load-label-total').text(total);
+		$('#export_result_label .load-label-success').text(success);
+		$('#export_result_label .load-label-error').text(error);
 	}
-	var completeUrl = String.format(url_templates.user_list,0,pageSize,local_data.token);
+	var completeUrl = String.format(url_templates.user_list,0,total,local_data.token);
+	request(completeUrl,"","get",after_list);
+}
+
+function exportGroupExec(){
+	var total = $('#export_data_total').val();
+	function after_list(data,status){
+		var error = 0;
+		var success = 0;
+		if(status == 'error'){
+			error = error + 1;	
+		}
+		else{
+			var text = "";
+			for(var index = 0 ; index < data.count ; index++){
+				var group = data.groups[index];
+				var tags = "";
+				if(group.tags.length > 0){
+					tags = group.tags[0];
+					for(var tagIndex = 1 ; tagIndex < group.tags.length ; tagIndex ++){
+						tags = tags + '-' + group.tags[tagIndex];
+					}
+				}
+				
+				text = text + group.group_name + ",";
+				text = text + group.description + ",";
+				text = text + tags + ",";
+				text = text + group.type_str + "\n";
+				success = success + 1;
+				dataProgressExec('export',index+1,total);
+			}
+			var blob = new Blob([text],{type: "text/plain;charset=utf-8"});
+			if(blob){
+				var path = $('#data_export_text').val();
+				saveAs(blob,path+".csv");
+			}
+		}
+		
+		$('#export_result_label').css('display','block');
+		$('#export_result_label .load-label-total').text(total);
+		$('#export_result_label .load-label-success').text(success);
+		$('#export_result_label .load-label-error').text(error);
+	}
+	var completeUrl = String.format(url_templates.group_list,0,pageSize,local_data.token);
 	request(completeUrl,"","get",after_list);
 }
 
