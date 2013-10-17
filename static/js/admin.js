@@ -89,6 +89,9 @@ $(function(){
 	$('#import_user').click(importUser);
 	$('#import_group').click(importGroup);
 	$('#import_execution').click(importExecution);
+	$('#import_user_down').click(importUserDown);
+	$('#import_group_down').click(importGroupDown);
+	$('#import_result_close').click(resultClose);
 	
 	//Export
 	$('#data_export').click(dataExport);
@@ -1624,7 +1627,7 @@ function groupUserCheckManage(){
 
 //Import
 function dataImport(){
-	$('#data_slide').animate({marginLeft:'-0px'},500);
+	$('#data_slide').animate({marginLeft:'0px'},500);
 }
 
 function importInterface(){
@@ -1632,30 +1635,73 @@ function importInterface(){
 
 function importUser(){
 	$('#data_file_search').click();
+	$('#import_execution').val(1);
 	$('#data_file_search').change(importOnchange);
 }
 
 function importGroup(){
+	$('#data_file_search').click();
+	$('#import_execution').val(2);
+	$('#data_file_search').change(importOnchange);
 }
 
 function importOnchange(){
-	$('#data_import_text').val(this.value);
 	var file = this.files[0];
-	if(window.File && window.FileReader && window.FileList && window.Blob){
-		var fileReader = new FileReader();
-		fileReader.onloadend = function(e){
-			var fileArray = fileStrToArray(e.target.result);
-			createPreviewTable(fileArray,pageSize);
-			dataProgressInit('import',fileArray.length-1);
-		};
-		fileReader.readAsText(file,'UTF-8');
+	if(file.type != "application/vnd.ms-excel"){
+		alert("请上传CSV格式的文件!!");
 	}
 	else{
-		alert('此浏览器的版本过低！');
+		$('#data_import_text').val(this.value);
+		if(window.File && window.FileReader && window.FileList && window.Blob){
+			var fileReader = new FileReader();
+			fileReader.onloadend = function(e){
+				var fileArray = fileStrToArray(e.target.result);
+				createPreviewTable(fileArray,pageSize);
+				dataProgressInit('import',fileArray.length-1);
+			};
+			fileReader.readAsText(file,'UTF-8');
+		}
+		else{
+			alert('此浏览器的版本过低！');
+		}
+	}
+}
+
+function importUserDown(){
+	var text = "";
+		text = text + export_user_header.user_name + ',';
+		text = text + export_user_header.display_name + ',';
+		text = text + export_user_header.password + ',';
+		text = text + export_user_header.email;
+	
+	var blob = new Blob([text],{type: "text/plain;charset=utf-8"});
+	if(blob){
+		saveAs(blob,"user_templates.csv");
+	}
+}
+
+function importGroupDown(){
+	var text = "";
+	var blob = new Blob([text],{type: "text/plain;charset=utf-8"});
+	if(blob){
+		saveAs(blob,"group_templates.csv");
 	}
 }
 
 function importExecution(){
+	var val = parseInt($('#import_execution').val());
+	if(val == 1){
+		importUserExec();
+	}
+	else if(val == 2){
+		importGroupExec();
+	}
+	else{
+		alert('请先选择导入选项');
+	}
+}
+
+function importUserExec(){
 	var file = document.getElementById('data_file_search').files[0];
 	if(window.File && window.FileReader && window.FileList && window.Blob){
 		var fileReader = new FileReader();
@@ -1667,8 +1713,11 @@ function importExecution(){
 		fileReader.readAsText(file,'UTF-8');
 	}
 	else{
-		alert('此浏览器的版本过低！');
+		alert('此浏览器的版本过低！不支持文件读写！');
 	}
+}
+
+function importGroupExec(){
 }
 
 function fileStrToArray(str){
@@ -1691,6 +1740,8 @@ function createPreviewTable(dataArray,count){
 
 function registerUser(dataArray){
 	var total = dataArray.length - 1;
+	$('#import_result_label').css('display','block');
+	$('#import_result_label .load-label-total').text(total);
 	var success = 0;
 	var error = 0;
 	function after_register(data,status){
@@ -1701,12 +1752,8 @@ function registerUser(dataArray){
 			success = success + 1;
 		}
 		dataProgressExec('import',success+error,total);
-		if((error + success) >= total){
-			$('#import_result_label').css('display','block');
-			$('#import_result_label .load-label-total').text(total);
-			$('#import_result_label .load-label-success').text(success);
-			$('#import_result_label .load-label-error').text(error);
-		}
+		$('#import_result_label .load-label-success').text(success);
+		$('#import_result_label .load-label-error').text(error);
 	}
 	for(var index =1 ; index <= total ; index++){
 		var form = JSON.stringify({
@@ -1731,6 +1778,10 @@ function dataProgressExec(itemName,count,total){
 	$('#'+itemName+'_progress').css('width',rate+'%');
 	$('#'+itemName+'_rate').text(rate+'%');
 	$('#'+itemName+'_statistic>strong').text(count);
+}
+
+function resultClose(){
+	$('#import_result_label').css('display','none');
 }
 
 //Export

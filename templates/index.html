@@ -477,9 +477,18 @@
                 	<div class="eachSlice firstSlice">
                     	<div class="row-fluid">
                         	<div class="pull-left">
-                            	<div class="input-append">
+                            	<div class="input-prepend input-append">
+                                	<div class="btn-group">
+                                    	<button class="btn dropdown-toggle" data-toggle="dropdown" id="" tableindex="-1">
+                                    		模板下载<span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a id="import_user_down">用户模板</a></li>
+                                            <li><a id="import_group_down">群组模板</a></li>
+                                        </ul>
+                                        </div>
                                 	<input type="hidden" name="MAX_FILE_SIZE">
-                                	<input type="text" class="span10" id="data_import_text" placeholder="选择上传文件">
+                                	<input type="text" class="span7" id="data_import_text" placeholder="选择上传文件">
                                     <input type="file" id="data_file_search" style="display:none;" value="">
                                     <div class="btn-group">
                                         <button class="btn dropdown-toggle" data-toggle="dropdown" tabindex="-1">
@@ -493,16 +502,16 @@
                                 </div>
                             </div>
                             <div id="import_result_label" class="load-label">
-                            	<button type="button" class="close" id="">×</button>
-                                <strong>导入完成!!&nbsp;&nbsp;</strong>
+                            	<button type="button" class="close" id="import_result_close">×</button>
+                                <strong>导入统计!!&nbsp;&nbsp;</strong>
                                 总共:&nbsp;<span class="load-label-total"></span>
                                 成功:&nbsp;<span class="load-label-success"></span>
                                 失败:&nbsp;<span class="load-label-error"></span> 
                             </div>
                             <div class="pull-right">
                             	<div class="btn-group">
-                                	<button class="btn btn-small" id="import_execution">执行</button>
-                                    <button class="btn btn-small" id="import_help">帮助</button>
+                                    
+                                    <button class="btn btn-small" id="import_execution" value="0">执行</button>
                                 </div>
                             </div>
                         </div>
