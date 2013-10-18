@@ -46,6 +46,7 @@ var url_templates = {
 	group_disband:		 servers.group + '/{0}?token={1}',
 	//group user
 	group_user_update:   servers.group + '/{0}/users/{1}/update?token={2}',
+	group_add_user:		 servers.group + '/{0}/users?user_id={1}&token={2}',
 	
 	//constants
 	group_type:			 servers.constants + '/group_types?token={0}',

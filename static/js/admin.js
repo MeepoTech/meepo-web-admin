@@ -84,6 +84,9 @@ $(function(){
 	$('#group_user_page_left').click(groupUserPageLeft);
 	$('#group_user_page_last').click(groupUserPageLast);
 	$('#group_user_search_submit').click(groupUserSearchSubmit);
+	$('#group_user_add').click(groupUserAdd);
+	$('#group_adduser_search_submit').click(groupAdduserSearchSubmit);
+	$('#group_adduser_submit').click(groupAdduserSubmit);
 	
 	//Import
 	$('#data_import').click(dataImport);
@@ -1107,6 +1110,7 @@ function userList(groupID){
 	$('#group_slide').animate({marginLeft:'-1158px'},500);
 	$('#group_edit_manage').css('display','none');
 	$('#group_user_edit_manage').css('display','inline-block');
+	$('#group_user_add').css('display','inline-block');
 	$('#group_delete_manage').val(1);
 	$('#group_cancel_manage').val(1);
 	$('#current_group_id').val(groupID);
@@ -1119,6 +1123,7 @@ function slideBack(){
 	$('#group_user_edit_manage').css('display','none');
 	$('#group_delete_manage').val(0);
 	$('#group_cancel_manage').val(0);
+	$('#group_user_add').css('display','none');
 	//Clean checkbox
 	deactivateEdit('group_user');
 	//$('#group_table').css('display','table');
@@ -1407,6 +1412,93 @@ function groupSave(){
 function groupUserSearchSubmit(){
 }
 
+function groupUserAdd(){
+	$('#group_adduser_modal').modal('show');
+}
+
+function groupAdduserSearchSubmit(){
+	var userName = $('#group_adduser_search_name').val();
+	clearTable('group_adduser_table');
+	function after_search(data,status){
+		if(status == 'error'){
+		}
+		else{
+			var dataVal = [];
+			for(var index = 0,pos = 0; index < data.count; index++){
+				var user = data.users[index];
+				if(user.user_id != "00000000-0000-0000-0000-000000000000"){
+					dataVal[pos] = [];
+					dataVal[pos][0] = user.user_name;
+					dataVal[pos][1] = user.display_name;
+					dataVal[pos][2] = user.email;
+					dataVal[pos][3] = user.registered_str;
+					dataVal[pos][4] = '<a onClick="addUserToAlternativeBox(\''+user.user_name+'\',\''+user.user_id+'\')">添加</a>';
+				}
+			}
+			createTable('group_adduser_table',dataVal);
+		}
+	}
+	var completeUrl = String.format(url_templates.user_search,userName,0,-1,local_data.token);
+	request(completeUrl,"","get",after_search);
+}
+
+function addUserToAlternativeBox(userName,userID){
+	var flag = false;
+	$userList = $('#group_adduser_result_box button');
+	if($userList.length != 0){
+		$userList.each(function(index, element) {
+            if(userID == element.value){
+				flag = true;
+			}
+        });
+	}
+	if(!flag){
+		var appendHtml = '<span class="badge badge-info badge-pos">'+userName+'<button type="button" class="myClose" value="'+userID+'" onClick="deleteUserFromAlternativeBox(this)">&times;</button></span>';
+		$('#group_adduser_result_box').append(appendHtml);
+	}
+	else{
+		alert('该用户已经添加过!!');
+	}
+}
+
+function deleteUserFromAlternativeBox(element){
+	$(element).parent().remove();
+}
+
+function groupAdduserSubmit(){
+	var groupID = $('#current_group_id').val();
+	$userList = $('#group_adduser_result_box button');
+	var length = $userList.length;
+	var count = 0;
+	if($userList.length == 0){
+	}
+	else{
+		function after_add(data,status){
+			if(status == 'error'){
+			}
+			else{
+			}
+			count = count + 1;
+			if(count >= length){
+				$('#group_adduser_result_box span').remove();
+				alert('用户添加完毕！！');
+			}
+		}
+		$userList.each(function(index, element) {
+            var userID = element.value;
+			var completeUrl = String.format(url_templates.group_add_user,groupID,userID,local_data.token);
+			request(completeUrl,"","post",after_add);
+        });
+	}
+}
+
+function clearAlternativeBox(){
+	$('#group_adduser_result_box span').remove();
+	clearTable('group_adduser_table');
+	$('#group_adduser_search_name').val("");
+	$('#group_adduser_modal').modal('hide');
+}
+
 function groupUserEdit(){
 	var $checkedList = $('#group_user_table >tbody input:checkbox:checked');
 	if($checkedList.length == 0){
@@ -1632,9 +1724,6 @@ function groupUserCheckManage(){
 //Import
 function dataImport(){
 	$('#data_slide').animate({marginLeft:'0px'},500);
-}
-
-function importInterface(){
 }
 
 function importUser(){
