@@ -5,6 +5,7 @@
     <link rel="icon" href="../static/img/favicon.ico" type="image/x-icon" />
 	<script src="../static/js/jquery.min.js" type="text/javascript"></script>
     <script src="../static/js/bootstrap.min.js" type="text/javascript"></script>
+    <script src="../static/js/bootstrap-tooltip.js" type="text/javascript"></script>
     <script src="../static/js/bootstrap-popover.js" type="text/javascript"></script>
     <script src="../static/js/bootstrap-modal.js" type="text/javascript"></script>
     <script src="../static/js/jssha256.js" type="text/javascript"></script>
@@ -31,7 +32,7 @@
             <ul class="nav pull-right">
             	<li class="divider-vertical"></li>
                 <li class="bar-font">
-                	<a href="#" data-toggle="popover" data-placement="bottom" data-content="Vivamus sagittis lacus vel augue laoreet rutrum faucibus." title data-original-title="Popover on bottom">您好，supervisor</a>
+                	<a href="#">您好，supervisor</a>
                 </li>
                 <li>
                 	<a id="admin_logout" class="bar-font">注销</a>
@@ -715,5 +716,13 @@
 		</div>
 	</div>
     <!--Dialog end-->
+    
+    <!--Popover start-->
+    <div class="popover fade bottom in" id="reset_supervisor_pwd_modal" style="display:none;">
+    	<div class="arrow"></div>
+        <h3 class="popover-title">aaaaaaaaaaaaa</h3>
+        <div class="popover-content">bbbbbbbbbbb</div>
+    </div>
+    <!--Popover end-->
 </body>
 </html>

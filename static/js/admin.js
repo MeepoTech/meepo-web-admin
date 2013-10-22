@@ -19,6 +19,8 @@ var GROUP_TYPE = [];
 var USER_POSITION = [];
 
 $(function(){
+	//Supervisor
+	$('#reset_supervisor_pwd').click(resetSupervisorPwd);
 	//Quota group
 	$('#quota_group_search').click(quotaGroupSearch);
 	$('#quota_group_slide_back').click(quotaGroupSlideBack);
@@ -1416,6 +1418,10 @@ function groupUserAdd(){
 	$('#group_adduser_modal').modal('show');
 }
 
+function resetSupervisorPwd(){
+	$('#reset_supervisor_pwd_modal').popover('show');
+}
+
 function groupAdduserSearchSubmit(){
 	var userName = $('#group_adduser_search_name').val();
 	clearTable('group_adduser_table');
@@ -1481,7 +1487,6 @@ function groupAdduserSubmit(){
 			count = count + 1;
 			if(count >= length){
 				$('#group_adduser_result_box span').remove();
-				alert('用户添加完毕！！');
 			}
 		}
 		$userList.each(function(index, element) {
@@ -1497,6 +1502,7 @@ function clearAlternativeBox(){
 	clearTable('group_adduser_table');
 	$('#group_adduser_search_name').val("");
 	$('#group_adduser_modal').modal('hide');
+	listGroupUser();
 }
 
 function groupUserEdit(){
