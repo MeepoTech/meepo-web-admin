@@ -20,7 +20,7 @@ var USER_POSITION = [];
 
 $(function(){
 	//Supervisor
-	$('#reset_supervisor_pwd').click(resetSupervisorPwd);
+	$('.popbox').popbox();
 	//Quota group
 	$('#quota_group_search').click(quotaGroupSearch);
 	$('#quota_group_slide_back').click(quotaGroupSlideBack);
@@ -1416,10 +1416,6 @@ function groupUserSearchSubmit(){
 
 function groupUserAdd(){
 	$('#group_adduser_modal').modal('show');
-}
-
-function resetSupervisorPwd(){
-	$('#reset_supervisor_pwd_modal').popover('show');
 }
 
 function groupAdduserSearchSubmit(){
