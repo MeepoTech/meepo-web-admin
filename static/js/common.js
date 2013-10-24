@@ -73,3 +73,16 @@ function request(url,data,method,callback){
 		dataType:"json"
 	});
 }
+
+function requestSync(url,data,method,callback){
+	$.ajax({
+		url:url + LANG,
+		data:data,
+		type:method,
+		async:false,
+		contentType:"application/json; charset=utf-8",
+		success: callback,
+		error: callback,
+		dataType:"json"
+	});
+}

@@ -21,6 +21,7 @@ var USER_POSITION = [];
 $(function(){
 	//Supervisor
 	$('.popbox').popbox();
+	$('#reset_passowrd_submit').click(resetPasswordSubmit);
 	//Quota group
 	$('#quota_group_search').click(quotaGroupSearch);
 	$('#quota_group_slide_back').click(quotaGroupSlideBack);
@@ -197,9 +198,9 @@ function groupManage(){
 
 function dataManage(){
 	switchItem('data');
-	clearTableHeader('data_import_table');
-	clearTable('data_import_table');
-	dataProgressInit('import',0);
+	//clearTableHeader('data_import_table');
+	//clearTable('data_import_table');
+	//dataProgressInit('import',0);
 }
 
 function infoManage(){
@@ -208,6 +209,10 @@ function infoManage(){
 
 function clientManage(){
 	switchItem('client');
+}
+
+function resetPasswordSubmit(){
+	
 }
 
 function listUser(){
@@ -1731,16 +1736,16 @@ function dataImport(){
 function importUser(){
 	$('#data_file_search').click();
 	$('#import_execution').val(1);
-	$('#data_file_search').change(importOnchange);
+	$('#data_file_search').change(importUserOnchange);
 }
 
 function importGroup(){
 	$('#data_file_search').click();
 	$('#import_execution').val(2);
-	$('#data_file_search').change(importOnchange);
+	$('#data_file_search').change(importGroupOnchange);
 }
 
-function importOnchange(){
+function importUserOnchange(){
 	var file = this.files[0];
 	if(file.type != "application/vnd.ms-excel"){
 		alert("请上传CSV格式的文件!!");
@@ -1754,6 +1759,29 @@ function importOnchange(){
 				createPreviewTable(fileArray,pageSize);
 				dataProgressInit('import',fileArray.length-1);
 			};
+			fileReader.readAsText(file,'UTF-8');
+		}
+		else{
+			alert('此浏览器的版本过低！');
+		}
+	}
+}
+
+function importGroupOnchange(){
+	var file = this.files[0];
+	if(file.type != "application/vnd.ms-excel"){
+		alert("请上传CSV格式的文件!!");
+	}
+	else{
+		$('#data_import_text').val(this.value);
+		if(window.File && window.FileReader && window.FileList && window.Blob){
+			var fileReader = new FileReader();
+			fileReader.onloadend = function(e){
+				var fileArray = fileStrToArray(e.target.result);
+				var previewArray = groupDataPretreatment(fileArray);
+				createPreviewTable(previewArray,pageSize);
+				dataProgressInit('import',previewArray.length-1);
+			}; 
 			fileReader.readAsText(file,'UTF-8');
 		}
 		else{
@@ -1777,6 +1805,13 @@ function importUserDown(){
 
 function importGroupDown(){
 	var text = "";
+		text = text + export_group_header.group_name + ',';
+		text = text + export_group_header.description + ',';
+		text = text + export_group_header.group_tags + ',';
+		text = text + export_group_header.group_type +',';
+		text = text + export_group_header.group_visible + ',';
+		text = text + export_group_header.group_user_count;
+		
 	var blob = new Blob([text],{type: "text/plain;charset=utf-8"});
 	if(blob){
 		saveAs(blob,"group_templates.csv");
@@ -1813,6 +1848,72 @@ function importUserExec(){
 }
 
 function importGroupExec(){
+	var file = document.getElementById('data_file_search').files[0];
+	if(window.File && window.FileReader && window.FileList && window.Blob){
+		var fileReader = new FileReader();
+		fileReader = new FileReader();
+		fileReader.onloadend=function(e){
+			var fileArray = fileStrToArray(e.target.result);
+			var arrangedArray = groupDataArrange(fileArray);
+			if(arrangedArray.length > 0){
+				$('#import_result_label').css('display','block');
+				$('#import_result_label .load-label-total').text(arrangedArray.length);
+				$('#import_result_label .load-label-error').text(0);
+				$('#import_result_label .load-label-success').text(0);
+				for(var index = 0 ; index < arrangedArray.length ; index++){
+					createGroupAndAddUser(arrangedArray[index],arrangedArray.length);
+				}
+			}
+		};
+		fileReader.readAsText(file,'UTF-8');
+	}
+	else{
+		alert('此浏览器的版本过低！不支持文件读写！');
+	}
+}
+
+function createGroupAndAddUser(groupInfo,total){
+	var group = groupInfo.group;
+	var user = groupInfo.user;
+	var length = user.length;
+	var count = 0;
+	function after_add(data,status){
+		if(status == 'error'){
+		}
+		else{
+		}
+		if(count == length - 1){
+			var currentCount = parseInt($('#import_statistic > strong').text());
+			dataProgressExec('import',currentCount+1,total);
+			var success = parseInt($('#import_result_label .load-label-success').text());
+			$('#import_result_label .load-label-success').text(success+1)
+		}
+	}
+	
+	function after_create(data,status){
+		if(status == 'error'){
+			var currentCount = parseInt($('#import_statistic > strong').text());
+			dataProgressExec('import',currentCount+1,total);
+			var error = parseInt($('#import_result_label .load-label-error').text());
+			$('#import_result_label .load-label-error').text(error+1);
+		}
+		else{
+			for(var index = 1 ; index < user.length; index++){
+				var completeUrl = String.format(url_templates.group_add_user,data.group_id,user[index],local_data.token);
+				request(completeUrl,"","post",after_add);
+			}
+		}
+	}
+	
+	var form = JSON.stringify({
+		'group_name' : group[0],
+		'description' : group[1],
+		'tags' : group[2],
+		'type' : group[3],
+		'visible_to_search' : groupVisibleToSearch(group[4])
+	});
+	var completeUrl = String.format(url_templates.group_establish,user[0],local_data.token);
+	request(completeUrl,form,"post",after_create);
 }
 
 function fileStrToArray(str){
@@ -1821,6 +1922,84 @@ function fileStrToArray(str){
 		infoArray[index] = infoArray[index].split(',');
 	}
 	return infoArray;
+}
+
+function groupDataPretreatment(fileArray){
+	if(fileArray.length > 1){
+		var index,pos;
+		var tableData = [];
+		tableData[0] = fileArray[0];
+		for(pos = 1,index = 1;index < fileArray.length ;pos++,index++){
+			tableData[pos] = fileArray[index];
+			tableData[pos][2] = transforGroupTags(fileArray[index][2]);
+			var length = fileArray[index].length;
+			var countStr = fileArray[index][length - 1];
+			if(countStr != '*'){
+				var count = parseInt(countStr);
+				index = index + count;
+			}
+		}
+		return tableData;
+	}
+}
+
+function groupDataArrange(fileArray){
+	var resultArray = [];
+	var index,pos;
+	for(index = 1,pos = 0;index < fileArray.length ;pos++,index++){
+		resultArray[pos] = new Object();
+		resultArray[pos].group = fileArray[index];
+		resultArray[pos].group[2] = fileArray[index][2].split('-');
+		var length = fileArray[index].length;
+		var countStr = fileArray[index][length - 1];
+		if(countStr != '*'){
+			var count = parseInt(countStr);
+			resultArray[pos].user = [];
+			for(var userIndex = 0 ; userIndex < count ; userIndex++){
+				index++;
+				resultArray[pos].user[userIndex] = getUserID(fileArray[index]);
+			}
+		}
+	}
+	return resultArray;
+}
+
+function getUserID(userName){
+	var userID;
+	function after_search(data,status){
+		if(status == 'error'){
+		}
+		else{
+			userID = data.users[0].user_id;
+		}
+	}
+	var completeUrl = String.format(url_templates.user_search,userName,0,1,local_data.token);
+	requestSync(completeUrl,"","get",after_search);
+	return userID;
+}
+
+function groupVisibleToSearch(str){
+	var flag = -1;
+	if(str.length == 1){
+		var type = str.toLowerCase();
+		if(type == 'y')
+			flag = "true";
+		else if(type == 'n')
+			flag = "false";
+	}
+	return flag;
+}
+
+function transforGroupTags(str){
+	var tags = "";
+	var tagArray = str.split('-');
+	if(tagArray.length > 0){
+		for(var index = 0 ; index < tagArray.length-1 ; index++){
+			tags += tagArray[index] + ',';
+		}
+		tags += tagArray[tagArray.length-1];
+	}
+	return tags;
 }
 
 function createPreviewTable(dataArray,count){

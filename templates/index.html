@@ -35,6 +35,7 @@
                 <li class="bar-font">
                 	<div class="popbox">
                     	<a href="#" id="resetOpen" class="bar-font">您好，supervisor</a>
+                        <input type="hidden" value="" name="" id="supervisor_info">
                         <div class="pop-collapse">
                             <div class="box"  style="display:none;top:10px;left:0px;">
                               <div class="arrow" style="left:165px;"></div>
@@ -42,11 +43,11 @@
                               <div class="box-content">
                               	<div class="control-group">
                                    <input type="text" id="last_password" placeholder="原始密码">
-                                   <input type="text" id="last_password" placeholder="新密码">
-                                   <input type="text" id="last_password" placeholder="密码确认">
+                                   <input type="text" id="new_password" placeholder="新密码">
+                                   <input type="text" id="new_password_confirm" placeholder="密码确认">
                                 </div>
                                 <div class="box-button-group">
-                                	<button type="button" class="btn">确定</button>
+                                	<button type="button" class="btn" id="reset_passowrd_submit">确定</button>
                                 	<button type="button" class="btn">取消</button>
                                 </div>
                               </div>
@@ -74,7 +75,7 @@
                     <li class="divider-vertical"></li>
                     <li id="groupManage"><a>群组管理</a></li>
                     <li class="divider-vertical"></li>
-                    <li id="dataManage"><a>数据管理</a></li>
+                    <li id="dataManage"><a>导入导出</a></li>
                     <li class="divider-vertical"></li>
                     <li id="infoManage"><a>信息统计</a></li>
                     <li class="divider-vertical"></li>
@@ -485,7 +486,7 @@
         	<div class="printDiv form-horizontal container-fluid">
             	<div class="row-fluid manage_bar">
                 	<div class="pull-left">
-                    	<img src="../static/img/data_manage.jpg" class="img-rounded">数据管理
+                    	<img src="../static/img/data_manage.jpg" class="img-rounded">导入导出
                     </div>
                     <div class="pull-right">
                     	<div class="btn-group">

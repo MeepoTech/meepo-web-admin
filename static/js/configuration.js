@@ -44,6 +44,7 @@ var url_templates = {
 	group_updata_quota:  servers.group + '/{0}/quota?quota={1}&token={2}',
 	group_remove_user:   servers.group + '/{0}/users/{1}?token={2}',
 	group_disband:		 servers.group + '/{0}?token={1}',
+	group_establish:	 servers.group + '?owner_id={0}&token={1}',
 	//group user
 	group_user_update:   servers.group + '/{0}/users/{1}/update?token={2}',
 	group_add_user:		 servers.group + '/{0}/users?user_id={1}&token={2}',
@@ -89,9 +90,11 @@ var export_user_header = {
 
 var export_group_header = {
 	group_name : "群组名",
-	description : "群组描述",
-	group_tags : "群组标签",
-	group_type : "群组类型"
+	description : "描述",
+	group_tags : "标签",
+	group_type : "类型",
+	group_visible: "是否可搜索",
+	group_user_count: "导入成员数"
 };
 
 function getGroupSearch(searchVal){
