@@ -1882,6 +1882,7 @@ function createGroupAndAddUser(groupInfo,total){
 		}
 		else{
 		}
+		count++;
 		if(count == length - 1){
 			var currentCount = parseInt($('#import_statistic > strong').text());
 			dataProgressExec('import',currentCount+1,total);
@@ -1899,7 +1900,7 @@ function createGroupAndAddUser(groupInfo,total){
 		}
 		else{
 			for(var index = 1 ; index < user.length; index++){
-				var completeUrl = String.format(url_templates.group_add_user,data.group_id,user[index],local_data.token);
+				var completeUrl = String.format(url_templates.group_add_user,data.group_id,getUserID(user[index]),local_data.token);
 				request(completeUrl,"","post",after_add);
 			}
 		}
@@ -1912,7 +1913,7 @@ function createGroupAndAddUser(groupInfo,total){
 		'type' : group[3],
 		'visible_to_search' : groupVisibleToSearch(group[4])
 	});
-	var completeUrl = String.format(url_templates.group_establish,user[0],local_data.token);
+	var completeUrl = String.format(url_templates.group_establish,getUserID(user[0]),local_data.token);
 	request(completeUrl,form,"post",after_create);
 }
 
@@ -1957,7 +1958,7 @@ function groupDataArrange(fileArray){
 			resultArray[pos].user = [];
 			for(var userIndex = 0 ; userIndex < count ; userIndex++){
 				index++;
-				resultArray[pos].user[userIndex] = getUserID(fileArray[index]);
+				resultArray[pos].user[userIndex] = fileArray[index];
 			}
 		}
 	}
