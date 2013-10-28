@@ -2045,7 +2045,7 @@ function registerUser(dataArray){
 function dataProgressInit(itemName,total){
 	$('#'+itemName+'_progress').css('width','0%');
 	$('#'+itemName+'_rate').text('0%');
-	$('#'+itemName+'_statistic').html('已经上传<strong>0</strong>/'+total);
+	$('#'+itemName+'_statistic').html('已经导入<strong>0</strong>/'+total);
 }
 
 function dataProgressExec(itemName,count,total){
