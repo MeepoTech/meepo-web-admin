@@ -119,7 +119,8 @@ function initEnvironment(){
 }
 
 function flush_local_data(){
-	
+	sessionStorage.clear();
+	localStorage.clear();
 }
 
 function check_logging(){
@@ -212,7 +213,38 @@ function clientManage(){
 }
 
 function resetPasswordSubmit(){
+	var lastPassword = $('#last_password').val();
+	var newPassword = $('#new_password').val();
+	var newPasswordConfirm = $('#new_password_confirm').val();
 	
+	function after_reset(data,status){
+		if(status == "error"){
+		}
+		else{
+			alert("密码修改成功，请重新登录！");
+			flush_local_data();
+			window.location.href="/login";
+		}
+	}
+	
+	if( typeof lastPassword == "undefined" || lastPassword == null || lastPassword == ""
+	  ||typeof newPassword == "undefined" || newPassword == null || newPassword == ""
+	  ||typeof newPasswordConfirm == "undefined" || newPasswordConfirm == null || newPasswordConfirm == ""){
+		  alert("所有项不能为空！");
+		  return;
+	}
+	else{
+		if(newPassword.length < 5 && newPassword.length > 20){
+			alert("密码需要在5~20个字符间！");
+			return;
+		}
+		if(newPassword != newPasswordConfirm){
+			alert("两次密码必须相同！");
+			return;
+		}
+		var completeUrl = String.format(url_templates.change_password,local_data.adminname,lastPassword,newPassword);
+		request(completeUrl,"","post",after_reset);
+	}
 }
 
 function listUser(){
