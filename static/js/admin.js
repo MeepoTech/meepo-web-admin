@@ -223,7 +223,7 @@ function resetPasswordSubmit(){
 		else{
 			alert("密码修改成功，请重新登录！");
 			flush_local_data();
-			window.location.href="/index";
+			window.location.href="/";
 		}
 	}
 	
@@ -234,7 +234,7 @@ function resetPasswordSubmit(){
 		  return;
 	}
 	else{
-		if(newPassword.length < 5 && newPassword.length > 20){
+		if(newPassword.length < 4 && newPassword.length > 20){
 			alert("密码需要在5~20个字符间！");
 			return;
 		}
