@@ -223,7 +223,7 @@ function resetPasswordSubmit(){
 		else{
 			alert("密码修改成功，请重新登录！");
 			flush_local_data();
-			window.location.href="/login";
+			window.location.href="/index";
 		}
 	}
 	
