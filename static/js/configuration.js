@@ -52,7 +52,7 @@ var url_templates = {
 	
 	//constants
 	group_type:			 servers.constants + '/group_types?token={0}',
-	relation_positions:  servers.constants + '/relation_positions?token={0}',
+	relation_positions:  servers.constants + '/relation_positions?token={0}'
 };
 
 var user_role = {

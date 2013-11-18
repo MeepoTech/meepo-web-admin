@@ -100,10 +100,12 @@ a{
 
 .divSlide{
 	width:2306px;
+	*width:201%;
 }
 
 .eachSlice{
 	width : 1148px;
+	*width:49.6%;
 	float : left;
 }
 
