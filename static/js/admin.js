@@ -841,7 +841,8 @@ function resetPassword(userID){
 				alert('密码重置成功');
 			}
 		}
-		var new_password = SHA256_hash('123456');
+		//var new_password = SHA256_hash('123456');
+		var new_password = '123456';
 		var completeUrl = String.format(url_templates.user_update_password,userID,new_password,local_data.token);
 		request(completeUrl,"","post",after_update);
 	}
