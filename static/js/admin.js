@@ -126,7 +126,7 @@ function flush_local_data(){
 function check_logging(){
 	if(!localStorage.logging && !sessionStorage.logging){
 		flush_local_data();
-		self.location.href="login.html";
+		self.location.href="/";
 	}
 	else{
 		local_data = JSON.parse(localStorage.data);
