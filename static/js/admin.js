@@ -1688,7 +1688,7 @@ function groupAlertClose(){
 function groupDeleteManage(){
 	var val = $('#group_delete_manage').val();
 	if(val == 0){
-		//groupDelete();
+		groupDelete();
 	}
 	else{
 		groupUserDelete();
