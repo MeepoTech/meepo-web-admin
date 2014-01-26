@@ -176,6 +176,7 @@ function logout(){
 			alert('无法注销');
 		}
 		else{
+			flush_local_data();
 			window.location.href='/';
 		}
 	}
