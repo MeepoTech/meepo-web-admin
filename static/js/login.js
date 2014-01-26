@@ -10,7 +10,14 @@
 =============================================================================*/
 $(function(){
 	$('#login_submit').click(login);
+	checkRemember();
 });
+
+function checkRemember(){
+	if(localStorage.logging){
+		self.location.href="/home";
+	}
+}
 
 function login(){
 	var username = $('#username').val();
@@ -25,7 +32,8 @@ function login(){
 			local_data.adminname = username;
 			local_data.token = data.token;
 			local_data.device = data.device_id;
-			if($('#remember_me').attr("check")){
+			var rememberMe = document.getElementById('remember_me').checked;
+			if(rememberMe){
 				localStorage.setItem("logging",true);
 			}
 			else{
