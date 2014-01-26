@@ -10,7 +10,6 @@
 =============================================================================*/
 $(function(){
 	$('#login_submit').click(login);
-	checkRemember();
 });
 
 function checkRemember(){
