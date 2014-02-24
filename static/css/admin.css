@@ -182,6 +182,49 @@ a{
 }
 /*Import and export style end*/
 
+/*Data manage style start*/
+.alert-text{
+	width:205px;
+	float:left;
+}
+
+.alert-progress{
+	width:260px;
+	position:relative;
+	margin-right:72px;
+}
+
+.alert-progress .percent{
+	color:#000;
+	font-weight: lighter;
+	font-family: Arial;
+	position: absolute;
+	text-align: center;
+	top: 0;
+	left: 100px;
+	width: 120px;
+}
+
+.chart{
+	width:562px;
+	height:300px;
+	margin-top:20px;
+	float:left;
+	border:1px solid #ccc;
+}
+
+.chart-bottom{
+	width:1146px;
+	height:300px;
+	margin-top:20px;
+	border:1px solid #ccc;
+}
+
+.chart-right{
+	margin-left:20px;
+}
+/*Data manage style end*/
+
 /*Dialog style start*/
 .myWell{
   min-height: 20px !important;

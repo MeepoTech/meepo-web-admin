@@ -207,6 +207,7 @@ function dataManage(){
 
 function infoManage(){
 	switchItem('info');
+	listInformation();
 }
 
 function clientManage(){
@@ -2262,6 +2263,87 @@ function exportGroupExec(){
 	var completeUrl = String.format(url_templates.group_list,0,pageSize,local_data.token);
 	request(completeUrl,"","get",after_list);
 }
+
+//Information
+function listInformation(){
+	$('#file_type_chart').highcharts(genPieOptions("文件类型统计Top10"));
+	$('#group_user_chart').highcharts(genOptions("column","人数最多的群组Top10","人数"));
+	$('#group_file_chart').highcharts(genOptions("column","文件数量最多的群组Top10","文件数"));
+	$('#group_usage_chart').highcharts(genOptions("column","空间使用量最多的群组Top10","使用量"));
+	$('#user_history_chart').highcharts(genOptions("line","历史用户数量","人数"));
+}
+
+function genOptions(type,title,itemName){
+	var options = {
+		chart : {
+			type : type
+		},
+		title : {
+			text : title
+		},
+		xAxis : {
+			categories : [1,2,3,4,5,6,7,8,9,10]
+		},
+		yAxis : {
+			title : {
+				text : title
+			}
+		},
+		series :[{
+			name : itemName,
+			data : [10,9,8,7,6,5,4,3,2,1]
+		}]
+	};
+	
+	return options;
+}
+
+function genPieOptions(title){
+	var options = {
+        chart: {
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            plotShadow: false
+        },
+        title: {
+            text: title
+        },
+        tooltip: {
+    	    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+        },
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true,
+                    color: '#000000',
+                    connectorColor: '#000000',
+                    format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                }
+            }
+        },
+        series: [{
+            type: 'pie',
+            name: 'Browser share',
+            data: [
+                ['Firefox',   45.0],
+                ['IE',       26.8],
+                {
+                    name: 'Chrome',
+                    y: 12.8,
+                    sliced: true,
+                    selected: true
+                },
+                ['Safari',    8.5],
+                ['Opera',     6.2],
+                ['Others',   0.7]
+            ]
+        }]
+    };
+	return options;
+}
+
 
 //key down
 function keyDown(name){
