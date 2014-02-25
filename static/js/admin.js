@@ -14,6 +14,7 @@ var itemArray = Array('user','quota','group','data','info','client');
 var pageSize = 20;
 var strMaxLength = 15;
 var pageNumberShowed = 5;
+var topLimit = 10;
 
 var GROUP_TYPE = [];
 var USER_POSITION = [];
@@ -2266,39 +2267,141 @@ function exportGroupExec(){
 
 //Information
 function listInformation(){
-	$('#file_type_chart').highcharts(genPieOptions("文件类型统计Top10"));
-	$('#group_user_chart').highcharts(genOptions("column","人数最多的群组Top10","人数"));
-	$('#group_file_chart').highcharts(genOptions("column","文件数量最多的群组Top10","文件数"));
-	$('#group_usage_chart').highcharts(genOptions("column","空间使用量最多的群组Top10","使用量"));
-	$('#user_history_chart').highcharts(genOptions("line","历史用户数量","人数"));
+	getRealTimeData();
+	getTopData();
+	//$('#group_user_chart').highcharts(genBarOptions("人数最多的群组Top10","人数"));
+	//$('#group_file_chart').highcharts(genBarOptions("文件数量最多的群组Top10","文件数"));
+	//$('#group_usage_chart').highcharts(genBarOptions("空间使用量最多的群组Top10","使用量"));
+	//$('#user_history_chart').highcharts(genLineOptions("line","历史用户数量","人数"));
 }
 
-function genOptions(type,title,itemName){
+function getTopData(){
+	function after_get(data,status){
+		if(status == "error"){
+			return;
+		}
+		var extensions = [];
+		for(var index = 0 ; index < data.top_extensions.length ; index++){
+			extensions[index] = {
+				name : data.top_extensions[index].extension,
+				value: parseFloat(Number((parseInt(data.top_extensions[index].count) / parseInt(data.top_extensions[index].total) * 100)).toFixed(1))
+			};
+		}
+		$('#file_type_chart').highcharts(genBarOptions("文件类型统计Top10","百分比",extensions));
+		
+		var userGroups = [];
+		for(var index = 0 ; index < data.top_user_groups.length ; index++){
+			userGroups[index] = {
+				name : data.top_user_groups[index].name,
+				value: data.top_user_groups[index].group_stat_info.user_count
+			};
+		}
+		$('#group_user_chart').highcharts(genBarOptions("人数最多的群组Top10","人数",userGroups));
+	}
+	
+	var completeUrl = String.format(url_templates.top,topLimit,local_data.token);
+	request(completeUrl,"","get",after_get);
+}
+
+function getRealTimeData(){
+	var completeUrl = String.format(url_templates.summary,+new Date(),local_data.token);
+	request(completeUrl,"","get",function(data,status){
+		if(status == "success"){
+			$('#info_manage').find('.userNum').text(data.user_count);
+			$('#info_manage').find('.groupNum').text(data.group_count);
+			$('#info_manage').find('.fileNum').text(data.file_count);
+		}
+	});
+}
+
+function getTrendData(){
+	var completeUrl = String.format(url_templates.trend,local_data.token);
+	request(completeUrl,"","get",function(data,status){
+		if(status == "error"){
+			return;
+		}
+		
+	});
+}
+
+function genBarOptions(title,itemName,data){
 	var options = {
 		chart : {
-			type : type
+			type : "column"
 		},
 		title : {
 			text : title
 		},
 		xAxis : {
-			categories : [1,2,3,4,5,6,7,8,9,10]
+			categories : [],
+			labels : {
+				rotation : -45,
+				align : 'right',
+				style : {
+					fontSize : '13px',
+					fontFamily : 'Verdana,sans-serif'
+				}
+			}
 		},
 		yAxis : {
 			title : {
 				text : title
-			}
+			},
+			allowDecimals : true
 		},
 		series :[{
 			name : itemName,
-			data : [10,9,8,7,6,5,4,3,2,1]
+			data : []
 		}]
 	};
-	
+	for(var index = 0 ; index < data.length ; index++){
+		options.xAxis.categories.push(data[index].name);
+		options.series[0].data.push(data[index].value);
+	}
 	return options;
 }
 
-function genPieOptions(title){
+function genLineOptions(title,data){
+	var options = {
+		chart : {
+			type : 'spline',
+			animation : Highcharts.svg
+		},
+		title : {
+			title : title
+		},
+		xAxis : {
+			type : 'datetime',
+			tickPixelInterval : 150
+		},
+		yAxis : {
+			title : {
+				text : 'value',
+			},
+			plotLines :[{
+				value : 0,
+				width : 1,
+				color : '#808080'
+			}]
+		},
+		tooltip: {
+        	formatter: function() {
+            	return '<b>'+ this.series.name +'</b><br/>'+
+                	Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) +'<br/>'+
+                    Highcharts.numberFormat(this.y, 2);
+            }
+        },
+        legend: {
+        	enabled: false
+        },
+        exporting: {
+        	enabled: false
+        },
+		series:[]
+	};
+}
+
+function genPieOptions(title,data){
 	var options = {
         chart: {
             plotBackgroundColor: null,
@@ -2326,21 +2429,30 @@ function genPieOptions(title){
         series: [{
             type: 'pie',
             name: 'Browser share',
-            data: [
-                ['Firefox',   45.0],
-                ['IE',       26.8],
-                {
-                    name: 'Chrome',
-                    y: 12.8,
-                    sliced: true,
-                    selected: true
-                },
-                ['Safari',    8.5],
-                ['Opera',     6.2],
-                ['Others',   0.7]
-            ]
+            data: []
         }]
     };
+	
+	var percentSum = 0;
+	for(var index = 0 ; index < data.length ; index++){
+		var name = data[index].extension;
+		var percent = Number((parseInt(data[index].count) / parseInt(data[index].total) * 100)).toFixed(1);
+		percentSum += percent;
+		if(index == 0){
+			options.series[0].data.push({
+				name: name,
+				y:	percent,
+				sliced:true,
+				selected:true
+			});
+			total = parseInt(data[index].total);
+		}
+		else{
+			options.series[0].data.push([name,percent]);
+		}
+	}
+	var lastPercent = 100-percentSum;
+	options.series[0].data.push(["其他",lastPercent]);
 	return options;
 }
 

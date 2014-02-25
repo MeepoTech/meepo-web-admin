@@ -11,7 +11,8 @@
 var url_prefix = {
 	domain  : 'http://admin.meepotech.com',
 	control : 'http://admin.meepotech.com/0',
-	data    : 'http://admin.meepotech.com/c0' 
+	data    : 'http://admin.meepotech.com/c0', 
+	new_control:'https://api.meepotech.com/admin_1'
 };
 
 var servers = {
@@ -22,7 +23,8 @@ var servers = {
 	trash   : url_prefix.control + '/admin_groups',
 	device  : url_prefix.control + '/devices',
 	data    : url_prefix.control + '/admin_groups',
-	constants:url_prefix.control + '/constants'
+	constants:url_prefix.control + '/constants',
+	statistics:url_prefix.new_control + '/statistics'
 };
 
 var url_templates = {
@@ -52,7 +54,13 @@ var url_templates = {
 	
 	//constants
 	group_type:			 servers.constants + '/group_types?token={0}',
-	relation_positions:  servers.constants + '/relation_positions?token={0}'
+	relation_positions:  servers.constants + '/relation_positions?token={0}',
+	
+	//statistics
+	real_time:			 servers.statistics + '/real_time?token={0}',
+	summary:			 servers.statistics + '/summary?time={0}&token={1}',
+	top:				 servers.statistics + '/top?limit={0}&token={1}',
+	trend:				 servers.statistics + '/trend?token={0}'
 };
 
 var user_role = {
