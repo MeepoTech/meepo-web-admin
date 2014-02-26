@@ -2287,7 +2287,7 @@ function getTopData(){
 				value: parseFloat(Number((parseInt(data.top_extensions[index].count) / parseInt(data.top_extensions[index].total) * 100)).toFixed(1))
 			};
 		}
-		$('#file_type_chart').highcharts(genBarOptions("文件类型统计Top10","百分比",extensions));
+		$('#file_type_chart').highcharts(genBarOptions("文件类型统计Top10","百分比(%)","百分比",extensions));
 		
 		var userGroups = [];
 		for(var index = 0 ; index < data.top_user_groups.length ; index++){
@@ -2296,7 +2296,27 @@ function getTopData(){
 				value: data.top_user_groups[index].group_stat_info.user_count
 			};
 		}
-		$('#group_user_chart').highcharts(genBarOptions("人数最多的群组Top10","人数",userGroups));
+		$('#group_user_chart').highcharts(genBarOptions("人数最多的群组Top10","人数(位)","人数",userGroups));
+
+		var fileGroups = [];
+		for(var index = 0 ; index < data.top_file_groups.length ; index++){
+			fileGroups[index] = {
+				name : data.top_file_groups[index].name,
+				value: data.top_file_groups[index].group_stat_info.file_count
+			};
+		}
+		$('#group_file_chart').highcharts(genBarOptions("文件数量最多的群组Top10","文件数(个)","文件数",fileGroups));
+
+		var sizeGroups = [];
+		for(var index = 0; index < data.top_size_groups.length ; index++){
+			var size = data.top_size_groups[index].group_stat_info.used_bytes / (1024 * 1024 * 1024);
+			size = parseFloat(Number(size).toFixed(2));
+			sizeGroups[index] = {
+				name : data.top_size_groups[index].name,
+				value: size
+			}
+		}
+		$('#group_usage_chart').highcharts(genBarOptions("空间使用量最多的群组Top10","使用量(GB)","使用量",sizeGroups));
 	}
 	
 	var completeUrl = String.format(url_templates.top,topLimit,local_data.token);
@@ -2324,7 +2344,7 @@ function getTrendData(){
 	});
 }
 
-function genBarOptions(title,itemName,data){
+function genBarOptions(title,yText,itemName,data){
 	var options = {
 		chart : {
 			type : "column"
@@ -2345,7 +2365,7 @@ function genBarOptions(title,itemName,data){
 		},
 		yAxis : {
 			title : {
-				text : title
+				text : yText
 			},
 			allowDecimals : true
 		},

@@ -272,5 +272,9 @@ button.myClose{
   border: 0;
   -webkit-appearance: none;
 }
+
+.panel-style{
+  min-width:1170px;
+}
 /*Dialog style end*/
 
