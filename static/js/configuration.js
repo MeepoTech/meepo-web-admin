@@ -12,7 +12,7 @@ var url_prefix = {
 	domain  : 'http://admin.meepotech.com',
 	control : 'http://admin.meepotech.com/0',
 	data    : 'http://admin.meepotech.com/c0', 
-	new_control:'https://api.meepotech.com/admin_1'
+	new_control:'http://admin.meepotech.com/admin_1'
 };
 
 var servers = {
