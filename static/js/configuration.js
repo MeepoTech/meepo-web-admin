@@ -12,7 +12,7 @@ var url_prefix = {
 	domain  : 'http://admin.meepotech.com',
 	control : 'http://admin.meepotech.com/0',
 	data    : 'http://admin.meepotech.com/c0', 
-	new_control:'http://admin.meepotech.com/admin_1'
+	new_control:'https://api.meepotech.com/admin_1'
 };
 
 var servers = {
@@ -24,7 +24,9 @@ var servers = {
 	device  : url_prefix.control + '/devices',
 	data    : url_prefix.control + '/admin_groups',
 	constants:url_prefix.control + '/constants',
-	statistics:url_prefix.new_control + '/statistics'
+	new_constants:url_prefix.new_control + '/consts',
+	statistics:url_prefix.new_control + '/statistics',
+	new_group:url_prefix.new_control + '/groups'
 };
 
 var url_templates = {
@@ -48,12 +50,13 @@ var url_templates = {
 	group_remove_user:   servers.group + '/{0}/users/{1}?token={2}',
 	group_disband:		 servers.group + '/{0}?token={1}',
 	group_establish:	 servers.group + '?owner_id={0}&token={1}',
+	new_group_update:	 servers.new_group + '/{0}/update?token={1}',
 	//group user
 	group_user_update:   servers.group + '/{0}/users/{1}/update?token={2}',
 	group_add_user:		 servers.group + '/{0}/users?user_id={1}&token={2}',
 	
 	//constants
-	group_type:			 servers.constants + '/group_types?token={0}',
+	group_type:			 servers.new_constants + '/group/types?token={0}',
 	relation_positions:  servers.constants + '/relation_positions?token={0}',
 	
 	//statistics

@@ -1300,7 +1300,7 @@ function getGroupType(){
 		else{
 			for(var index = 0 ; index < data.length ; index++){
 				GROUP_TYPE[index] = new Object();
-				GROUP_TYPE[index].type_str = data[index].type_str;
+				GROUP_TYPE[index].type_str = data[index].type_details;
 				GROUP_TYPE[index].type = data[index].type;
 			}
 		}
@@ -1312,9 +1312,14 @@ function getGroupType(){
 function createGroupTypeSelect(itemNumber,itemName){
 	var htmlStr = '<select id="group_type">';
 	if(GROUP_TYPE.length > 0){
-		htmlStr = htmlStr + '<option value="'+itemNumber+'">'+itemName+'</option>';
 		for(var index = 0 ; index < GROUP_TYPE.length ; index++){
-			if(itemNumber != GROUP_TYPE[index].type){
+			if(itemName == GROUP_TYPE[index].type_str){
+				htmlStr = htmlStr + '<option value="'+GROUP_TYPE[index].type+'">'+GROUP_TYPE[index].type_str+'</option>';
+			}
+		}
+		
+		for(var index = 0 ; index < GROUP_TYPE.length ; index++){
+			if(itemName != GROUP_TYPE[index].type_str){
 				htmlStr = htmlStr + '<option value="'+GROUP_TYPE[index].type+'">'+GROUP_TYPE[index].type_str+'</option>';
 			}
 		}
@@ -1583,15 +1588,15 @@ function groupUserSave(){
 }
 
 function updateGroupInfo(groupID,description,tags,type,visible){
-	var tagArray = tags.split(',');
+	/*var tagArray = tags.split(',');
 	for(var index = 0; index < tagArray.length ; index++)
-		tagArray[index] = Trim(tagArray[index]).toLowerCase();
+		tagArray[index] = Trim(tagArray[index]).toLowerCase();*/
 		
 	var form = JSON.stringify({
-		"description" : description,
-		"tags" : tagArray,
+		"intro" : description,
+		"tags" : tags,
 		"type" : type,
-		"visible_to_search" : visible
+		"is_visible" : visible
 	});
 	
 	function after_update(data,status){
@@ -1600,7 +1605,7 @@ function updateGroupInfo(groupID,description,tags,type,visible){
 		else{
 		}
 	}
-	var completeUrl = String.format(url_templates.group_update,groupID,local_data.token);
+	var completeUrl = String.format(url_templates.new_group_update,groupID,local_data.token);
 	request(completeUrl,form,"post",after_update);
 }
 
@@ -2269,10 +2274,7 @@ function exportGroupExec(){
 function listInformation(){
 	getRealTimeData();
 	getTopData();
-	//$('#group_user_chart').highcharts(genBarOptions("人数最多的群组Top10","人数"));
-	//$('#group_file_chart').highcharts(genBarOptions("文件数量最多的群组Top10","文件数"));
-	//$('#group_usage_chart').highcharts(genBarOptions("空间使用量最多的群组Top10","使用量"));
-	//$('#user_history_chart').highcharts(genLineOptions("line","历史用户数量","人数"));
+	getTrendData();
 }
 
 function getTopData(){
@@ -2340,7 +2342,53 @@ function getTrendData(){
 		if(status == "error"){
 			return;
 		}
+		var userTrendData = [];
+		var groupTrendData = [];
+		var fileTrendData = [];
+		userTrendData[0] = {
+			name : "用户数",
+			point: []
+		};
 		
+		groupTrendData[0] = {
+			name : "群组数",
+			point: []
+		};
+		
+		fileTrendData[0] = {
+			name : "文件数",
+			point: []
+		};
+		
+		fileTrendData[1] = {
+			name : "meta数",
+			point : []
+		};
+		
+		for(var index = 0 ; index < data.trend_stat_info.length ; index++){
+			userTrendData[0].point[index] = {
+				x : data.trend_stat_info[index].time_millis,
+				y : data.trend_stat_info[index].user_count
+			};
+			
+			groupTrendData[0].point[index] = {
+				x : data.trend_stat_info[index].time_millis,
+				y : data.trend_stat_info[index].group_count
+			};
+			
+			fileTrendData[0].point[index] = {
+				x : data.trend_stat_info[index].time_millis,
+				y : data.trend_stat_info[index].file_count
+			};
+			
+			fileTrendData[1].point[index] = {
+				x : data.trend_stat_info[index].time_millis,
+				y : data.trend_stat_info[index].meta_count
+			};
+		}
+		$('#user_history_chart').highcharts(genLineOptions("历史用户数量","人数（位）",userTrendData));
+		$('#group_history_chart').highcharts(genLineOptions("历史群组数量","群组数（个）",groupTrendData));
+		$('#file_history_chart').highcharts(genLineOptions("历史文件与Meta数量","文件数（个）",fileTrendData));
 	});
 }
 
@@ -2381,14 +2429,14 @@ function genBarOptions(title,yText,itemName,data){
 	return options;
 }
 
-function genLineOptions(title,data){
+function genLineOptions(title,yText,data){
 	var options = {
 		chart : {
-			type : 'spline',
+			type : 'line',
 			animation : Highcharts.svg
 		},
 		title : {
-			title : title
+			text : title
 		},
 		xAxis : {
 			type : 'datetime',
@@ -2396,13 +2444,21 @@ function genLineOptions(title,data){
 		},
 		yAxis : {
 			title : {
-				text : 'value',
+				text : yText,
 			},
 			plotLines :[{
 				value : 0,
 				width : 1,
 				color : '#808080'
 			}]
+		},
+		plotOptions : {
+			line : {
+				dataLabels : {
+					enabled : true
+				},
+				enableMouseTracking : true
+			}
 		},
 		tooltip: {
         	formatter: function() {
@@ -2411,14 +2467,25 @@ function genLineOptions(title,data){
                     Highcharts.numberFormat(this.y, 2);
             }
         },
-        legend: {
-        	enabled: false
-        },
         exporting: {
         	enabled: false
         },
 		series:[]
 	};
+	
+	for(var i = 0 ; i < data.length ; i++){
+		options.series[i] = {};
+		options.series[i].name = data[i].name;
+		options.series[i].data = [];
+		for(var j = 0 ; j < data[i].point.length ; j++){
+			options.series[i].data.push({
+				x : data[i].point[j].x,
+				y : data[i].point[j].y
+			});
+		}
+	}
+	
+	return options;
 }
 
 function genPieOptions(title,data){
