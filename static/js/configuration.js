@@ -63,7 +63,8 @@ var url_templates = {
 	real_time:			 servers.statistics + '/real_time?token={0}',
 	summary:			 servers.statistics + '/summary?time={0}&token={1}',
 	top:				 servers.statistics + '/top?limit={0}&token={1}',
-	trend:				 servers.statistics + '/trend?token={0}'
+	trend:				 servers.statistics + '/trend?token={0}',
+	spaceUsage:			 '/stats'
 };
 
 var user_role = {

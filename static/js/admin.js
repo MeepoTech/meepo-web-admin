@@ -2326,11 +2326,31 @@ function getTopData(){
 }
 
 function getRealTimeData(){
-	var completeUrl = String.format(url_templates.summary,+new Date(),local_data.token);
+	getRealTimeCount();
+	getSummaryCount();
+}
+
+function getRealTimeCount(){
+	var completeUrl = String.format(url_templates.real_time,local_data.token);
 	request(completeUrl,"","get",function(data,status){
 		if(status == "success"){
 			$('#info_manage').find('.userNum').text(data.user_count);
 			$('#info_manage').find('.groupNum').text(data.group_count);
+			$('#info_manage').find('.onlineNum').text(data.token_count);
+		}
+	});
+}
+
+function getSummaryCount(){
+	var completeUrl = String.format(url_templates.summary,+new Date(),local_data.token);
+	request(completeUrl,"","get",function(data,status){
+		if(status == "success"){
+			var extentsUrl = url_templates.spaceUsage;
+			request(extentsUrl,"","get",function(data,status){
+				if(status == "success"){
+					
+				}
+			});
 			$('#info_manage').find('.fileNum').text(data.file_count);
 		}
 	});
