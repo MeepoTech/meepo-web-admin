@@ -2388,7 +2388,7 @@ function parseSize(size,quota){
 	return {
 		used : usage,
 		quota: quota + " GB",
-		percent: Number(size / quota).toFixed(2) + "%"
+		percent: Number(size / totalVolume).toFixed(2) + "%"
 	};
 }
 
