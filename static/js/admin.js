@@ -2348,14 +2348,48 @@ function getSummaryCount(){
 			var extentsUrl = url_templates.spaceUsage;
 			$.get(
 				extentsUrl,
-				function(data){
-					alert(data);
+				function(statsData){
+					var usageInfo = parseSize(data.bytes,statsData);
+					var percent = usageInfo.usage + "/" + usageInfo.quota;
+					$('#info_manage').find('.bar').css("width",usageInfo.percent);
+					$('#info_manage').find('.percent').text(percent);
 				},
 				'json'
 			);
 			$('#info_manage').find('.fileNum').text(data.file_count);
 		}
 	});
+}
+
+function parseSize(size,quota){
+	var totalVolume = parseInt(quota) * 1024 * 1024 * 1024;
+	var usage = size;
+	if(usage <= 1024)
+        usage += " B";
+    else if( usage <= 1024*1024)
+    {
+        usage /= 1024;
+        usage = usage.toFixed(2);
+        usage += " KB";
+    }
+    else if(usage <= 1024*1024*1024)
+    {
+        usage /= (1024.0*1024);  
+        usage = usage.toFixed(2);
+        usage += " MB";
+    }
+    else
+    {
+        usage /= (1024*1024*1024);
+        usage = usage.toFixed(2);
+        usage += " GB";
+    }
+	
+	return {
+		used : usage,
+		quota: totalVolume + " GB",
+		percent: Number(size / quota).toFixed(2) + "%"
+	};
 }
 
 function getTrendData(){
