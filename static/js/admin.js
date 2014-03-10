@@ -2350,7 +2350,7 @@ function getSummaryCount(){
 				extentsUrl,
 				function(statsData){
 					var usageInfo = parseSize(data.bytes,statsData);
-					var percent = usageInfo.usage + "/" + usageInfo.quota;
+					var percent = usageInfo.used + "/" + usageInfo.quota;
 					$('#info_manage').find('.bar').css("width",usageInfo.percent);
 					$('#info_manage').find('.percent').text(percent);
 				},
