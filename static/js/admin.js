@@ -2346,11 +2346,13 @@ function getSummaryCount(){
 	request(completeUrl,"","get",function(data,status){
 		if(status == "success"){
 			var extentsUrl = url_templates.spaceUsage;
-			request(extentsUrl,"","get",function(data,status){
-				if(status == "success"){
-					
-				}
-			});
+			$.get(
+				extentsUrl,
+				function(data){
+					alert(data);
+				},
+				'json'
+			);
 			$('#info_manage').find('.fileNum').text(data.file_count);
 		}
 	});
