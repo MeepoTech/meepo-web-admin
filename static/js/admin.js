@@ -1788,8 +1788,8 @@ function importGroup(){
 
 function importUserOnchange(){
 	var file = this.files[0];
-	if(file.type != "application/vnd.ms-excel"){
-		alert("请上传CSV格式的文件!!");
+	if(file.type != "text/plain"){
+		alert("请上传TXT格式的文件!!");
 	}
 	else{
 		$('#data_import_text').val(this.value);
@@ -1810,8 +1810,8 @@ function importUserOnchange(){
 
 function importGroupOnchange(){
 	var file = this.files[0];
-	if(file.type != "application/vnd.ms-excel"){
-		alert("请上传CSV格式的文件!!");
+	if(file.type != "text/plain"){
+		alert("请上传TXT格式的文件!!");
 	}
 	else{
 		$('#data_import_text').val(this.value);
@@ -1836,11 +1836,11 @@ function importUserDown(){
 		text = text + export_user_header.user_name + ',';
 		text = text + export_user_header.display_name + ',';
 		text = text + export_user_header.password + ',';
-		text = text + export_user_header.email;
+		text = text + export_user_header.email + '\n';
 	
 	var blob = new Blob([text],{type: "text/plain;charset=utf-8"});
 	if(blob){
-		saveAs(blob,"user_templates.csv");
+		saveAs(blob,"user_templates.txt");
 	}
 }
 
@@ -1851,11 +1851,11 @@ function importGroupDown(){
 		text = text + export_group_header.group_tags + ',';
 		text = text + export_group_header.group_type +',';
 		text = text + export_group_header.group_visible + ',';
-		text = text + export_group_header.group_user_count;
+		text = text + export_group_header.group_user_count + '\n';
 		
 	var blob = new Blob([text],{type: "text/plain;charset=utf-8"});
 	if(blob){
-		saveAs(blob,"group_templates.csv");
+		saveAs(blob,"group_templates.txt");
 	}
 }
 
@@ -1941,29 +1941,40 @@ function createGroupAndAddUser(groupInfo,total){
 		}
 		else{
 			for(var index = 1 ; index < user.length; index++){
-				var completeUrl = String.format(url_templates.group_add_user,data.group_id,getUserID(user[index]),local_data.token);
-				request(completeUrl,"","post",after_add);
+				var userID = getUserID(user[index]);
+				if(userID != null){
+					var completeUrl = String.format(url_templates.group_add_user,data.group_id,userID,local_data.token);
+					request(completeUrl,"","post",after_add);
+				}
 			}
 		}
 	}
 	
 	var form = JSON.stringify({
 		'group_name' : group[0],
-		'description' : group[1],
+		'description' : group[1], 
 		'tags' : group[2],
 		'type' : group[3],
 		'visible_to_search' : groupVisibleToSearch(group[4])
 	});
-	var completeUrl = String.format(url_templates.group_establish,getUserID(user[0]),local_data.token);
-	request(completeUrl,form,"post",after_create);
+	var ownerID = getUserID(user[0]);
+	if(ownerID != null){
+		var completeUrl = String.format(url_templates.group_establish,ownerID,local_data.token);
+		request(completeUrl,form,"post",after_create);
+	}
 }
 
 function fileStrToArray(str){
-	var infoArray = str.split('\n');
-	for(var index = 0 ; index < infoArray.length ; index++){
-		infoArray[index] = infoArray[index].split(',');
+	var regStr = /\r|\n/g;
+	var infoArray = str.split(regStr);
+	var trimArray = [];
+	for(var index = 0,pos = 0 ; pos < infoArray.length ; pos++){
+		if(Trim(infoArray[pos]) != ""){
+			trimArray[index] = infoArray[pos].split(',');
+			index++;
+		}
 	}
-	return infoArray;
+	return trimArray;
 }
 
 function groupDataPretreatment(fileArray){
@@ -1991,7 +2002,7 @@ function groupDataArrange(fileArray){
 	for(index = 1,pos = 0;index < fileArray.length ;pos++,index++){
 		resultArray[pos] = new Object();
 		resultArray[pos].group = fileArray[index];
-		resultArray[pos].group[2] = fileArray[index][2].split('-');
+		resultArray[pos].group[2] = fileArray[index][2].split('/');
 		var length = fileArray[index].length;
 		var countStr = fileArray[index][length - 1];
 		if(countStr != '*'){
@@ -2012,7 +2023,10 @@ function getUserID(userName){
 		if(status == 'error'){
 		}
 		else{
-			userID = data.users[0].user_id;
+			if(data.count > 0)
+				userID = data.users[0].user_id;
+			else
+				userID = null;
 		}
 	}
 	var completeUrl = String.format(url_templates.user_search,userName,0,1,local_data.token);
@@ -2193,15 +2207,15 @@ function exportExecution(){
 }
 
 function exportUserExec(){
-	var total = $('#export_data_total').val();
+	var total = parseInt($('#export_data_total').val());
+	var curCount = 0 ,error = 0, success = 0;
+	var text = "";
+	
 	function after_list(data,status){
-		var error = 0;
-		var success=0;
 		if(status == 'error'){
 			error = error + 1;
 		}
 		else{
-			var text = "";
 			for(var index = 0 ; index < data.count ; index++){
 				var user = data.users[index];
 				text = text + user.user_name + ",";
@@ -2209,34 +2223,40 @@ function exportUserExec(){
 				text = text + user.email + ",";
 				text = text + user.groups_can_own + "\n";
 				success = success + 1;
-				dataProgressExec('export',index+1,total);
-			}
-			var blob = new Blob([text],{type: "text/plain;charset=utf-8"});
-			if(blob){
-				var path = $('#data_export_text').val();
-				saveAs(blob,path+".csv");
+				dataProgressExec('export',success,total);
 			}
 		}
-		
-		$('#export_result_label').css('display','block');
-		$('#export_result_label .load-label-total').text(total);
 		$('#export_result_label .load-label-success').text(success);
 		$('#export_result_label .load-label-error').text(error);
+		
+		if(success + error == total)
+			writeToFile(text);
 	}
-	var completeUrl = String.format(url_templates.user_list,0,total,local_data.token);
-	request(completeUrl,"","get",after_list);
+	
+	$('#export_result_label .load-label-total').text(total);
+	$('#export_result_label').css('display','block');
+	
+	var times = total / pageSize;
+	for(var i = 0 ; i < times ; i++){
+		var completeUrl = String.format(url_templates.user_list,i*pageSize,pageSize,local_data.token);
+		request(completeUrl,"","get",after_list);
+	}
+	if(times * pageSize < total){
+		var completeUrl = String.format(url_templates.user_list,(times*pageSize),(total - times * pageSize),local_data.token);
+		request(completeUrl,"","get",after_list);
+	}
 }
 
 function exportGroupExec(){
-	var total = $('#export_data_total').val();
+	var total = parseInt($('#export_data_total').val());
+	var curCount = 0 ,error = 0, success = 0;
+	var text = "";
+	
 	function after_list(data,status){
-		var error = 0;
-		var success = 0;
 		if(status == 'error'){
 			error = error + 1;	
 		}
 		else{
-			var text = "";
 			for(var index = 0 ; index < data.count ; index++){
 				var group = data.groups[index];
 				var tags = "";
@@ -2252,22 +2272,38 @@ function exportGroupExec(){
 				text = text + tags + ",";
 				text = text + group.type_str + "\n";
 				success = success + 1;
-				dataProgressExec('export',index+1,total);
-			}
-			var blob = new Blob([text],{type: "text/plain;charset=utf-8"});
-			if(blob){
-				var path = $('#data_export_text').val();
-				saveAs(blob,path+".csv");
+				dataProgressExec('export',success,total);
 			}
 		}
-		
-		$('#export_result_label').css('display','block');
-		$('#export_result_label .load-label-total').text(total);
 		$('#export_result_label .load-label-success').text(success);
 		$('#export_result_label .load-label-error').text(error);
+		
+		if(success + error == total)
+			writeToFile(text);
 	}
-	var completeUrl = String.format(url_templates.group_list,0,pageSize,local_data.token);
-	request(completeUrl,"","get",after_list);
+	
+	$('#export_result_label').css('display','block');
+	$('#export_result_label .load-label-total').text(total);
+	
+	var times = total / pageSize;
+	for(var i = 0 ; i < times ; i++){
+		var completeUrl = String.format(url_templates.group_list,i*pageSize,pageSize,local_data.token);
+		request(completeUrl,"","get",after_list);
+	}
+	if(times * pageSize < total){
+		var completeUrl = String.format(url_templates.group_list,(times*pageSize),(total - times * pageSize),local_data.token);
+		request(completeUrl,"","get",after_list);
+	}
+}
+
+function writeToFile(text){
+	var blob = new Blob([text],{type: "text/plain;charset=utf-8"});
+	if(blob){
+		var path = $('#data_export_text').val();
+		if(path == "")
+			path = "导出数据";
+		saveAs(blob,path+".txt");
+	}
 }
 
 //Information
