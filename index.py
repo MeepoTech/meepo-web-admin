@@ -13,11 +13,16 @@ urls = (
     '/',            'Login',
     '/upload',      'Upload',
     '/home',        'Home',
+    '/stats',	    'Stats',
 )
 
 #r = redis.StrictRedis(host=redis_addr)
 r = redis.StrictRedis()
 
+class Stats:
+    def GET(self):
+	val = r.hget("stats","volume")
+	return json.dumps(val)
 
 class Login:
     def GET(self):
