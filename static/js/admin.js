@@ -1458,6 +1458,44 @@ function groupSave(){
 }
 
 function groupUserSearchSubmit(){
+	var groupID = $('#current_group_id').val();
+	var query = $('#group_user_search_name').val();
+	clearTable('group_user_table');
+	var currentPageNumber = 1;
+	var offset = (currentPageNumber-1)*pageSize;
+	function after_search(data,status){
+		if(status == "success"){
+			var dataVal = [];
+			var saveDataVal = [];
+			if(currentPageNumber == 1){
+				//Create page number
+				var totalPageNumber = calcPageTotalCount(data.total,pageSize);
+				$('#group_user_page_total_number').val(totalPageNumber);
+				$('#group_user_page_label').text('Page 1 of '+totalPageNumber);
+			}
+			for(var index = 0 ; index < data.users.length ; index++){
+				dataVal[index] = [];
+				dataVal[index][0] = index+1;
+				dataVal[index][1] = '<input type="checkbox" value="'+data.users[index].user_id+'" name="'+index+'">';
+				dataVal[index][2] = data.users[index].name;
+				dataVal[index][3] = data.users[index].full_name;
+				dataVal[index][4] = data.users[index].email;
+				dataVal[index][5] = data.users[index].relation.role_details;
+				
+				saveDataVal[index] = [];
+				saveDataVal[index][0] = groupID;
+				saveDataVal[index][1] = data.users[index].user_id;
+				saveDataVal[index][2] = data.users[index].relation.role_details;
+				saveDataVal[index][3] = relation_position[data.users[index].relation.role];
+			}
+			//$('#group_table').css('display','none');
+			localStorage.setItem('groupUserTableData',JSON.stringify(saveDataVal));
+			createTable('group_user_table',dataVal);
+		}
+	}
+	
+	var completeUrl = String.format(url_templates.group_user_search,groupID,query,offset,pageSize,local_data.token);
+	request(completeUrl,"","get",after_search);
 }
 
 function groupUserAdd(){
@@ -2657,6 +2695,7 @@ function keyDown(name){
 			break;
 			
 			case 'group_user_search':
+			groupUserSearchSubmit();
 			break;
 		}
 	}

@@ -54,6 +54,7 @@ var url_templates = {
 	//group user
 	group_user_update:   servers.group + '/{0}/users/{1}/update?token={2}',
 	group_add_user:		 servers.group + '/{0}/users?user_id={1}&token={2}',
+	group_user_search:	 servers.new_group + '/{0}/users/search?query={1}&offset={2}&count={3}&token={4}',
 	
 	//constants
 	group_type:			 servers.new_constants + '/group/types?token={0}',
@@ -88,7 +89,7 @@ var group_status = {
 
 var relation_position = {
 	owner		  : 0,
-	administrator : 10,
+	admin		  : 10,
 	member		  : 20,
 	blocked		  : 90
 };
