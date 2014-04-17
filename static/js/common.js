@@ -53,8 +53,8 @@ String.format = function(src){
 
 function stringThumbnail(str,maxLength){
 	var curMaxLength = maxLength ? maxLength : strMaxLength;
-	if(str.length > maxLength)
-		return str.substr(0,maxLength-3)+'...';
+	if(str.length > curMaxLength)
+		return str.substr(0,curMaxLength-3)+'...';
 	else
 		return str;
 }
