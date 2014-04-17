@@ -2209,8 +2209,8 @@ function exportGroup(){
 			for(var index = 0 ; index < data.count ; index++){
 				var group = data.groups[index];
 				dataVal[index] = [];
-				dataVal[index][0] = group.group_name;
-				dataVal[index][1] = group.description;
+				dataVal[index][0] = stringThumbnail(group.group_name);
+				dataVal[index][1] = stringThumbnail(group.description,30);
 				var tags = "";
 				if(group.tags.length > 0){
 					tags = group.tags[0];
@@ -2585,7 +2585,7 @@ function genLineOptions(title,yText,data){
 		plotOptions : {
 			line : {
 				dataLabels : {
-					enabled : true
+					enabled : false
 				},
 				enableMouseTracking : true
 			}

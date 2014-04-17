@@ -51,9 +51,10 @@ String.format = function(src){
     });
 };
 
-function stringThumbnail(str){
-	if(str.length > strMaxLength)
-		return str.substr(0,strMaxLength-3)+'...';
+function stringThumbnail(str,maxLength){
+	var curMaxLength = maxLength ? maxLength : strMaxLength;
+	if(str.length > maxLength)
+		return str.substr(0,maxLength-3)+'...';
 	else
 		return str;
 }
