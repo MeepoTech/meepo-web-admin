@@ -28,18 +28,32 @@ function login(){
 			alert('输入的用户名或密码错误！');
 		}
 		else{
-			local_data.adminname = username;
-			local_data.token = data.token;
-			local_data.device = data.device_id;
-			var rememberMe = document.getElementById('remember_me').checked;
-			if(rememberMe){
-				localStorage.setItem("logging",true);
-			}
-			else{
-				sessionStorage.setItem("logging",true);
-			}
-			localStorage.setItem("data",JSON.stringify(local_data));
-			self.location.href="/home";
+			//判断supervisor
+			var completeUrl = String.format(url_templates.account_info,data.token);
+			request(completeUrl,'','get',function(user,status){
+				if(status == "success"){
+					if(user.role == user_role.supervisor){
+						local_data.adminname = username;
+						local_data.token = data.token;
+						local_data.device = data.device_id;
+						var rememberMe = document.getElementById('remember_me').checked;
+						if(rememberMe){
+							localStorage.setItem("logging",true);
+						}
+						else{
+							sessionStorage.setItem("logging",true);
+						}
+						localStorage.setItem("data",JSON.stringify(local_data));
+						self.location.href="/home";
+					}
+					else{
+						alert('输入的用户名或密码错误！');
+					}
+				}
+				else{
+					alert('输入的用户名或密码错误！');
+				}
+			});
 		}
 	}
 	

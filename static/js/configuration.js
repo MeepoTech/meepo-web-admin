@@ -33,6 +33,7 @@ var url_templates = {
 	login :              servers.account + '/login?locale={0}&device_name=web-control&user_name={1}&password={2}',
 	logout:              servers.account + '/logout?token={0}',
 	change_password:	 servers.account + '/change_password?user_name={0}&password={1}&new_password={2}',
+	account_info:		 servers.account + '/info?token={0}',
 	//user
 	user_list:			 servers.user + '?offset={0}&count={1}&token={2}',
 	user_search:		 servers.user + '/search?query={0}&offset={1}&count={2}&token={3}',
